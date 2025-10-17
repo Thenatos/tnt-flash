@@ -48,8 +48,13 @@ export const ProductCard = ({
           <img
             src={image || "/placeholder.svg"}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
+          {isExpired && (
+            <div className="absolute top-1 left-1 bg-muted text-muted-foreground px-2 py-0.5 rounded-full text-xs font-bold shadow-lg border border-border">
+              INATIVO
+            </div>
+          )}
           {discount > 0 && (
             <div className="absolute top-1 left-1 bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-xs font-bold shadow-lg">
               -{discount}%
@@ -117,8 +122,13 @@ export const ProductCard = ({
           <img
             src={image || "/placeholder.svg"}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
+          {isExpired && (
+            <div className="absolute top-3 left-3 bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm font-bold shadow-lg border border-border">
+              INATIVO
+            </div>
+          )}
           {discount > 0 && (
             <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-sm font-bold shadow-lg">
               -{discount}%

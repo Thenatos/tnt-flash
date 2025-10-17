@@ -204,8 +204,7 @@ const ProductDetail = () => {
               {isExpired && (
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full font-bold text-lg py-6"
+                  className="w-full gradient-alert hover:opacity-90 font-bold text-lg py-6 shadow-lg text-white"
                   onClick={handleCreateAlert}
                 >
                   <Bell className="h-5 w-5 mr-2" />

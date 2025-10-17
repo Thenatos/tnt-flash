@@ -57,7 +57,7 @@ export default function Admin() {
     setIsSubmitting(true);
     try {
       let expiresAt = null;
-      if (data.expires_in_days && data.expires_in_days !== "") {
+      if (data.expires_in_days && data.expires_in_days !== "never") {
         const daysToAdd = parseInt(data.expires_in_days);
         const expirationDate = new Date();
         expirationDate.setDate(expirationDate.getDate() + daysToAdd);

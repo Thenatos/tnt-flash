@@ -85,7 +85,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       installment_info: "",
       installment_count: "",
       is_hot: false,
-      expires_in_days: "",
+      expires_in_days: "never",
     },
   });
 
@@ -416,7 +416,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">Nunca expira</SelectItem>
+                  <SelectItem value="never">Nunca expira</SelectItem>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((days) => (
                     <SelectItem key={days} value={days.toString()}>
                       {days} {days === 1 ? "dia" : "dias"}

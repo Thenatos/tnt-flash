@@ -8,6 +8,7 @@ import { CommentReactions } from "@/components/CommentReactions";
 import { useComments } from "@/hooks/useComments";
 import { useCommentUsers } from "@/hooks/useCommentUsers";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { MessageSquare, Send, Trash2, Reply } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -25,6 +26,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
   const { comments, isLoading, createComment, deleteComment } = useComments(productId);
   const { data: commentUsers = [] } = useCommentUsers(productId);
   const { user } = useAuth();
+  const { data: isAdmin } = useAdmin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +149,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                               Responder
                             </Button>
                           )}
-                          {user && user.id === comment.user_id && (
+                          {user && (user.id === comment.user_id || isAdmin) && (
                             <Button
                               variant="ghost"
                               size="sm"
@@ -231,7 +233,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                                     @{reply.profile?.username || "usuario"} · {replyTimeAgo}
                                   </p>
                                 </div>
-                                {user && user.id === reply.user_id && (
+                                {user && (user.id === reply.user_id || isAdmin) && (
                                   <Button
                                     variant="ghost"
                                     size="sm"

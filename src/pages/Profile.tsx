@@ -21,6 +21,30 @@ const PRESET_AVATARS = [
   "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
   "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucy",
   "https://api.dicebear.com/7.x/avataaars/svg?seed=Rocky",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Milo",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Daisy",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Leo",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Lily",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Buddy",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Molly",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Cooper",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Sadie",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Bailey",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Chloe",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Duke",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Bear",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Ruby",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Jack",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Stella",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Toby",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Penny",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Zeus",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Rosie",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Oscar",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Ellie",
 ];
 
 const Profile = () => {
@@ -182,7 +206,7 @@ const Profile = () => {
               {/* Avatares predefinidos */}
               <div className="space-y-3">
                 <Label>Ou escolha um avatar:</Label>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-3 max-h-96 overflow-y-auto p-2 border rounded-lg">
                   {PRESET_AVATARS.map((preset) => (
                     <div
                       key={preset}

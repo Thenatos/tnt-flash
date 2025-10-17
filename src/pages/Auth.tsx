@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap, Mail, Lock, User as UserIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Zap, Mail, Lock, User as UserIcon, Flame } from "lucide-react";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -19,6 +21,9 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
   password: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
   confirmPassword: z.string(),
+  acceptedTerms: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os termos para continuar",
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -28,6 +33,8 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, signIn, signUp, signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
@@ -86,6 +93,7 @@ const Auth = () => {
         email: signupEmail,
         password: signupPassword,
         confirmPassword: signupConfirmPassword,
+        acceptedTerms: acceptedTerms,
       });
       
       setIsLoading(true);
@@ -98,6 +106,8 @@ const Auth = () => {
         setSignupEmail("");
         setSignupPassword("");
         setSignupConfirmPassword("");
+        setAcceptedTerms(false);
+        setShowTermsDialog(false);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -111,6 +121,44 @@ const Auth = () => {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSignupClick = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignupErrors({});
+    
+    // Validate form fields first (excluding terms)
+    const basicValidation = z.object({
+      fullName: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
+      email: z.string().email({ message: "Email inválido" }),
+      password: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+      confirmPassword: z.string(),
+    }).refine((data) => data.password === data.confirmPassword, {
+      message: "As senhas não coincidem",
+      path: ["confirmPassword"],
+    });
+    
+    try {
+      basicValidation.parse({
+        fullName: signupFullName,
+        email: signupEmail,
+        password: signupPassword,
+        confirmPassword: signupConfirmPassword,
+      });
+      
+      // If validation passes, show terms dialog
+      setShowTermsDialog(true);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: any = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setSignupErrors(errors);
+      }
     }
   };
 
@@ -230,7 +278,7 @@ const Auth = () => {
             
             {/* Signup Tab */}
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
+              <form onSubmit={handleSignupClick} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-name">Nome Completo</Label>
                   <div className="relative">
@@ -358,6 +406,84 @@ const Auth = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Terms and Conditions Dialog */}
+      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-gradient-accent rounded-full p-6">
+                <Flame className="h-12 w-12 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              Você concorda com nossas políticas e termos?
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                className="mt-1"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm leading-relaxed cursor-pointer"
+              >
+                Confirmo que li, aceito e concordo com os{" "}
+                <button
+                  type="button"
+                  className="font-bold underline hover:text-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // TODO: Link para Termos de uso
+                  }}
+                >
+                  Termos de uso
+                </button>
+                ,{" "}
+                <button
+                  type="button"
+                  className="font-bold underline hover:text-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // TODO: Link para Código de conduta
+                  }}
+                >
+                  Código de conduta
+                </button>
+                {" "}e{" "}
+                <button
+                  type="button"
+                  className="font-bold underline hover:text-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // TODO: Link para Política de privacidade
+                  }}
+                >
+                  Política de privacidade
+                </button>
+                .
+              </label>
+            </div>
+            {signupErrors.acceptedTerms && (
+              <p className="text-sm text-destructive">{signupErrors.acceptedTerms}</p>
+            )}
+            
+            <Button
+              type="button"
+              className="w-full gradient-accent hover:opacity-90 font-bold text-lg py-6"
+              disabled={!acceptedTerms || isLoading}
+              onClick={handleSignup}
+            >
+              {isLoading ? "Criando conta..." : "Continuar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

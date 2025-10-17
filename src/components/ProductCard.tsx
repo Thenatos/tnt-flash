@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Clock, Flame, ExternalLink, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ProductReactions } from "./ProductReactions";
+import { ProductReactionCount } from "./ProductReactionCount";
 
 interface ProductCardProps {
   id: string;
@@ -105,10 +105,8 @@ export const ProductCard = ({
           </div>
         </div>
 
-        {/* Like/Dislike Buttons */}
-        <div className="flex justify-center py-2">
-          <ProductReactions productId={id} />
-        </div>
+        {/* Reaction Count */}
+        <ProductReactionCount productId={id} />
 
         {/* CTA Button */}
         <Button 

@@ -33,17 +33,14 @@ export const Footer = () => {
           <div>
             <h4 className="text-xl font-bold mb-4">Links Rápidos</h4>
             <div className="space-y-2">
-              <a href="#" className="block text-white/80 hover:text-white transition-colors">
-                Sobre Nós
-              </a>
-              <a href="#" className="block text-white/80 hover:text-white transition-colors">
-                Contato
-              </a>
-              <a href="#" className="block text-white/80 hover:text-white transition-colors">
+              <a href="/termos" className="block text-white/80 hover:text-white transition-colors">
                 Termos de Uso
               </a>
-              <a href="#" className="block text-white/80 hover:text-white transition-colors">
+              <a href="/privacidade" className="block text-white/80 hover:text-white transition-colors">
                 Política de Privacidade
+              </a>
+              <a href="/conduta" className="block text-white/80 hover:text-white transition-colors">
+                Código de Conduta
               </a>
             </div>
           </div>

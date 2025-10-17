@@ -10,6 +10,9 @@ import ProductDetail from "./pages/ProductDetail";
 import Admin from "./pages/Admin";
 import Alerts from "./pages/Alerts";
 import Profile from "./pages/Profile";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Conduct from "./pages/Conduct";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/alertas" element={<Alerts />} />
             <Route path="/perfil" element={<Profile />} />
+            <Route path="/privacidade" element={<Privacy />} />
+            <Route path="/termos" element={<Terms />} />
+            <Route path="/conduta" element={<Conduct />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

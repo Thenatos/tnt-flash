@@ -1,0 +1,410 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useCategories } from "@/hooks/useCategories";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+
+const productSchema = z.object({
+  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
+  description: z.string().optional(),
+  original_price: z.string().min(1, "Preço original é obrigatório"),
+  promotional_price: z.string().min(1, "Preço promocional é obrigatório"),
+  discount_percentage: z.string().min(1, "Desconto é obrigatório"),
+  category_id: z.string().min(1, "Categoria é obrigatória"),
+  store_id: z.string().min(1, "Loja é obrigatória"),
+  image_url: z.string().min(1, "Imagem é obrigatória"),
+  affiliate_link: z.string().url("Link de afiliado inválido"),
+  coupon_code: z.string().optional(),
+  installment_info: z.string().optional(),
+  installment_count: z.string().optional(),
+  is_hot: z.boolean().default(false),
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
+
+interface ProductFormProps {
+  onSubmit: (data: ProductFormData) => void;
+  defaultValues?: Partial<ProductFormData>;
+  isLoading?: boolean;
+}
+
+export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormProps) => {
+  const { data: categories } = useCategories();
+  const { data: stores } = useQuery({
+    queryKey: ["stores"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("stores")
+        .select("*")
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const [useImageUpload, setUseImageUpload] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: defaultValues || {
+      title: "",
+      description: "",
+      original_price: "",
+      promotional_price: "",
+      discount_percentage: "",
+      category_id: "",
+      store_id: "",
+      image_url: "",
+      affiliate_link: "",
+      coupon_code: "",
+      installment_info: "",
+      installment_count: "",
+      is_hot: false,
+    },
+  });
+
+  // Calcular desconto automaticamente
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "original_price" || name === "promotional_price") {
+        const original = parseFloat(value.original_price || "0");
+        const promotional = parseFloat(value.promotional_price || "0");
+        
+        if (original > 0 && promotional > 0 && promotional < original) {
+          const discount = Math.round(((original - promotional) / original) * 100);
+          form.setValue("discount_percentage", discount.toString());
+        }
+      }
+
+      // Calcular parcelamento automaticamente
+      if (name === "promotional_price" || name === "installment_count") {
+        const promotional = parseFloat(value.promotional_price || "0");
+        const installments = parseInt(value.installment_count || "1");
+        
+        if (promotional > 0 && installments > 0) {
+          const installmentValue = (promotional / installments).toFixed(2);
+          form.setValue(
+            "installment_info",
+            `${installments}x de R$ ${installmentValue.replace(".", ",")}`
+          );
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      form.setValue("image_url", publicUrl);
+      toast.success("Imagem enviada com sucesso!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Erro ao enviar imagem");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Título</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome do produto" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descrição</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Descrição do produto" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="original_price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preço Original</FormLabel>
+                <FormControl>
+                  <Input type="number" step="0.01" placeholder="199.99" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="promotional_price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preço Promocional</FormLabel>
+                <FormControl>
+                  <Input type="number" step="0.01" placeholder="149.99" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="discount_percentage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Desconto (%)</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="25" {...field} disabled />
+              </FormControl>
+              <FormDescription>Calculado automaticamente</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="category_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categoria</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories?.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="store_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Loja</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma loja" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {stores?.map((store) => (
+                      <SelectItem key={store.id} value={store.id}>
+                        {store.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="space-y-3">
+          <Label>Imagem do Produto</Label>
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant={useImageUpload ? "outline" : "default"}
+              size="sm"
+              onClick={() => setUseImageUpload(false)}
+            >
+              URL
+            </Button>
+            <Button
+              type="button"
+              variant={useImageUpload ? "default" : "outline"}
+              size="sm"
+              onClick={() => setUseImageUpload(true)}
+            >
+              Upload
+            </Button>
+          </div>
+
+          {useImageUpload ? (
+            <div>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && <p className="text-sm text-muted-foreground mt-2">Enviando...</p>}
+              {form.watch("image_url") && (
+                <img
+                  src={form.watch("image_url")}
+                  alt="Preview"
+                  className="mt-2 h-32 w-32 object-cover rounded"
+                />
+              )}
+            </div>
+          ) : (
+            <FormField
+              control={form.control}
+              name="image_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="https://exemplo.com/imagem.jpg" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </div>
+
+        <FormField
+          control={form.control}
+          name="affiliate_link"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Link de Afiliado</FormLabel>
+              <FormControl>
+                <Input placeholder="https://loja.com/produto?ref=..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="coupon_code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cupom (Opcional)</FormLabel>
+              <FormControl>
+                <Input placeholder="DESCONTO10" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="installment_count"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parcelas</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Quantidade" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num}x
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="installment_info"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Info Parcelamento</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled />
+                </FormControl>
+                <FormDescription>Calculado automaticamente</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Button type="submit" variant="secondary" className="w-full" disabled={isLoading}>
+          {isLoading ? "Salvando..." : "Salvar Produto"}
+        </Button>
+      </form>
+    </Form>
+  );
+};

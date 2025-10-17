@@ -1,25 +1,40 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Bold, Italic, Underline, Smile } from "lucide-react";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { MentionAutocomplete } from "@/components/MentionAutocomplete";
+
+interface User {
+  user_id: string;
+  username: string;
+  full_name: string;
+  avatar_url?: string;
+}
 
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   minHeight?: string;
+  users?: User[];
 }
 
 export const RichTextEditor = ({ 
   value, 
   onChange, 
   placeholder = "Digite sua mensagem...",
-  minHeight = "100px"
+  minHeight = "100px",
+  users = []
 }: RichTextEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
+  const [mentionStartPos, setMentionStartPos] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const insertFormatting = (prefix: string, suffix: string = prefix) => {
     const textarea = textareaRef.current;
@@ -66,8 +81,78 @@ export const RichTextEditor = ({
     }, 0);
   };
 
+  const handleTextChange = (newValue: string) => {
+    onChange(newValue);
+    
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = newValue.substring(0, cursorPos);
+    
+    // Verificar se há @ antes do cursor
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+    
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
+      
+      // Verificar se não há espaço após @
+      if (!textAfterAt.includes(" ")) {
+        setMentionQuery(textAfterAt);
+        setMentionStartPos(lastAtIndex);
+        setShowMentions(true);
+        
+        // Calcular posição do autocomplete
+        const textareaRect = textarea.getBoundingClientRect();
+        const containerRect = containerRef.current?.getBoundingClientRect();
+        
+        if (containerRect) {
+          setMentionPosition({
+            top: textareaRect.bottom - containerRect.top + 5,
+            left: textareaRect.left - containerRect.left + 10,
+          });
+        }
+      } else {
+        setShowMentions(false);
+      }
+    } else {
+      setShowMentions(false);
+    }
+  };
+
+  const handleMentionSelect = (username: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const beforeMention = value.substring(0, mentionStartPos);
+    const afterCursor = value.substring(textarea.selectionStart);
+    
+    const newText = `${beforeMention}@${username} ${afterCursor}`;
+    onChange(newText);
+    setShowMentions(false);
+    setMentionQuery("");
+
+    // Restaurar foco
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = mentionStartPos + username.length + 2;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowMentions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="relative space-y-2">
       {/* Toolbar */}
       <div className="flex items-center gap-1 p-2 bg-muted/50 rounded-t-lg border border-b-0">
         <Button
@@ -133,14 +218,24 @@ export const RichTextEditor = ({
       <Textarea
         ref={textareaRef}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => handleTextChange(e.target.value)}
         placeholder={placeholder}
         className="rounded-t-none border-t-0"
         style={{ minHeight }}
       />
 
+      {/* Mention Autocomplete */}
+      {showMentions && users.length > 0 && (
+        <MentionAutocomplete
+          users={users}
+          onSelect={handleMentionSelect}
+          position={mentionPosition}
+          searchQuery={mentionQuery}
+        />
+      )}
+
       <div className="text-xs text-muted-foreground px-2">
-        Use **negrito**, *itálico* ou &lt;u&gt;sublinhado&lt;/u&gt; para formatar seu texto
+        Use **negrito**, *itálico* ou &lt;u&gt;sublinhado&lt;/u&gt; para formatar. Digite @ para mencionar usuários.
       </div>
     </div>
   );

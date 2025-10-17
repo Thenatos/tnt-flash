@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { MarkdownContent } from "@/components/MarkdownContent";
 import { useComments } from "@/hooks/useComments";
+import { useCommentUsers } from "@/hooks/useCommentUsers";
 import { useAuth } from "@/hooks/useAuth";
 import { MessageSquare, Send, Trash2, Reply } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -21,6 +22,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const { comments, isLoading, createComment, deleteComment } = useComments(productId);
+  const { data: commentUsers = [] } = useCommentUsers(productId);
   const { user } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,6 +75,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
               value={newComment}
               onChange={setNewComment}
               placeholder="Deixe seu comentário sobre este produto..."
+              users={commentUsers}
             />
             <div className="flex justify-end">
               <Button
@@ -168,6 +171,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                         value={replyContent}
                         onChange={setReplyContent}
                         placeholder="Escreva sua resposta..."
+                        users={commentUsers}
                       />
                       <div className="flex gap-2 justify-end">
                         <Button

@@ -28,6 +28,7 @@ export const RichTextEditor = ({
   minHeight = "100px",
   users = []
 }: RichTextEditorProps) => {
+  const [isFocused, setIsFocused] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMentions, setShowMentions] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
@@ -152,76 +153,85 @@ export const RichTextEditor = ({
   }, []);
 
   return (
-    <div ref={containerRef} className="relative space-y-2">
-      {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 bg-muted/50 rounded-t-lg border border-b-0">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleBold}
-          title="Negrito (Ctrl+B)"
-          className="h-8 w-8 p-0"
-        >
-          <Bold className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleItalic}
-          title="Itálico (Ctrl+I)"
-          className="h-8 w-8 p-0"
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleUnderline}
-          title="Sublinhado (Ctrl+U)"
-          className="h-8 w-8 p-0"
-        >
-          <Underline className="h-4 w-4" />
-        </Button>
+    <div ref={containerRef} className="relative">
+      {/* Toolbar - Only visible when focused */}
+      {isFocused && (
+        <div className="flex items-center gap-1 p-2 bg-muted/50 rounded-t-lg border border-b-0 animate-fade-in">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleBold}
+            title="Negrito (Ctrl+B)"
+            className="h-8 w-8 p-0"
+          >
+            <Bold className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleItalic}
+            title="Itálico (Ctrl+I)"
+            className="h-8 w-8 p-0"
+          >
+            <Italic className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleUnderline}
+            title="Sublinhado (Ctrl+U)"
+            className="h-8 w-8 p-0"
+          >
+            <Underline className="h-4 w-4" />
+          </Button>
 
-        <div className="h-6 w-px bg-border mx-1" />
+          <div className="h-6 w-px bg-border mx-1" />
 
-        <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              title="Adicionar emoji"
-              className="h-8 w-8 p-0"
-            >
-              <Smile className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0 border-0" align="start">
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              width={320}
-              height={400}
-              searchPlaceHolder="Buscar emoji..."
-              previewConfig={{ showPreview: false }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+          <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                title="Adicionar emoji"
+                className="h-8 w-8 p-0"
+              >
+                <Smile className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0 border-0" align="start">
+              <EmojiPicker
+                onEmojiClick={handleEmojiClick}
+                width={320}
+                height={400}
+                searchPlaceHolder="Buscar emoji..."
+                previewConfig={{ showPreview: false }}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
 
       {/* Textarea */}
       <Textarea
         ref={textareaRef}
         value={value}
         onChange={(e) => handleTextChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          // Keep focused if emoji picker is open
+          if (!showEmojiPicker) {
+            setTimeout(() => setIsFocused(false), 200);
+          }
+        }}
         placeholder={placeholder}
-        className="rounded-t-none border-t-0"
-        style={{ minHeight }}
+        className={isFocused ? "rounded-t-none border-t-0" : "rounded-lg"}
+        style={{ minHeight: isFocused ? minHeight : "60px" }}
       />
 
       {/* Mention Autocomplete */}
@@ -234,9 +244,12 @@ export const RichTextEditor = ({
         />
       )}
 
-      <div className="text-xs text-muted-foreground px-2">
-        Use **negrito**, *itálico* ou &lt;u&gt;sublinhado&lt;/u&gt; para formatar. Digite @ para mencionar usuários.
-      </div>
+      {/* Helper text - Only visible when focused */}
+      {isFocused && (
+        <div className="text-xs text-muted-foreground px-2 py-1 animate-fade-in">
+          Use **negrito**, *itálico* ou &lt;u&gt;sublinhado&lt;/u&gt; para formatar. Digite @ para mencionar usuários.
+        </div>
+      )}
     </div>
   );
 };

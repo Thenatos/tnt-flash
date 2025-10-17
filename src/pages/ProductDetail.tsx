@@ -215,8 +215,7 @@ const ProductDetail = () => {
                 />
                 {product.is_hot && !isExpired && (
                   <div className="absolute top-4 right-4">
-                    <Badge variant="destructive" className="gap-1 font-bold shadow-lg text-base px-3 py-1">
-                      <Flame className="h-4 w-4" />
+                    <Badge variant="destructive" className="font-bold shadow-lg text-base px-3 py-1">
                       BOMBANDO
                     </Badge>
                   </div>

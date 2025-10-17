@@ -119,9 +119,11 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
       // Dinamite explodindo grande
       return (
         <div className="relative">
-          <Bomb className="h-12 w-12 text-destructive animate-pulse" />
-          <Sparkles className="h-8 w-8 text-accent absolute -top-2 -right-2 animate-spin" />
-          <Sparkles className="h-6 w-6 text-accent absolute -bottom-1 -left-1 animate-bounce" />
+          <Bomb className="h-12 w-12 text-destructive animate-bounce" />
+          <Sparkles className="h-10 w-10 text-yellow-400 absolute -top-3 -right-3 animate-spin" />
+          <Sparkles className="h-8 w-8 text-yellow-300 absolute -bottom-2 -left-2 animate-ping" />
+          <Flame className="h-6 w-6 text-orange-500 absolute top-0 right-0 animate-pulse" />
+          <Flame className="h-5 w-5 text-orange-400 absolute bottom-0 left-0 animate-pulse" />
         </div>
       );
     }
@@ -130,8 +132,9 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
       // Dinamite explodindo pequeno
       return (
         <div className="relative">
-          <Bomb className="h-8 w-8 text-destructive" />
-          <Sparkles className="h-4 w-4 text-accent absolute -top-1 -right-1" />
+          <Bomb className="h-8 w-8 text-destructive animate-pulse" />
+          <Sparkles className="h-5 w-5 text-yellow-400 absolute -top-2 -right-2 animate-spin" />
+          <Flame className="h-4 w-4 text-orange-500 absolute -bottom-1 -left-1 animate-pulse" />
         </div>
       );
     }
@@ -139,14 +142,20 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
     // Se não tem likes suficientes, mostrar baseado em dislikes
     if (dislikes > 100) {
       // Dinamite com pavio apagado
-      return <Bomb className="h-8 w-8 text-muted-foreground" />;
+      return (
+        <div className="relative">
+          <Bomb className="h-8 w-8 text-muted-foreground opacity-60" />
+          <div className="h-3 w-3 bg-muted-foreground/30 rounded-full absolute -top-1 right-1" />
+        </div>
+      );
     }
     
     // Dinamite com pavio aceso (padrão)
     return (
       <div className="relative">
         <Bomb className="h-8 w-8 text-foreground" />
-        <Flame className="h-4 w-4 text-destructive absolute -top-1 right-0 animate-pulse" />
+        <Flame className="h-5 w-5 text-orange-500 absolute -top-2 right-0 animate-pulse" />
+        <Sparkles className="h-3 w-3 text-yellow-400 absolute -top-1 right-1 animate-ping" />
       </div>
     );
   };

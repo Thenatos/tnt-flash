@@ -71,8 +71,7 @@ export const BannerForm = ({
       setPreviewUrl(publicUrl);
       toast.success("Imagem enviada com sucesso!");
     } catch (error: any) {
-      console.error('Erro ao fazer upload:', error);
-      toast.error("Erro ao fazer upload da imagem: " + error.message);
+      toast.error(error?.message || "Erro ao fazer upload da imagem");
     } finally {
       setUploading(false);
     }

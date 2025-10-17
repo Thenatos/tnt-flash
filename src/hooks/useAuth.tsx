@@ -103,8 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             },
           });
         } catch (emailError) {
-          console.error('Erro ao enviar email de boas-vindas:', emailError);
-          // Não bloqueamos o signup se o email falhar
+          // Email de boas-vindas é opcional - não bloqueia o signup
         }
       }
 

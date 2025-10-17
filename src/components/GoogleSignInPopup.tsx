@@ -33,7 +33,7 @@ export const GoogleSignInPopup = ({ delayMs = 5000 }: GoogleSignInPopupProps) =>
       await signInWithGoogle();
       setIsOpen(false);
     } catch (error) {
-      console.error("Error signing in:", error);
+      // Error is already handled by useAuth hook with toast
     }
   };
 

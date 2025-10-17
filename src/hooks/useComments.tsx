@@ -86,7 +86,9 @@ export const useComments = (productId: string) => {
               productId,
             },
           })
-          .catch((err) => console.error("Error processing mentions:", err));
+          .catch(() => {
+            // Processamento de menções é em background - não bloqueia o comentário
+          });
       }
 
       // Se for uma resposta, notificar o autor do comentário original
@@ -100,7 +102,9 @@ export const useComments = (productId: string) => {
               productId,
             },
           })
-          .catch((err) => console.error("Error processing reply notification:", err));
+          .catch(() => {
+            // Processamento de notificação é em background - não bloqueia a resposta
+          });
       }
 
       return data;

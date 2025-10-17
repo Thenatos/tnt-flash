@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
 import { useProductAlerts } from "@/hooks/useProductAlerts";
-import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical, Thermometer } from "lucide-react";
+import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";

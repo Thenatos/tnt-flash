@@ -143,9 +143,8 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
 
       form.setValue("image_url", publicUrl);
       toast.success("Imagem enviada com sucesso!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Erro ao enviar imagem");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao enviar imagem");
     } finally {
       setUploading(false);
     }

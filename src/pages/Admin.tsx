@@ -107,8 +107,7 @@ export default function Admin() {
             body: { product: newProduct },
           });
         } catch (alertError) {
-          console.error("Erro ao notificar alertas:", alertError);
-          // Não bloquear criação do produto se notificação falhar
+          // Notificação de alertas é opcional - não bloqueia criação do produto
         }
         
         toast.success("Produto criado com sucesso!");

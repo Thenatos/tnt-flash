@@ -17,7 +17,8 @@ export const useProducts = (searchQuery?: string, categorySlug?: string) => {
             name,
             slug,
             logo_url
-          )
+          ),
+          comments (count)
         `)
         .order("created_at", { ascending: false });
 

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Clock, Flame, ExternalLink } from "lucide-react";
+import { Clock, Flame, ExternalLink, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
@@ -15,6 +15,7 @@ interface ProductCardProps {
   discount: number;
   timeAgo: string;
   isHot?: boolean;
+  commentCount?: number;
 }
 
 export const ProductCard = ({
@@ -27,6 +28,7 @@ export const ProductCard = ({
   discount,
   timeAgo,
   isHot = false,
+  commentCount = 0,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   return (
@@ -80,10 +82,16 @@ export const ProductCard = ({
         {/* Store and Time */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="font-medium">{store}</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {timeAgo}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <MessageCircle className="h-3 w-3" />
+              {commentCount}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {timeAgo}
+            </span>
+          </div>
         </div>
 
         {/* CTA Button */}

@@ -84,6 +84,7 @@ const Index = () => {
                     locale: ptBR,
                   })}
                   isHot={product.is_hot || false}
+                  commentCount={product.comments?.[0]?.count || 0}
                 />
               ))}
             </div>

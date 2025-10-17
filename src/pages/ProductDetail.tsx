@@ -5,7 +5,8 @@ import { CommentSection } from "@/components/CommentSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
-import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy } from "lucide-react";
+import { useProductAlerts } from "@/hooks/useProductAlerts";
+import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: product, isLoading } = useProduct(id!);
+  const { createAlert } = useProductAlerts();
 
   if (isLoading) {
     return (
@@ -54,6 +56,13 @@ const ProductDetail = () => {
       navigator.clipboard.writeText(product.coupon_code);
       toast.success("Cupom copiado!");
     }
+  };
+
+  const handleCreateAlert = () => {
+    createAlert.mutate({
+      alert_type: "product_name",
+      search_term: product.title,
+    });
   };
 
   return (
@@ -190,6 +199,19 @@ const ProductDetail = () => {
                 <span>VER OFERTA NA LOJA</span>
                 <ExternalLink className="h-5 w-5 ml-2" />
               </Button>
+
+              {/* Alert Button for Expired Offers */}
+              {isExpired && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full font-bold text-lg py-6"
+                  onClick={handleCreateAlert}
+                >
+                  <Bell className="h-5 w-5 mr-2" />
+                  <span>Criar alerta para: {product.title}</span>
+                </Button>
+              )}
             </div>
           </div>
 

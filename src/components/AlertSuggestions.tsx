@@ -9,7 +9,21 @@ import { useMemo } from "react";
 export const AlertSuggestions = () => {
   const { createAlert } = useProductAlerts();
 
-  // Buscar títulos completos dos produtos recentes
+  // Buscar sugestões do banco de dados + produtos recentes
+  const { data: dbSuggestions } = useQuery({
+    queryKey: ["alert-suggestions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("alert_suggestions")
+        .select("term")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: products } = useQuery({
     queryKey: ["product-suggestions"],
     queryFn: async () => {
@@ -17,14 +31,14 @@ export const AlertSuggestions = () => {
         .from("products")
         .select("title")
         .order("created_at", { ascending: false })
-        .limit(30);
+        .limit(10);
       
       if (error) throw error;
       return data;
     },
   });
 
-  // Criar sugestões inteligentes baseadas nos produtos
+  // Combinar sugestões do banco + produtos recentes
   const suggestions = useMemo(() => {
     const defaultSuggestions = [
       "Smartphone Samsung",
@@ -33,28 +47,23 @@ export const AlertSuggestions = () => {
       "SSD",
       "Fone Bluetooth",
       "Smart TV",
-      "Air Fryer",
-      "Geladeira",
-      "PlayStation",
-      "Xbox",
-      "Nintendo Switch",
-      "Smartwatch",
     ];
 
-    if (!products || products.length === 0) {
-      return defaultSuggestions.slice(0, 6);
-    }
-
-    // Pegar títulos completos dos produtos + sugestões padrão
-    const productTitles = products.map(p => p.title);
-    const allSuggestions = [...productTitles, ...defaultSuggestions];
+    // Sugestões do banco de dados
+    const dbTerms = dbSuggestions?.map(s => s.term) || [];
+    
+    // Títulos de produtos recentes
+    const productTitles = products?.map(p => p.title) || [];
+    
+    // Combinar tudo
+    const allSuggestions = [...dbTerms, ...productTitles, ...defaultSuggestions];
     
     // Remover duplicatas e embaralhar
     const uniqueSuggestions = Array.from(new Set(allSuggestions));
     const shuffled = uniqueSuggestions.sort(() => Math.random() - 0.5);
     
     return shuffled.slice(0, 6);
-  }, [products]);
+  }, [dbSuggestions, products]);
 
   const handleAddSuggestion = (term: string) => {
     createAlert.mutate({

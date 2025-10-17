@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { BannersManager } from "@/components/admin/BannersManager";
+import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsManager";
 import {
   Dialog,
   DialogContent,
@@ -163,6 +164,7 @@ export default function Admin() {
           <TabsList>
             <TabsTrigger value="products">Produtos</TabsTrigger>
             <TabsTrigger value="banners">Banners</TabsTrigger>
+            <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -261,6 +263,10 @@ export default function Admin() {
 
           <TabsContent value="banners">
             <BannersManager />
+          </TabsContent>
+
+          <TabsContent value="alert-suggestions">
+            <AlertSuggestionsManager />
           </TabsContent>
         </Tabs>
       </div>

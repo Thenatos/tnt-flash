@@ -6,108 +6,38 @@ import {
   Dumbbell, 
   Baby, 
   BookOpen, 
-  Gamepad2,
-  Tv,
-  Watch,
-  Headphones,
-  Camera
+  Gamepad2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCategories } from "@/hooks/useCategories";
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  icon: any;
-  color: string;
-}
+const getCategoryIcon = (slug: string) => {
+  const iconMap: Record<string, any> = {
+    "bebes": Baby,
+    "casa": Sofa,
+    "celulares": Smartphone,
+    "eletronicos": Smartphone,
+    "esportes": Dumbbell,
+    "informatica": Monitor,
+    "livros-games": BookOpen,
+    "moda": ShoppingBag
+  };
+  return iconMap[slug] || Gamepad2;
+};
 
-const categories: Category[] = [
-  {
-    id: "1",
-    name: "Eletrônicos",
-    slug: "eletronicos",
-    icon: Smartphone,
-    color: "text-blue-500"
-  },
-  {
-    id: "2",
-    name: "Informática",
-    slug: "informatica",
-    icon: Monitor,
-    color: "text-purple-500"
-  },
-  {
-    id: "3",
-    name: "Casa e Decoração",
-    slug: "casa",
-    icon: Sofa,
-    color: "text-green-500"
-  },
-  {
-    id: "4",
-    name: "Moda",
-    slug: "moda",
-    icon: ShoppingBag,
-    color: "text-pink-500"
-  },
-  {
-    id: "5",
-    name: "Esportes",
-    slug: "esportes",
-    icon: Dumbbell,
-    color: "text-orange-500"
-  },
-  {
-    id: "6",
-    name: "TV e Áudio",
-    slug: "tv-audio",
-    icon: Tv,
-    color: "text-indigo-500"
-  },
-  {
-    id: "7",
-    name: "Games",
-    slug: "games",
-    icon: Gamepad2,
-    color: "text-red-500"
-  },
-  {
-    id: "8",
-    name: "Bebês",
-    slug: "bebes",
-    icon: Baby,
-    color: "text-cyan-500"
-  },
-  {
-    id: "9",
-    name: "Livros",
-    slug: "livros",
-    icon: BookOpen,
-    color: "text-amber-500"
-  },
-  {
-    id: "10",
-    name: "Relógios",
-    slug: "relogios",
-    icon: Watch,
-    color: "text-yellow-600"
-  },
-  {
-    id: "11",
-    name: "Áudio",
-    slug: "audio",
-    icon: Headphones,
-    color: "text-violet-500"
-  },
-  {
-    id: "12",
-    name: "Câmeras",
-    slug: "cameras",
-    icon: Camera,
-    color: "text-teal-500"
-  }
-];
+const getCategoryColor = (slug: string) => {
+  const colorMap: Record<string, string> = {
+    "bebes": "text-cyan-500",
+    "casa": "text-green-500",
+    "celulares": "text-blue-500",
+    "eletronicos": "text-purple-500",
+    "esportes": "text-orange-500",
+    "informatica": "text-indigo-500",
+    "livros-games": "text-amber-500",
+    "moda": "text-pink-500"
+  };
+  return colorMap[slug] || "text-gray-500";
+};
 
 interface CategorySectionProps {
   onCategorySelect?: (slug: string | undefined) => void;
@@ -115,6 +45,8 @@ interface CategorySectionProps {
 }
 
 export const CategorySection = ({ onCategorySelect, selectedCategory }: CategorySectionProps) => {
+  const { data: categories, isLoading } = useCategories();
+
   return (
     <section className="py-12 bg-gradient-to-br from-muted/30 to-muted/10">
       <div className="container px-4">
@@ -131,8 +63,9 @@ export const CategorySection = ({ onCategorySelect, selectedCategory }: Category
             >
               <span className="text-sm font-semibold">Todas</span>
             </Button>
-            {categories.map((category) => {
-              const Icon = category.icon;
+            {!isLoading && categories?.map((category) => {
+              const Icon = getCategoryIcon(category.slug);
+              const color = getCategoryColor(category.slug);
               const isSelected = selectedCategory === category.slug;
               
               return (
@@ -142,7 +75,7 @@ export const CategorySection = ({ onCategorySelect, selectedCategory }: Category
                   className="flex flex-col items-center gap-2 h-auto py-4 px-6 hover-lift min-w-[120px] shadow-md hover:shadow-lg flex-shrink-0"
                   onClick={() => onCategorySelect?.(category.slug)}
                 >
-                  <Icon className={`h-8 w-8 ${isSelected ? 'text-secondary-foreground' : category.color}`} />
+                  <Icon className={`h-8 w-8 ${isSelected ? 'text-secondary-foreground' : color}`} />
                   <span className="text-sm font-semibold whitespace-nowrap">{category.name}</span>
                 </Button>
               );

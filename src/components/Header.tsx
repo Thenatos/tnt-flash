@@ -23,6 +23,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -36,15 +43,99 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
   const { data: categories } = useCategories();
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 flex flex-col gap-4">
+                {/* Categorias */}
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-sm text-muted-foreground">Categorias</h3>
+                  <div className="flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start"
+                      onClick={() => {
+                        onCategorySelect?.(undefined);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Todas
+                    </Button>
+                    {categories?.map((category) => (
+                      <Button
+                        key={category.id}
+                        variant="ghost"
+                        className="justify-start"
+                        onClick={() => {
+                          onCategorySelect?.(category.slug);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        {category.name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Grupos */}
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-sm text-muted-foreground">Grupos</h3>
+                  <div className="flex flex-col gap-1">
+                    <a
+                      href="https://chat.whatsapp.com/seu-grupo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                    >
+                      <MessageCircle className="h-5 w-5 text-green-500" />
+                      <div>
+                        <div className="text-sm font-medium">WhatsApp</div>
+                        <p className="text-xs text-muted-foreground">Participe do nosso grupo</p>
+                      </div>
+                    </a>
+                    <a
+                      href="https://t.me/seu-grupo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                    >
+                      <MessageCircle className="h-5 w-5 text-blue-500" />
+                      <div>
+                        <div className="text-sm font-medium">Telegram</div>
+                        <p className="text-xs text-muted-foreground">Entre no nosso canal</p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Melhores Ofertas */}
+                <Button
+                  variant="outline"
+                  className="justify-start"
+                  onClick={() => {
+                    onBestDealsFilter?.();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Melhores Ofertas
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
           <button 
             onClick={() => navigate("/")}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"

@@ -26,6 +26,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { AlertSuggestions } from "@/components/AlertSuggestions";
 
 export const ProductAlertsSection = () => {
   const { user } = useAuth();
@@ -228,6 +229,9 @@ export const ProductAlertsSection = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Alert Suggestions */}
+      <AlertSuggestions />
 
       <div className="grid gap-4">
         {isLoading ? (

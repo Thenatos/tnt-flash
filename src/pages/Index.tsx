@@ -41,17 +41,38 @@ const Index = () => {
           new Date(product.created_at) >= thirtyHoursAgo
         );
         
-        // Ordenar por desconto (maior primeiro) como critério primário
-        return [...recentProducts].sort((a, b) => {
-          // Primeiro critério: maior desconto
+        // Separar expiradas e não expiradas
+        const active = recentProducts.filter(p => !p.expires_at || new Date(p.expires_at) >= now);
+        const expired = recentProducts.filter(p => p.expires_at && new Date(p.expires_at) < now);
+        
+        // Ordenar ativos por desconto
+        const sortedActive = [...active].sort((a, b) => {
           const discountDiff = b.discount_percentage - a.discount_percentage;
           if (discountDiff !== 0) return discountDiff;
-          
-          // Segundo critério: mais recente
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         });
+        
+        // Ordenar expirados por desconto
+        const sortedExpired = [...expired].sort((a, b) => {
+          const discountDiff = b.discount_percentage - a.discount_percentage;
+          if (discountDiff !== 0) return discountDiff;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        
+        // Retornar ativos primeiro, expirados depois
+        return [...sortedActive, ...sortedExpired];
       })()
-    : products;
+    : (() => {
+        if (!products) return products;
+        const now = new Date();
+        
+        // Separar expiradas e não expiradas
+        const active = products.filter(p => !p.expires_at || new Date(p.expires_at) >= now);
+        const expired = products.filter(p => p.expires_at && new Date(p.expires_at) < now);
+        
+        // Retornar ativos primeiro (já ordenados por created_at), expirados depois
+        return [...active, ...expired];
+      })();
 
   return (
     <div className="min-h-screen flex flex-col">

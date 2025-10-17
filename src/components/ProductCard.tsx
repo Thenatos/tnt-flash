@@ -62,7 +62,7 @@ export const ProductCard = ({
           )}
           {isHot && (
             <div className="absolute top-1 right-1 bg-orange-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-lg animate-pulse">
-              🔥 HOT
+              🔥 BOMBANDO
             </div>
           )}
         </div>
@@ -136,7 +136,7 @@ export const ProductCard = ({
           )}
           {isHot && (
             <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
-              🔥 HOT
+              🔥 BOMBANDO
             </div>
           )}
         </div>

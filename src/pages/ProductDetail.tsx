@@ -217,7 +217,7 @@ const ProductDetail = () => {
                   <div className="absolute top-4 right-4">
                     <Badge variant="destructive" className="gap-1 font-bold shadow-lg text-base px-3 py-1">
                       <Flame className="h-4 w-4" />
-                      QUENTE
+                      BOMBANDO
                     </Badge>
                   </div>
                 )}

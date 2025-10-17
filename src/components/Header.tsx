@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Menu, User, LogIn, LogOut, Shield, ChevronDown, MessageCircle } from "lucide-react";
+import { Search, Menu, User, LogIn, LogOut, Shield, ChevronDown, MessageCircle, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -192,15 +192,20 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/alertas")}>
+                  <Bell className="mr-2 h-4 w-4" />
+                  <span>Meus Alertas</span>
+                </DropdownMenuItem>
                 {isAdmin && (
                   <>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate("/admin")}>
                       <Shield className="mr-2 h-4 w-4" />
                       <span>Painel Admin</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                   </>
                 )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sair</span>

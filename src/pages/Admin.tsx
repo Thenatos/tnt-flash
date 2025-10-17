@@ -78,9 +78,24 @@ export default function Admin() {
         if (error) throw error;
         toast.success("Produto atualizado com sucesso!");
       } else {
-        const { error } = await supabase.from("products").insert(productData);
+        const { data: newProduct, error } = await supabase
+          .from("products")
+          .insert(productData)
+          .select()
+          .single();
 
         if (error) throw error;
+        
+        // Notificar usuários com alertas correspondentes
+        try {
+          await supabase.functions.invoke("notify-product-alerts", {
+            body: { product: newProduct },
+          });
+        } catch (alertError) {
+          console.error("Erro ao notificar alertas:", alertError);
+          // Não bloquear criação do produto se notificação falhar
+        }
+        
         toast.success("Produto criado com sucesso!");
       }
 

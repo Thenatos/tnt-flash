@@ -35,7 +35,7 @@ export const useComments = (productId: string) => {
       const userIds = [...new Set(allComments.map((c) => c.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url")
+        .select("user_id, full_name, avatar_url, username")
         .in("user_id", userIds);
 
       // Combinar comentários e respostas com perfis

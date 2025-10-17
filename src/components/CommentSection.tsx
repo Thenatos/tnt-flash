@@ -127,7 +127,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                           <p className="font-semibold">
                             {comment.profile?.full_name || "Usuário"}
                           </p>
-                          <p className="text-xs text-muted-foreground">{timeAgo}</p>
+                          <p className="text-xs text-muted-foreground">
+                            @{comment.profile?.username || "usuario"} · {timeAgo}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           {user && (
@@ -217,7 +219,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                                   <p className="font-semibold text-sm">
                                     {reply.profile?.full_name || "Usuário"}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">{replyTimeAgo}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    @{reply.profile?.username || "usuario"} · {replyTimeAgo}
+                                  </p>
                                 </div>
                                 {user && user.id === reply.user_id && (
                                   <Button

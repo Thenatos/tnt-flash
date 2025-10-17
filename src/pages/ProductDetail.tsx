@@ -143,7 +143,7 @@ const ProductDetail = () => {
               onClick={handleCreateAlert}
             >
               <Bell className="h-4 w-4" />
-              Criar alerta
+              Criar Alerta
             </Button>
 
             {/* CTA Button */}
@@ -325,17 +325,15 @@ const ProductDetail = () => {
                   <ExternalLink className="h-5 w-5 ml-2" />
                 </Button>
 
-                {/* Alert Button for Expired Offers */}
-                {isExpired && (
-                  <Button
-                    size="lg"
-                    className="w-full gradient-alert hover:opacity-90 font-bold text-lg py-6 shadow-lg text-white"
-                    onClick={handleCreateAlert}
-                  >
-                    <Bell className="h-5 w-5 mr-2" />
-                    <span>Criar alerta para: {product.title}</span>
-                  </Button>
-                )}
+                {/* Alert Button */}
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={handleCreateAlert}
+                >
+                  <Bell className="h-5 w-5" />
+                  Criar Alerta
+                </Button>
 
                 {/* Product Reactions */}
                 <div className="mt-6 pt-6 border-t">

@@ -159,16 +159,26 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
       </div>
 
       {/* Botão Like */}
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1 relative">
         <Button
-          variant={userReaction === "like" ? "default" : "outline"}
+          variant={userReaction === "like" ? "destructive" : "outline"}
           size="sm"
           onClick={() => handleReaction("like")}
           disabled={reactionMutation.isPending}
-          className="gap-2"
+          className={`gap-2 transition-all duration-300 ${
+            userReaction === "like" 
+              ? "animate-pulse shadow-lg shadow-destructive/50" 
+              : ""
+          }`}
         >
-          <ThumbsUp className="h-4 w-4" />
+          <ThumbsUp className={`h-4 w-4 ${userReaction === "like" ? "animate-bounce" : ""}`} />
           <span className="font-bold">{likes}</span>
+          {userReaction === "like" && (
+            <>
+              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 animate-ping" />
+              <Sparkles className="h-3 w-3 absolute -bottom-1 -left-1 animate-spin" />
+            </>
+          )}
         </Button>
         <span className="text-xs text-muted-foreground">Bombando</span>
       </div>
@@ -176,7 +186,7 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
       {/* Botão Dislike */}
       <div className="flex flex-col items-center gap-1">
         <Button
-          variant={userReaction === "dislike" ? "destructive" : "outline"}
+          variant={userReaction === "dislike" ? "secondary" : "outline"}
           size="sm"
           onClick={() => handleReaction("dislike")}
           disabled={reactionMutation.isPending}

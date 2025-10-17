@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -92,9 +92,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error };
       }
 
+      // Enviar email de boas-vindas
+      if (data.user) {
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              userId: data.user.id,
+              email: data.user.email,
+              fullName: fullName,
+            },
+          });
+        } catch (emailError) {
+          console.error('Erro ao enviar email de boas-vindas:', emailError);
+          // Não bloqueamos o signup se o email falhar
+        }
+      }
+
       toast({
         title: "Conta criada com sucesso!",
-        description: "Você já pode fazer login.",
+        description: "Você já pode fazer login. Confira seu email de boas-vindas!",
       });
       
       return { error: null };

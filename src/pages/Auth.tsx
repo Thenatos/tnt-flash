@@ -434,38 +434,32 @@ const Auth = () => {
                 className="text-sm leading-relaxed cursor-pointer"
               >
                 Confirmo que li, aceito e concordo com os{" "}
-                <button
-                  type="button"
+                <a
+                  href="/termos"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-bold underline hover:text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // TODO: Link para Termos de uso
-                  }}
                 >
                   Termos de uso
-                </button>
+                </a>
                 ,{" "}
-                <button
-                  type="button"
+                <a
+                  href="/conduta"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-bold underline hover:text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // TODO: Link para Código de conduta
-                  }}
                 >
                   Código de conduta
-                </button>
+                </a>
                 {" "}e{" "}
-                <button
-                  type="button"
+                <a
+                  href="/privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-bold underline hover:text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // TODO: Link para Política de privacidade
-                  }}
                 >
                   Política de privacidade
-                </button>
+                </a>
                 .
               </label>
             </div>

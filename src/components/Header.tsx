@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Menu, User, LogIn, LogOut, Shield, ChevronDown, MessageCircle, Bell } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -264,6 +265,9 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
           <Button variant="ghost" size="icon" className="md:hidden">
             <Search className="h-5 w-5" />
           </Button>
+          
+          {/* Notification Bell */}
+          <NotificationBell />
           
           {user ? (
             <DropdownMenu>

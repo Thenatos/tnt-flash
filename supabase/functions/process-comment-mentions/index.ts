@@ -73,9 +73,19 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("id", productId)
       .single();
 
-    // Buscar emails dos usuários
+    // Buscar emails e status online dos usuários
     const { data: authUsers } = await supabase.auth.admin.listUsers();
     const userEmails = new Map(authUsers.users.map(u => [u.id, u.email]));
+    
+    // Buscar perfis para verificar quem está online (online nos últimos 2 minutos)
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+    const { data: onlineProfiles } = await supabase
+      .from("profiles")
+      .select("user_id, online_at")
+      .in("user_id", profiles.map(p => p.user_id))
+      .gte("online_at", twoMinutesAgo);
+    
+    const onlineUserIds = new Set(onlineProfiles?.map(p => p.user_id) || []);
 
     // Processar cada menção
     let notificationsSent = 0;
@@ -88,7 +98,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       const productLink = `${Deno.env.get("SUPABASE_URL")?.replace("https://lndlitesudgswlejhupp.supabase.co", "https://descola.lovable.app")}/produto/${productId}#comment-${commentId}`;
 
-      // Criar notificação no banco
+      // Sempre criar notificação no banco
       await supabase.from("notifications").insert({
         user_id: profile.user_id,
         type: "mention",
@@ -97,45 +107,52 @@ const handler = async (req: Request): Promise<Response> => {
         link: productLink,
       });
 
-      // Enviar email usando Resend API diretamente
-      try {
-        const emailResponse = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${resendApiKey}`,
-          },
-          body: JSON.stringify({
-            from: "Descola <onboarding@resend.dev>",
-            to: [email],
-            subject: "Você foi mencionado em um comentário",
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2>Olá, ${profile.full_name || profile.username}!</h2>
-                <p><strong>@${author?.username || "Usuário"}</strong> mencionou você em um comentário sobre <strong>"${product?.title || "um produto"}"</strong>.</p>
-                <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                  <p style="margin: 0;">${content.substring(0, 200)}${content.length > 200 ? "..." : ""}</p>
+      // Enviar email apenas se o usuário estiver offline
+      const isOnline = onlineUserIds.has(profile.user_id);
+      
+      if (!isOnline) {
+        try {
+          const emailResponse = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${resendApiKey}`,
+            },
+            body: JSON.stringify({
+              from: "Descola <onboarding@resend.dev>",
+              to: [email],
+              subject: "Você foi mencionado em um comentário",
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2>Olá, ${profile.full_name || profile.username}!</h2>
+                  <p><strong>@${author?.username || "Usuário"}</strong> mencionou você em um comentário sobre <strong>"${product?.title || "um produto"}"</strong>.</p>
+                  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <p style="margin: 0;">${content.substring(0, 200)}${content.length > 200 ? "..." : ""}</p>
+                  </div>
+                  <a href="${productLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
+                    Ver Comentário
+                  </a>
+                  <p style="color: #666; font-size: 12px; margin-top: 30px;">
+                    Esta é uma notificação automática. Para desativá-la, acesse as configurações da sua conta.
+                  </p>
                 </div>
-                <a href="${productLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
-                  Ver Comentário
-                </a>
-                <p style="color: #666; font-size: 12px; margin-top: 30px;">
-                  Esta é uma notificação automática. Para desativá-la, acesse as configurações da sua conta.
-                </p>
-              </div>
-            `,
-          }),
-        });
+              `,
+            }),
+          });
 
-        if (emailResponse.ok) {
-          notificationsSent++;
-          console.log(`Notification sent to ${email}`);
-        } else {
-          const errorData = await emailResponse.json();
-          console.error(`Error sending email to ${email}:`, errorData);
+          if (emailResponse.ok) {
+            notificationsSent++;
+            console.log(`Email sent to ${email} (user was offline)`);
+          } else {
+            const errorData = await emailResponse.json();
+            console.error(`Error sending email to ${email}:`, errorData);
+          }
+        } catch (emailError) {
+          console.error(`Error sending email to ${email}:`, emailError);
         }
-      } catch (emailError) {
-        console.error(`Error sending email to ${email}:`, emailError);
+      } else {
+        console.log(`User ${profile.user_id} is online, skipping email`);
+        notificationsSent++;
       }
     }
 

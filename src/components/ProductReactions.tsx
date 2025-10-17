@@ -167,7 +167,7 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
           disabled={reactionMutation.isPending}
           className={`gap-2 transition-all duration-300 ${
             userReaction === "like" 
-              ? "animate-pulse shadow-lg shadow-destructive/50" 
+              ? "shadow-xl shadow-destructive/60" 
               : ""
           }`}
         >
@@ -175,8 +175,9 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
           <span className="font-bold">{likes}</span>
           {userReaction === "like" && (
             <>
-              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 animate-ping" />
-              <Sparkles className="h-3 w-3 absolute -bottom-1 -left-1 animate-spin" />
+              <Sparkles className="h-4 w-4 text-yellow-400 absolute -top-2 -right-2 animate-ping" />
+              <Sparkles className="h-4 w-4 text-yellow-300 absolute -bottom-2 -left-2 animate-spin" />
+              <Flame className="h-3 w-3 text-orange-500 absolute top-0 right-0 animate-pulse" />
             </>
           )}
         </Button>

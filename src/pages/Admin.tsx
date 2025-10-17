@@ -56,6 +56,14 @@ export default function Admin() {
   const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
+      let expiresAt = null;
+      if (data.expires_in_days && data.expires_in_days !== "") {
+        const daysToAdd = parseInt(data.expires_in_days);
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + daysToAdd);
+        expiresAt = expirationDate.toISOString();
+      }
+
       const productData = {
         title: data.title,
         description: data.description || null,
@@ -69,6 +77,7 @@ export default function Admin() {
         coupon_code: data.coupon_code || null,
         installment_info: data.installment_info || null,
         is_hot: data.is_hot || false,
+        expires_at: expiresAt,
       };
 
       if (editingProduct) {

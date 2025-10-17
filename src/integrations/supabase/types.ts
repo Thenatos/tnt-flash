@@ -172,6 +172,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           discount_percentage: number
+          expires_at: string | null
           id: string
           image_url: string
           installment_info: string | null
@@ -190,6 +191,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           discount_percentage: number
+          expires_at?: string | null
           id?: string
           image_url: string
           installment_info?: string | null
@@ -208,6 +210,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           discount_percentage?: number
+          expires_at?: string | null
           id?: string
           image_url?: string
           installment_info?: string | null

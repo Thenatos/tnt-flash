@@ -16,6 +16,7 @@ interface ProductCardProps {
   timeAgo: string;
   isHot?: boolean;
   commentCount?: number;
+  isExpired?: boolean;
 }
 
 export const ProductCard = ({
@@ -29,6 +30,7 @@ export const ProductCard = ({
   timeAgo,
   isHot = false,
   commentCount = 0,
+  isExpired = false,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   return (
@@ -38,7 +40,7 @@ export const ProductCard = ({
         <img
           src={image}
           alt={title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${isExpired ? 'grayscale' : ''}`}
         />
         {/* Discount Badge */}
         <div className="absolute top-3 left-3">
@@ -47,11 +49,19 @@ export const ProductCard = ({
           </Badge>
         </div>
         {/* Hot Badge */}
-        {isHot && (
+        {isHot && !isExpired && (
           <div className="absolute top-3 right-3">
             <Badge variant="destructive" className="gap-1 font-bold shadow-lg">
               <Flame className="h-3 w-3" />
               QUENTE
+            </Badge>
+          </div>
+        )}
+        {/* Expired Badge */}
+        {isExpired && (
+          <div className="absolute top-3 right-3">
+            <Badge variant="secondary" className="font-bold shadow-lg bg-muted text-muted-foreground">
+              EXPIRADA
             </Badge>
           </div>
         )}

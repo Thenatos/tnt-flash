@@ -41,6 +41,7 @@ const productSchema = z.object({
   installment_info: z.string().optional(),
   installment_count: z.string().optional(),
   is_hot: z.boolean().default(false),
+  expires_in_days: z.string().optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -84,6 +85,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       installment_info: "",
       installment_count: "",
       is_hot: false,
+      expires_in_days: "",
     },
   });
 
@@ -400,6 +402,35 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="expires_in_days"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Validade da Oferta</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o prazo de validade" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="">Nunca expira</SelectItem>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((days) => (
+                    <SelectItem key={days} value={days.toString()}>
+                      {days} {days === 1 ? "dia" : "dias"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                A oferta será marcada como expirada após esse período
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" variant="secondary" className="w-full" disabled={isLoading}>
           {isLoading ? "Salvando..." : "Salvar Produto"}

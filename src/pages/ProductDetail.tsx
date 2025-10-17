@@ -47,6 +47,8 @@ const ProductDetail = () => {
     locale: ptBR,
   });
 
+  const isExpired = product.expires_at ? new Date(product.expires_at) < new Date() : false;
+
   const handleCopyCoupon = () => {
     if (product.coupon_code) {
       navigator.clipboard.writeText(product.coupon_code);
@@ -75,13 +77,20 @@ const ProductDetail = () => {
               <img
                 src={product.image_url}
                 alt={product.title}
-                className="h-full w-full object-cover"
+                className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
               />
-              {product.is_hot && (
+              {product.is_hot && !isExpired && (
                 <div className="absolute top-4 right-4">
                   <Badge variant="destructive" className="gap-1 font-bold shadow-lg text-base px-3 py-1">
                     <Flame className="h-4 w-4" />
                     QUENTE
+                  </Badge>
+                </div>
+              )}
+              {isExpired && (
+                <div className="absolute top-4 right-4">
+                  <Badge variant="secondary" className="font-bold shadow-lg text-base px-3 py-1 bg-muted text-muted-foreground">
+                    EXPIRADA
                   </Badge>
                 </div>
               )}
@@ -97,11 +106,24 @@ const ProductDetail = () => {
                   {product.categories && (
                     <Badge variant="outline">{product.categories.name}</Badge>
                   )}
+                  {isExpired && (
+                    <Badge variant="secondary" className="bg-muted text-muted-foreground font-bold">
+                      EXPIRADA
+                    </Badge>
+                  )}
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">{product.title}</h1>
                 
                 {product.description && (
                   <p className="text-muted-foreground">{product.description}</p>
+                )}
+                
+                {isExpired && (
+                  <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-muted-foreground/20">
+                    <p className="text-sm text-muted-foreground">
+                      ⚠️ Esta oferta expirou. O cupom ou o valor do produto podem ter sofrido alterações.
+                    </p>
+                  </div>
                 )}
               </div>
 

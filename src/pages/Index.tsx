@@ -68,25 +68,29 @@ const Index = () => {
             </div>
           ) : filteredProducts && filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  originalPrice={Number(product.original_price)}
-                  promotionalPrice={Number(product.promotional_price)}
-                  image={product.image_url}
-                  store={product.stores?.name || "Loja"}
-                  storeLogo={product.stores?.logo_url}
-                  discount={product.discount_percentage}
-                  timeAgo={formatDistanceToNow(new Date(product.created_at), {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                  isHot={product.is_hot || false}
-                  commentCount={product.comments?.[0]?.count || 0}
-                />
-              ))}
+              {filteredProducts.map((product) => {
+                const isExpired = product.expires_at ? new Date(product.expires_at) < new Date() : false;
+                return (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    originalPrice={Number(product.original_price)}
+                    promotionalPrice={Number(product.promotional_price)}
+                    image={product.image_url}
+                    store={product.stores?.name || "Loja"}
+                    storeLogo={product.stores?.logo_url}
+                    discount={product.discount_percentage}
+                    timeAgo={formatDistanceToNow(new Date(product.created_at), {
+                      addSuffix: true,
+                      locale: ptBR,
+                    })}
+                    isHot={product.is_hot || false}
+                    commentCount={product.comments?.[0]?.count || 0}
+                    isExpired={isExpired}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12">

@@ -47,7 +47,7 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(285 60% 35%), hsl(340 80% 50%));
     --gradient-accent: linear-gradient(135deg, hsl(25 100% 55%), hsl(48 100% 60%));
     --gradient-explosive: linear-gradient(135deg, hsl(285 60% 35%), hsl(340 80% 50%), hsl(25 100% 55%));
-    --gradient-alert: linear-gradient(135deg, hsl(330 80% 60%), hsl(285 70% 55%), hsl(25 100% 60%));
+    --gradient-alert: linear-gradient(135deg, hsl(0 85% 60%), hsl(25 100% 60%));
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(0 0% 98%));
     
     /* Shadows */

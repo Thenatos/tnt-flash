@@ -287,6 +287,10 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/perfil")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Meu Perfil</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/alertas")}>
                   <Bell className="mr-2 h-4 w-4" />
                   <span>Meus Alertas</span>

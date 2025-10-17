@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import ProductDetail from "./pages/ProductDetail";
 import Admin from "./pages/Admin";
 import Alerts from "./pages/Alerts";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/produto/:id" element={<ProductDetail />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/alertas" element={<Alerts />} />
+            <Route path="/perfil" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -55,10 +55,10 @@ export const CategorySection = ({ onCategorySelect, selectedCategory }: Category
         </h2>
         
         <div className="relative">
-          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="flex gap-3 overflow-x-auto pb-4 px-1 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
             <Button
               variant={!selectedCategory ? "secondary" : "outline"}
-              className="flex flex-col items-center gap-2 h-auto py-4 px-6 hover-lift min-w-[120px] shadow-md hover:shadow-lg flex-shrink-0"
+              className="flex flex-col items-center gap-2 h-auto py-4 px-6 hover-lift min-w-[120px] shadow-md hover:shadow-lg flex-shrink-0 snap-start"
               onClick={() => onCategorySelect?.(undefined)}
             >
               <span className="text-sm font-semibold">Todas</span>
@@ -72,7 +72,7 @@ export const CategorySection = ({ onCategorySelect, selectedCategory }: Category
                 <Button
                   key={category.id}
                   variant={isSelected ? "secondary" : "outline"}
-                  className="flex flex-col items-center gap-2 h-auto py-4 px-6 hover-lift min-w-[120px] shadow-md hover:shadow-lg flex-shrink-0"
+                  className="flex flex-col items-center gap-2 h-auto py-4 px-6 hover-lift min-w-[120px] shadow-md hover:shadow-lg flex-shrink-0 snap-start"
                   onClick={() => onCategorySelect?.(category.slug)}
                 >
                   <Icon className={`h-8 w-8 ${isSelected ? 'text-secondary-foreground' : color}`} />
@@ -80,6 +80,9 @@ export const CategorySection = ({ onCategorySelect, selectedCategory }: Category
                 </Button>
               );
             })}
+          </div>
+          <div className="text-center mt-2 text-sm text-muted-foreground">
+            ← Deslize para ver mais categorias →
           </div>
         </div>
       </div>

@@ -170,7 +170,7 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
           <ThumbsUp className="h-4 w-4" />
           <span className="font-bold">{likes}</span>
         </Button>
-        <span className="text-xs text-muted-foreground">Likes</span>
+        <span className="text-xs text-muted-foreground">Bombando</span>
       </div>
 
       {/* Botão Dislike */}
@@ -185,7 +185,7 @@ export const ProductReactions = ({ productId }: ProductReactionsProps) => {
           <ThumbsDown className="h-4 w-4" />
           <span className="font-bold">{dislikes}</span>
         </Button>
-        <span className="text-xs text-muted-foreground">Dislikes</span>
+        <span className="text-xs text-muted-foreground">Gelando</span>
       </div>
     </div>
   );

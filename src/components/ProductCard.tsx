@@ -35,7 +35,10 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const navigate = useNavigate();
   return (
-    <Card className="group overflow-hidden border-0 shadow-[0_4px_12px_hsl(0_0%_0%_/_0.1)] hover:shadow-[0_8px_24px_hsl(0_0%_0%_/_0.15)] transition-all duration-300 hover:-translate-y-1">
+    <Card 
+      className="group overflow-hidden border-0 shadow-[0_4px_12px_hsl(0_0%_0%_/_0.1)] hover:shadow-[0_8px_24px_hsl(0_0%_0%_/_0.15)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+      onClick={() => navigate(`/produto/${id}`)}
+    >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img
@@ -110,8 +113,7 @@ export const ProductCard = ({
 
         {/* CTA Button */}
         <Button 
-          className="w-full gradient-accent hover:opacity-90 font-bold shadow-md group/btn"
-          onClick={() => navigate(`/produto/${id}`)}
+          className="w-full gradient-accent hover:opacity-90 font-bold shadow-md group/btn pointer-events-none"
         >
           <span>VER OFERTA</span>
           <ExternalLink className="h-4 w-4 ml-2 transition-transform group-hover/btn:translate-x-1" />

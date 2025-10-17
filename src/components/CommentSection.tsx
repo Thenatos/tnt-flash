@@ -6,10 +6,11 @@ import { RichTextEditor } from "@/components/RichTextEditor";
 import { MarkdownContent } from "@/components/MarkdownContent";
 import { useComments } from "@/hooks/useComments";
 import { useAuth } from "@/hooks/useAuth";
-import { MessageSquare, Send, Trash2 } from "lucide-react";
+import { MessageSquare, Send, Trash2, Reply } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface CommentSectionProps {
   productId: string;
@@ -17,6 +18,8 @@ interface CommentSectionProps {
 
 export const CommentSection = ({ productId }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
   const { comments, isLoading, createComment, deleteComment } = useComments(productId);
   const { user } = useAuth();
 
@@ -29,6 +32,20 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
       {
         onSuccess: () => {
           setNewComment("");
+        },
+      }
+    );
+  };
+
+  const handleReply = (commentId: string) => {
+    if (!replyContent.trim() || !user) return;
+
+    createComment.mutate(
+      { content: replyContent, userId: user.id, parentId: commentId },
+      {
+        onSuccess: () => {
+          setReplyContent("");
+          setReplyingTo(null);
         },
       }
     );
@@ -95,39 +112,135 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
             });
 
             return (
-              <Card key={comment.id} className="p-4">
-                <div className="flex gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={comment.profile?.avatar_url || ""} />
-                    <AvatarFallback>
-                      {comment.profile?.full_name?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold">
-                          {comment.profile?.full_name || "Usuário"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{timeAgo}</p>
+              <div key={comment.id} className="space-y-3">
+                <Card className="p-4">
+                  <div className="flex gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={comment.profile?.avatar_url || ""} />
+                      <AvatarFallback>
+                        {comment.profile?.full_name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold">
+                            {comment.profile?.full_name || "Usuário"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{timeAgo}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              className="gap-1"
+                            >
+                              <Reply className="h-4 w-4" />
+                              Responder
+                            </Button>
+                          )}
+                          {user && user.id === comment.user_id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(comment.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      {user && user.id === comment.user_id && (
+                      <div className="text-sm">
+                        <MarkdownContent content={comment.content} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reply Form */}
+                  {replyingTo === comment.id && user && (
+                    <div className="mt-4 ml-12 space-y-2">
+                      <RichTextEditor
+                        value={replyContent}
+                        onChange={setReplyContent}
+                        placeholder="Escreva sua resposta..."
+                      />
+                      <div className="flex gap-2 justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(comment.id)}
-                          className="text-destructive hover:text-destructive"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyContent("");
+                          }}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          Cancelar
                         </Button>
-                      )}
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleReply(comment.id)}
+                          disabled={!replyContent.trim() || createComment.isPending}
+                          className="gap-2"
+                        >
+                          <Send className="h-4 w-4" />
+                          Responder
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-sm">
-                      <MarkdownContent content={comment.content} />
-                    </div>
+                  )}
+                </Card>
+
+                {/* Replies */}
+                {comment.replies && comment.replies.length > 0 && (
+                  <div className="ml-12 space-y-2">
+                    {comment.replies.map((reply: any) => {
+                      const replyTimeAgo = formatDistanceToNow(new Date(reply.created_at), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      });
+
+                      return (
+                        <Card key={reply.id} className="p-3 bg-muted/50">
+                          <div className="flex gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={reply.profile?.avatar_url || ""} />
+                              <AvatarFallback>
+                                {reply.profile?.full_name?.charAt(0).toUpperCase() || "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-semibold text-sm">
+                                    {reply.profile?.full_name || "Usuário"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">{replyTimeAgo}</p>
+                                </div>
+                                {user && user.id === reply.user_id && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDelete(reply.id)}
+                                    className="text-destructive hover:text-destructive h-8"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="text-sm">
+                                <MarkdownContent content={reply.content} />
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    })}
                   </div>
-                </div>
-              </Card>
+                )}
+              </div>
             );
           })
         ) : (

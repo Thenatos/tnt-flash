@@ -72,24 +72,24 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
       {/* Form de novo comentário */}
       {user ? (
         <Card className="p-4">
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <RichTextEditor
-              value={newComment}
-              onChange={setNewComment}
-              placeholder="Deixe seu comentário sobre este produto..."
-              users={commentUsers}
-            />
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                variant="secondary"
-                disabled={!newComment.trim() || createComment.isPending}
-                className="gap-2"
-              >
-                <Send className="h-4 w-4" />
-                Comentar
-              </Button>
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <div className="flex-1">
+              <RichTextEditor
+                value={newComment}
+                onChange={setNewComment}
+                placeholder="Deixe seu comentário sobre este produto..."
+                users={commentUsers}
+              />
             </div>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={!newComment.trim() || createComment.isPending}
+              className="gap-2 self-end mb-1"
+            >
+              <Send className="h-4 w-4" />
+              Comentar
+            </Button>
           </form>
         </Card>
       ) : (
@@ -171,34 +171,38 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
 
                   {/* Reply Form */}
                   {replyingTo === comment.id && user && (
-                    <div className="mt-4 ml-12 space-y-2">
-                      <RichTextEditor
-                        value={replyContent}
-                        onChange={setReplyContent}
-                        placeholder="Escreva sua resposta..."
-                        users={commentUsers}
-                      />
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setReplyingTo(null);
-                            setReplyContent("");
-                          }}
-                        >
-                          Cancelar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleReply(comment.id)}
-                          disabled={!replyContent.trim() || createComment.isPending}
-                          className="gap-2"
-                        >
-                          <Send className="h-4 w-4" />
-                          Responder
-                        </Button>
+                    <div className="mt-4 ml-12">
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <RichTextEditor
+                            value={replyContent}
+                            onChange={setReplyContent}
+                            placeholder="Escreva sua resposta..."
+                            users={commentUsers}
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2 self-end mb-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setReplyingTo(null);
+                              setReplyContent("");
+                            }}
+                          >
+                            Cancelar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleReply(comment.id)}
+                            disabled={!replyContent.trim() || createComment.isPending}
+                            className="gap-2"
+                          >
+                            <Send className="h-4 w-4" />
+                            Responder
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}

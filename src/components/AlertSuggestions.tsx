@@ -9,7 +9,7 @@ import { useMemo } from "react";
 export const AlertSuggestions = () => {
   const { createAlert } = useProductAlerts();
 
-  // Buscar produtos únicos do banco de dados
+  // Buscar títulos completos dos produtos recentes
   const { data: products } = useQuery({
     queryKey: ["product-suggestions"],
     queryFn: async () => {
@@ -17,46 +17,42 @@ export const AlertSuggestions = () => {
         .from("products")
         .select("title")
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(30);
       
       if (error) throw error;
-      
-      // Extrair palavras-chave únicas dos títulos
-      const keywords = new Set<string>();
-      
-      data.forEach((product) => {
-        const words = product.title
-          .toLowerCase()
-          .split(/\s+/)
-          .filter((word) => word.length > 3); // Apenas palavras com mais de 3 letras
-        
-        words.forEach((word) => keywords.add(word));
-      });
-      
-      return Array.from(keywords);
+      return data;
     },
   });
 
-  // Selecionar 6 sugestões aleatórias
+  // Criar sugestões inteligentes baseadas nos produtos
   const suggestions = useMemo(() => {
+    const defaultSuggestions = [
+      "Smartphone Samsung",
+      "iPhone",
+      "Notebook",
+      "SSD",
+      "Fone Bluetooth",
+      "Smart TV",
+      "Air Fryer",
+      "Geladeira",
+      "PlayStation",
+      "Xbox",
+      "Nintendo Switch",
+      "Smartwatch",
+    ];
+
     if (!products || products.length === 0) {
-      // Sugestões padrão caso não haja produtos
-      return [
-        "Smartphone",
-        "Notebook",
-        "Fone de ouvido",
-        "Smart TV",
-        "Air Fryer",
-        "Geladeira",
-        "Máquina de lavar",
-        "Fogão",
-        "Micro-ondas",
-        "Ar condicionado",
-      ];
+      return defaultSuggestions.slice(0, 6);
     }
+
+    // Pegar títulos completos dos produtos + sugestões padrão
+    const productTitles = products.map(p => p.title);
+    const allSuggestions = [...productTitles, ...defaultSuggestions];
     
-    // Embaralhar e pegar 6 itens
-    const shuffled = [...products].sort(() => Math.random() - 0.5);
+    // Remover duplicatas e embaralhar
+    const uniqueSuggestions = Array.from(new Set(allSuggestions));
+    const shuffled = uniqueSuggestions.sort(() => Math.random() - 0.5);
+    
     return shuffled.slice(0, 6);
   }, [products]);
 
@@ -83,7 +79,7 @@ export const AlertSuggestions = () => {
           >
             <div className="flex items-center gap-3">
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium capitalize">{suggestion}</span>
+              <span className="font-medium text-sm">{suggestion}</span>
             </div>
             <Plus className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
           </button>

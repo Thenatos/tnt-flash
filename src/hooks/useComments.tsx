@@ -62,16 +62,34 @@ export const useComments = (productId: string) => {
       userId: string; 
       parentId?: string;
     }) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("comments")
         .insert({
           product_id: productId,
           user_id: userId,
           content,
           parent_id: parentId || null,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Processar menções em background
+      if (data && content.includes("@")) {
+        supabase.functions
+          .invoke("process-comment-mentions", {
+            body: {
+              commentId: data.id,
+              content,
+              authorId: userId,
+              productId,
+            },
+          })
+          .catch((err) => console.error("Error processing mentions:", err));
+      }
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", productId] });

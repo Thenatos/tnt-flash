@@ -416,6 +416,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="expired">Expirado</SelectItem>
                   <SelectItem value="never">Nunca expira</SelectItem>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((days) => (
                     <SelectItem key={days} value={days.toString()}>

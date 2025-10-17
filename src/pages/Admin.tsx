@@ -57,7 +57,10 @@ export default function Admin() {
     setIsSubmitting(true);
     try {
       let expiresAt = null;
-      if (data.expires_in_days && data.expires_in_days !== "never") {
+      if (data.expires_in_days === "expired") {
+        // Define como expirado (data no passado)
+        expiresAt = new Date(Date.now() - 86400000).toISOString(); // 1 dia no passado
+      } else if (data.expires_in_days && data.expires_in_days !== "never") {
         const daysToAdd = parseInt(data.expires_in_days);
         const expirationDate = new Date();
         expirationDate.setDate(expirationDate.getDate() + daysToAdd);

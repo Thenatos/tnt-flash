@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
       const email = userEmails.get(profile.user_id);
       if (!email) continue;
 
-      const productLink = `${Deno.env.get("SUPABASE_URL")?.replace("https://lndlitesudgswlejhupp.supabase.co", "https://descola.lovable.app")}/produto/${productId}#comment-${commentId}`;
+      const productLink = `/produto/${productId}#comment-${commentId}`;
 
       // Sempre criar notificação no banco
       await supabase.from("notifications").insert({

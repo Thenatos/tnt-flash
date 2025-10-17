@@ -5,6 +5,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { BannersManager } from "@/components/admin/BannersManager";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -136,104 +138,119 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-muted/10">
       <div className="container py-8 px-4">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-4xl font-bold">
-              Painel <span className="text-gradient-primary">Administrativo</span>
-            </h1>
-          </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setIsDialogOpen(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nova Oferta
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingProduct ? "Editar Oferta" : "Nova Oferta"}
-                </DialogTitle>
-              </DialogHeader>
-              <ProductForm
-                onSubmit={handleSubmit}
-                defaultValues={editingProduct}
-                isLoading={isSubmitting}
-              />
-            </DialogContent>
-          </Dialog>
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-4xl font-bold">
+            Painel <span className="text-gradient-primary">Administrativo</span>
+          </h1>
         </div>
 
-        {isLoadingProducts ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : (
-          <div className="bg-card rounded-lg shadow-md overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Imagem</TableHead>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Preço Original</TableHead>
-                  <TableHead>Preço Promo</TableHead>
-                  <TableHead>Desconto</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products?.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
-                      <img
-                        src={product.image_url}
-                        alt={product.title}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{product.title}</TableCell>
-                    <TableCell>R$ {product.original_price}</TableCell>
-                    <TableCell className="text-primary font-bold">
-                      R$ {product.promotional_price}
-                    </TableCell>
-                    <TableCell>
-                      <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-sm font-bold">
-                        {product.discount_percentage}%
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(product)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(product.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+        <Tabs defaultValue="products" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="products">Produtos</TabsTrigger>
+            <TabsTrigger value="banners">Banners</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="products" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Gerenciar Produtos</h2>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setIsDialogOpen(true);
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nova Oferta
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingProduct ? "Editar Oferta" : "Nova Oferta"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ProductForm
+                    onSubmit={handleSubmit}
+                    defaultValues={editingProduct}
+                    isLoading={isSubmitting}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {isLoadingProducts ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <div className="bg-card rounded-lg shadow-md overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Imagem</TableHead>
+                      <TableHead>Título</TableHead>
+                      <TableHead>Preço Original</TableHead>
+                      <TableHead>Preço Promo</TableHead>
+                      <TableHead>Desconto</TableHead>
+                      <TableHead>Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products?.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <img
+                            src={product.image_url}
+                            alt={product.title}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{product.title}</TableCell>
+                        <TableCell>R$ {product.original_price}</TableCell>
+                        <TableCell className="text-primary font-bold">
+                          R$ {product.promotional_price}
+                        </TableCell>
+                        <TableCell>
+                          <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-sm font-bold">
+                            {product.discount_percentage}%
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(product)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="banners">
+            <BannersManager />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

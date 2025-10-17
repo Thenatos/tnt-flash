@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { MarkdownContent } from "@/components/MarkdownContent";
+import { CommentReactions } from "@/components/CommentReactions";
 import { useComments } from "@/hooks/useComments";
 import { useCommentUsers } from "@/hooks/useCommentUsers";
 import { useAuth } from "@/hooks/useAuth";
@@ -161,6 +162,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                       <div className="text-sm">
                         <MarkdownContent content={comment.content} />
                       </div>
+                      
+                      {/* Reações do comentário */}
+                      <CommentReactions commentId={comment.id} />
                     </div>
                   </div>
 
@@ -241,6 +245,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                               <div className="text-sm">
                                 <MarkdownContent content={reply.content} />
                               </div>
+                              
+                              {/* Reações da resposta */}
+                              <CommentReactions commentId={reply.id} />
                             </div>
                           </div>
                         </Card>

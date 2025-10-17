@@ -89,6 +89,20 @@ export const useComments = (productId: string) => {
           .catch((err) => console.error("Error processing mentions:", err));
       }
 
+      // Se for uma resposta, notificar o autor do comentário original
+      if (data && parentId) {
+        supabase.functions
+          .invoke("process-comment-replies", {
+            body: {
+              commentId: data.id,
+              parentId,
+              authorId: userId,
+              productId,
+            },
+          })
+          .catch((err) => console.error("Error processing reply notification:", err));
+      }
+
       return data;
     },
     onSuccess: () => {

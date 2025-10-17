@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CommentSection } from "@/components/CommentSection";
+import { ProductReactions } from "@/components/ProductReactions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
@@ -211,6 +212,11 @@ const ProductDetail = () => {
                   <span>Criar alerta para: {product.title}</span>
                 </Button>
               )}
+
+              {/* Product Reactions */}
+              <div className="mt-6 pt-6 border-t">
+                <ProductReactions productId={id!} />
+              </div>
             </div>
           </div>
 

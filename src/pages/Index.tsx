@@ -32,7 +32,25 @@ const Index = () => {
   };
 
   const filteredProducts = showBestDeals && products
-    ? [...products].sort((a, b) => b.discount_percentage - a.discount_percentage)
+    ? (() => {
+        const now = new Date();
+        const thirtyHoursAgo = new Date(now.getTime() - 36 * 60 * 60 * 1000);
+        
+        // Filtrar apenas produtos das últimas 36 horas
+        const recentProducts = products.filter(product => 
+          new Date(product.created_at) >= thirtyHoursAgo
+        );
+        
+        // Ordenar por desconto (maior primeiro) como critério primário
+        return [...recentProducts].sort((a, b) => {
+          // Primeiro critério: maior desconto
+          const discountDiff = b.discount_percentage - a.discount_percentage;
+          if (discountDiff !== 0) return discountDiff;
+          
+          // Segundo critério: mais recente
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+      })()
     : products;
 
   return (
@@ -54,8 +72,8 @@ const Index = () => {
         <div className="container px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl md:text-4xl font-bold">
-              {showBestDeals ? "Melhores " : "Ofertas "}
-              <span className="text-gradient-primary">{showBestDeals ? "Ofertas" : "Recentes"}</span>
+              {showBestDeals ? "Melhores Ofertas " : "Ofertas "}
+              <span className="text-gradient-primary">{showBestDeals ? "(36h)" : "Recentes"}</span>
             </h2>
             <span className="text-sm text-muted-foreground">
               {filteredProducts?.length || 0} ofertas encontradas

@@ -8,6 +8,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { useCategories } from "@/hooks/useCategories";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +46,15 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { trackEvent } = useAnalytics();
+
+  const handleWhatsAppClick = () => {
+    trackEvent('whatsapp_click', { source: 'header' });
+  };
+
+  const handleTelegramClick = () => {
+    trackEvent('telegram_click', { source: 'header' });
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -100,6 +110,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                       href="https://chat.whatsapp.com/seu-grupo"
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={handleWhatsAppClick}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-accent rounded-md transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-green-500" />
@@ -112,6 +123,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                       href="https://t.me/seu-grupo"
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={handleTelegramClick}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-accent rounded-md transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-blue-500" />
@@ -198,6 +210,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                         href="https://chat.whatsapp.com/seu-grupo"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleWhatsAppClick}
                         className="flex items-center gap-3 select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <MessageCircle className="h-5 w-5 text-green-500" />
@@ -216,6 +229,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                         href="https://t.me/seu-grupo"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleTelegramClick}
                         className="flex items-center gap-3 select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <MessageCircle className="h-5 w-5 text-blue-500" />

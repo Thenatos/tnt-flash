@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { BannersManager } from "@/components/admin/BannersManager";
 import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsManager";
+import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import {
   Dialog,
   DialogContent,
@@ -164,6 +165,7 @@ export default function Admin() {
             <TabsTrigger value="products">Produtos</TabsTrigger>
             <TabsTrigger value="banners">Banners</TabsTrigger>
             <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -266,6 +268,10 @@ export default function Admin() {
 
           <TabsContent value="alert-suggestions">
             <AlertSuggestionsManager />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
           </TabsContent>
         </Tabs>
       </div>

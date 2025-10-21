@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CommentSection } from "@/components/CommentSection";
@@ -11,12 +12,20 @@ import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: product, isLoading } = useProduct(id!);
   const { createAlert } = useProductAlerts();
+  const { trackEvent } = useAnalytics();
+
+  useEffect(() => {
+    if (product) {
+      trackEvent('page_view', { product_title: product.title }, product.id);
+    }
+  }, [product]);
 
   if (isLoading) {
     return (

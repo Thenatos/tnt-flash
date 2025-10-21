@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { CategorySection } from "@/components/CategorySection";
@@ -8,12 +8,18 @@ import { GoogleSignInPopup } from "@/components/GoogleSignInPopup";
 import { useProducts } from "@/hooks/useProducts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [showBestDeals, setShowBestDeals] = useState(false);
   const { data: products, isLoading } = useProducts(searchQuery, selectedCategory);
+  const { trackEvent } = useAnalytics();
+
+  useEffect(() => {
+    trackEvent('page_view');
+  }, []);
 
   const handleBestDealsFilter = () => {
     setShowBestDeals(true);

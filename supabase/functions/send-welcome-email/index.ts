@@ -27,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Enviando email de boas-vindas para: ${email}`);
 
     const userName = fullName || email.split("@")[0];
-    const siteUrl = "https://seu-site.lovable.app";
+    const siteUrl = "https://tntofertas.com.br";
 
     // Create HTML email template with site colors
     const html = `
@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Ofertas Incríveis <onboarding@resend.dev>",
+        from: "TNT Ofertas <noreply@tntofertas.com.br>",
         to: [email],
         subject: "🎉 Bem-vindo ao clube das melhores ofertas!",
         html,

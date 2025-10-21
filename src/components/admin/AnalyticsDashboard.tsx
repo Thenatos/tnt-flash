@@ -1,20 +1,60 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Eye, MousePointerClick, Mail, MessageCircle, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format, subDays, subWeeks, subMonths, subYears, startOfDay, endOfDay } from "date-fns";
+import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 const COLORS = ['#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#3b82f6', '#eab308'];
 
 export const AnalyticsDashboard = () => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 7),
+    to: new Date(),
+  });
+
+  const setPeriod = (period: 'today' | 'week' | 'month' | 'year') => {
+    const now = new Date();
+    switch (period) {
+      case 'today':
+        setDateRange({ from: startOfDay(now), to: endOfDay(now) });
+        break;
+      case 'week':
+        setDateRange({ from: subWeeks(now, 1), to: now });
+        break;
+      case 'month':
+        setDateRange({ from: subMonths(now, 1), to: now });
+        break;
+      case 'year':
+        setDateRange({ from: subYears(now, 1), to: now });
+        break;
+    }
+  };
+
   // Query para eventos gerais
   const { data: eventStats } = useQuery({
-    queryKey: ["analytics-events"],
+    queryKey: ["analytics-events", dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("analytics_events")
         .select("event_type")
         .order("created_at", { ascending: false });
+      
+      if (dateRange?.from) {
+        query = query.gte("created_at", dateRange.from.toISOString());
+      }
+      if (dateRange?.to) {
+        query = query.lte("created_at", dateRange.to.toISOString());
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
 
@@ -29,15 +69,24 @@ export const AnalyticsDashboard = () => {
 
   // Query para cliques em produtos
   const { data: productClicks } = useQuery({
-    queryKey: ["analytics-product-clicks"],
+    queryKey: ["analytics-product-clicks", dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("analytics_events")
         .select("product_id, products(title)")
         .eq("event_type", "product_click")
         .not("product_id", "is", null)
         .order("created_at", { ascending: false })
         .limit(100);
+      
+      if (dateRange?.from) {
+        query = query.gte("created_at", dateRange.from.toISOString());
+      }
+      if (dateRange?.to) {
+        query = query.lte("created_at", dateRange.to.toISOString());
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
 
@@ -56,12 +105,21 @@ export const AnalyticsDashboard = () => {
 
   // Query para acessos por página
   const { data: pageViews } = useQuery({
-    queryKey: ["analytics-page-views"],
+    queryKey: ["analytics-page-views", dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("analytics_events")
         .select("page_path")
         .eq("event_type", "page_view");
+      
+      if (dateRange?.from) {
+        query = query.gte("created_at", dateRange.from.toISOString());
+      }
+      if (dateRange?.to) {
+        query = query.lte("created_at", dateRange.to.toISOString());
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
 
@@ -77,17 +135,22 @@ export const AnalyticsDashboard = () => {
     },
   });
 
-  // Query para eventos por dia (últimos 7 dias)
+  // Query para eventos por dia
   const { data: dailyEvents } = useQuery({
-    queryKey: ["analytics-daily"],
+    queryKey: ["analytics-daily", dateRange],
     queryFn: async () => {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-      const { data, error } = await supabase
+      let query = supabase
         .from("analytics_events")
-        .select("created_at, event_type")
-        .gte("created_at", sevenDaysAgo.toISOString());
+        .select("created_at, event_type");
+      
+      if (dateRange?.from) {
+        query = query.gte("created_at", dateRange.from.toISOString());
+      }
+      if (dateRange?.to) {
+        query = query.lte("created_at", dateRange.to.toISOString());
+      }
+
+      const { data, error } = await query;
       
       if (error) throw error;
 
@@ -115,6 +178,75 @@ export const AnalyticsDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap gap-2 items-center justify-between">
+        <div className="flex gap-2">
+          <Button
+            variant={dateRange?.from && dateRange?.to && 
+              format(dateRange.from, 'yyyy-MM-dd') === format(startOfDay(new Date()), 'yyyy-MM-dd') ? "default" : "outline"}
+            onClick={() => setPeriod('today')}
+            size="sm"
+          >
+            Hoje
+          </Button>
+          <Button
+            variant={dateRange?.from && 
+              Math.abs(new Date().getTime() - dateRange.from.getTime()) <= 7 * 24 * 60 * 60 * 1000 &&
+              Math.abs(new Date().getTime() - dateRange.from.getTime()) > 24 * 60 * 60 * 1000 ? "default" : "outline"}
+            onClick={() => setPeriod('week')}
+            size="sm"
+          >
+            Última Semana
+          </Button>
+          <Button
+            variant={dateRange?.from && 
+              Math.abs(new Date().getTime() - dateRange.from.getTime()) > 7 * 24 * 60 * 60 * 1000 &&
+              Math.abs(new Date().getTime() - dateRange.from.getTime()) <= 31 * 24 * 60 * 60 * 1000 ? "default" : "outline"}
+            onClick={() => setPeriod('month')}
+            size="sm"
+          >
+            Último Mês
+          </Button>
+          <Button
+            variant={dateRange?.from && 
+              Math.abs(new Date().getTime() - dateRange.from.getTime()) > 31 * 24 * 60 * 60 * 1000 ? "default" : "outline"}
+            onClick={() => setPeriod('year')}
+            size="sm"
+          >
+            Último Ano
+          </Button>
+        </div>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className={cn("justify-start text-left font-normal")}>
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "dd/MM/yyyy")} - {format(dateRange.to, "dd/MM/yyyy")}
+                  </>
+                ) : (
+                  format(dateRange.from, "dd/MM/yyyy")
+                )
+              ) : (
+                <span>Selecionar período</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              onSelect={setDateRange}
+              numberOfMonths={2}
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -239,8 +371,8 @@ export const AnalyticsDashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Eventos - Últimos 7 Dias</CardTitle>
-            <CardDescription>Tendência de eventos ao longo do tempo</CardDescription>
+            <CardTitle>Eventos ao Longo do Tempo</CardTitle>
+            <CardDescription>Tendência de eventos no período selecionado</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>

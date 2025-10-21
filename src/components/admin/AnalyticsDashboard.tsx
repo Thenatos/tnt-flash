@@ -109,7 +109,7 @@ export const AnalyticsDashboard = () => {
     queryFn: async () => {
       let query = supabase
         .from("analytics_events")
-        .select("page_path")
+        .select("page_path, product_id, products(title)")
         .eq("event_type", "page_view");
       
       if (dateRange?.from) {
@@ -123,8 +123,22 @@ export const AnalyticsDashboard = () => {
       
       if (error) throw error;
 
-      const views = data.reduce((acc: Record<string, number>, event) => {
-        acc[event.page_path || 'Unknown'] = (acc[event.page_path || 'Unknown'] || 0) + 1;
+      const views = data.reduce((acc: Record<string, number>, event: any) => {
+        let pageName = 'Página Inicial';
+        
+        if (event.page_path?.startsWith('/produto/')) {
+          pageName = event.products?.title || 'Produto Desconhecido';
+        } else if (event.page_path === '/alertas') {
+          pageName = 'Alertas';
+        } else if (event.page_path === '/perfil') {
+          pageName = 'Perfil';
+        } else if (event.page_path === '/admin') {
+          pageName = 'Painel Admin';
+        } else if (event.page_path && event.page_path !== '/') {
+          pageName = event.page_path;
+        }
+        
+        acc[pageName] = (acc[pageName] || 0) + 1;
         return acc;
       }, {});
 

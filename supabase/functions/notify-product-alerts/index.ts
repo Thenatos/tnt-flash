@@ -115,84 +115,110 @@ const handler = async (req: Request): Promise<Response> => {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Alerta de Oferta - TNT Ofertas</title>
+          <title>Nova Oferta Encontrada - TNT Ofertas</title>
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
           <table role="presentation" style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 40px 20px;">
-                <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
-                  <!-- Header -->
+                <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                  
+                  <!-- Header com Gradiente -->
                   <tr>
-                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-                      <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        🎉 Oferta Encontrada!
+                    <td style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); padding: 40px 30px; text-align: center;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">
+                        🎉 Nova Oferta Encontrada!
                       </h1>
-                      <p style="margin: 10px 0 0 0; color: #f0f0f0; font-size: 16px;">
-                        O produto que você estava esperando chegou!
+                    </td>
+                  </tr>
+                  
+                  <!-- Mensagem Inicial -->
+                  <tr>
+                    <td style="padding: 30px 30px 20px 30px;">
+                      <p style="margin: 0 0 15px 0; color: #333; font-size: 16px; line-height: 1.5;">
+                        Estamos <strong>super animados</strong> em ter uma nova oferta para você! 🚀
+                      </p>
+                      <p style="margin: 0; color: #666; font-size: 15px; line-height: 1.5;">
+                        Encontramos um produto que corresponde aos seus alertas configurados. Confira os detalhes abaixo:
                       </p>
                     </td>
                   </tr>
                   
-                  <!-- Product Image -->
+                  <!-- Imagem do Produto -->
                   <tr>
-                    <td style="padding: 0;">
-                      <img src="${product.image_url}" alt="${product.title}" style="width: 100%; height: auto; display: block; max-height: 400px; object-fit: cover;">
+                    <td style="padding: 0 30px;">
+                      <img src="${product.image_url}" alt="${product.title}" style="width: 100%; height: auto; display: block; border-radius: 12px; max-height: 300px; object-fit: cover;">
                     </td>
                   </tr>
                   
-                  <!-- Product Details -->
+                  <!-- Detalhes do Produto -->
                   <tr>
-                    <td style="padding: 30px;">
-                      <h2 style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 24px; font-weight: bold;">
+                    <td style="padding: 25px 30px;">
+                      <h2 style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 22px; font-weight: bold;">
                         ${product.title}
                       </h2>
                       
                       ${product.description ? `
-                        <p style="margin: 0 0 20px 0; color: #666; font-size: 15px; line-height: 1.6;">
+                        <p style="margin: 0 0 20px 0; color: #666; font-size: 14px; line-height: 1.6;">
                           ${product.description}
                         </p>
                       ` : ''}
                       
-                      <!-- Category and Store -->
-                      <div style="margin: 20px 0; padding: 15px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-radius: 8px;">
-                        <p style="margin: 0 0 8px 0; color: #2d3436; font-size: 14px;">
+                      <!-- Categoria e Loja -->
+                      <div style="margin: 20px 0; padding: 15px; background-color: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                        <p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;">
                           <strong>📂 Categoria:</strong> ${category?.name || "N/A"}
                         </p>
-                        <p style="margin: 0; color: #2d3436; font-size: 14px;">
+                        <p style="margin: 0; color: #92400e; font-size: 14px;">
                           <strong>🏪 Loja:</strong> ${store?.name || "N/A"}
                         </p>
                       </div>
                       
-                      <!-- Pricing -->
-                      <div style="margin: 25px 0; padding: 20px; background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); border-radius: 12px; text-align: center;">
-                        <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 14px; text-decoration: line-through; opacity: 0.8;">
+                      <!-- Preço com Destaque -->
+                      <div style="margin: 25px 0; padding: 25px; background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%); border-radius: 12px; text-align: center;">
+                        <p style="margin: 0 0 8px 0; color: #7c3aed; font-size: 14px; text-decoration: line-through;">
                           De: R$ ${product.original_price.toFixed(2)}
                         </p>
-                        <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 36px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <p style="margin: 0 0 10px 0; color: #7c3aed; font-size: 40px; font-weight: bold; line-height: 1;">
                           R$ ${product.promotional_price.toFixed(2)}
                         </p>
-                        <div style="display: inline-block; background-color: #fd79a8; color: #ffffff; padding: 8px 20px; border-radius: 20px; font-size: 16px; font-weight: bold; margin-top: 10px;">
+                        <div style="display: inline-block; background-color: #ec4899; color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 18px; font-weight: bold;">
                           ${product.discount_percentage}% OFF
                         </div>
                       </div>
-                      
-                      <!-- CTA Button -->
-                      <div style="text-align: center; margin: 30px 0 20px 0;">
-                        <a href="https://tntofertas.com.br/produto/${product.id}" style="display: inline-block; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(232, 67, 147, 0.4); transition: all 0.3s;">
-                          🛒 Ver Oferta Agora
-                        </a>
+                    </td>
+                  </tr>
+                  
+                  <!-- Botão CTA -->
+                  <tr>
+                    <td style="padding: 0 30px 30px 30px; text-align: center;">
+                      <a href="https://tntofertas.com.br/produto/${product.id}" style="display: inline-block; background-color: #f97316; color: #ffffff; text-decoration: none; padding: 16px 50px; border-radius: 8px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                        🛒 Explorar Oferta Agora
+                      </a>
+                    </td>
+                  </tr>
+                  
+                  <!-- Dica de Ouro -->
+                  <tr>
+                    <td style="padding: 0 30px 30px 30px;">
+                      <div style="background-color: #ede9fe; border-radius: 10px; padding: 20px; border-left: 4px solid #a855f7;">
+                        <p style="margin: 0; color: #6b21a8; font-size: 14px; line-height: 1.6;">
+                          💡 <strong>Dica de ouro:</strong> Configure seus alertas personalizados para nunca perder uma promoção dos produtos que você deseja!
+                        </p>
                       </div>
                     </td>
                   </tr>
                   
                   <!-- Footer -->
                   <tr>
-                    <td style="padding: 30px; background-color: #f8f9fa; border-top: 2px solid #e9ecef;">
-                      <p style="margin: 0 0 10px 0; color: #666; font-size: 13px; text-align: center;">
-                        Você recebeu este email porque configurou um alerta para este tipo de produto no TNT Ofertas.
+                    <td style="padding: 30px; background-color: #f9fafb; text-align: center; border-top: 1px solid #e5e7eb;">
+                      <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px;">
+                        Economize mais, compre melhor! 🔥
                       </p>
-                      <p style="margin: 0; color: #999; font-size: 12px; text-align: center;">
+                      <p style="margin: 0 0 15px 0; color: #9ca3af; font-size: 13px;">
+                        Se você tiver alguma dúvida, estamos aqui para ajudar.
+                      </p>
+                      <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                         © ${new Date().getFullYear()} TNT Ofertas. Todos os direitos reservados.
                       </p>
                     </td>

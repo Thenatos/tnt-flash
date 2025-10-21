@@ -44,13 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Buscar alertas ativos que correspondem ao produto
     const { data: alerts, error: alertsError } = await supabase
       .from("product_alerts")
-      .select(`
-        *,
-        profiles:user_id (
-          full_name,
-          user_id
-        )
-      `)
+      .select("*")
       .eq("is_active", true);
 
     if (alertsError) {
@@ -93,16 +87,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Encontrados ${matchingAlerts.length} alertas correspondentes`);
 
-    // Agrupar alertas por usuário para eviar apenas um email
+    // Agrupar alertas por usuário para enviar apenas um email
     const userAlerts = new Map();
     matchingAlerts.forEach((alert: any) => {
       const userId = alert.user_id;
       if (!userAlerts.has(userId)) {
-        userAlerts.set(userId, {
-          email: alert.profiles?.user_id,
-          name: alert.profiles?.full_name,
-          alerts: []
-        });
+        userAlerts.set(userId, { alerts: [] });
       }
       userAlerts.get(userId).alerts.push(alert);
     });
@@ -189,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
                       
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 30px 0 20px 0;">
-                        <a href="${product.affiliate_link}" style="display: inline-block; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(232, 67, 147, 0.4); transition: all 0.3s;">
+                        <a href="https://tntofertas.com.br/produto/${product.id}" style="display: inline-block; background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(232, 67, 147, 0.4); transition: all 0.3s;">
                           🛒 Ver Oferta Agora
                         </a>
                       </div>
@@ -223,7 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            from: "TNT Ofertas <onboarding@resend.dev>",
+            from: "TNT Ofertas <noreply@tntofertas.com.br>",
             to: [user.email],
             subject: `🔥 Oferta Encontrada: ${product.title}`,
             html: emailHtml,

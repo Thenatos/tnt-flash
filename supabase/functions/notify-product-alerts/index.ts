@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Encontrados ${matchingAlerts.length} alertas correspondentes`);
 
-    // Agrupar alertas por usuário para enviar apenas um email
+    // Agrupar alertas por usuário
     const userAlerts = new Map();
     matchingAlerts.forEach((alert: any) => {
       const userId = alert.user_id;
@@ -97,12 +97,41 @@ const handler = async (req: Request): Promise<Response> => {
       userAlerts.get(userId).alerts.push(alert);
     });
 
+    // Criar notificações no site para todos os usuários
+    const notificationPromises = Array.from(userAlerts.keys()).map(async (userId) => {
+      try {
+        await supabase.from("notifications").insert({
+          user_id: userId,
+          type: "product_alert",
+          title: "🔥 Nova Oferta Encontrada!",
+          message: `${product.title} - ${product.discount_percentage}% OFF`,
+          link: `/produto/${product.id}`,
+        });
+      } catch (error) {
+        console.error(`Erro ao criar notificação para usuário ${userId}:`, error);
+      }
+    });
+
+    await Promise.all(notificationPromises);
+
+    // Buscar preferências de email dos usuários
+    const { data: emailPreferences } = await supabase
+      .from("email_preferences")
+      .select("user_id, receive_alerts")
+      .in("user_id", Array.from(userAlerts.keys()));
+
     // Buscar emails dos usuários
-    const userIds = Array.from(userAlerts.keys());
     const { data: users } = await supabase.auth.admin.listUsers();
     
-    // Enviar emails
+    // Enviar emails apenas para quem optou por receber
     const emailPromises = Array.from(userAlerts.entries()).map(async ([userId, userData]) => {
+      // Verificar preferências de email
+      const userPreferences = emailPreferences?.find(p => p.user_id === userId);
+      if (userPreferences && !userPreferences.receive_alerts) {
+        console.log(`Usuário ${userId} optou por não receber emails de alertas`);
+        return;
+      }
+
       const user = users?.users.find(u => u.id === userId);
       if (!user?.email) {
         console.log(`Email não encontrado para usuário ${userId}`);

@@ -53,17 +53,18 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Subject and message are required");
     }
 
-    // Buscar todos os usuários
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles")
+    // Buscar usuários que optaram por receber emails em massa
+    const { data: emailPreferences, error: preferencesError } = await supabase
+      .from("email_preferences")
       .select("user_id")
+      .eq("receive_mass_emails", true)
       .limit(1000);
 
-    if (profilesError) throw profilesError;
+    if (preferencesError) throw preferencesError;
 
-    if (!profiles || profiles.length === 0) {
+    if (!emailPreferences || emailPreferences.length === 0) {
       return new Response(
-        JSON.stringify({ count: 0, message: "No users found" }),
+        JSON.stringify({ count: 0, message: "No users opted in for mass emails" }),
         {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -71,8 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Buscar emails dos usuários
-    const userIds = profiles.map(p => p.user_id);
+    // Buscar emails dos usuários que optaram por receber
+    const userIds = emailPreferences.map(p => p.user_id);
     const emails: string[] = [];
 
     for (const userId of userIds) {

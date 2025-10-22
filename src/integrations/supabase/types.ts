@@ -186,6 +186,36 @@ export type Database = {
           },
         ]
       }
+      email_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          receive_alerts: boolean
+          receive_mass_emails: boolean
+          receive_promotions: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receive_alerts?: boolean
+          receive_mass_emails?: boolean
+          receive_promotions?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receive_alerts?: boolean
+          receive_mass_emails?: boolean
+          receive_promotions?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       hero_banners: {
         Row: {
           created_at: string
@@ -502,10 +532,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_unique_username: {
-        Args: { email: string }
-        Returns: string
-      }
+      generate_unique_username: { Args: { email: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]

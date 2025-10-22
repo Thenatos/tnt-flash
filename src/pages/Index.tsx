@@ -5,6 +5,7 @@ import { CategorySection } from "@/components/CategorySection";
 import { ProductCard } from "@/components/ProductCard";
 import { Footer } from "@/components/Footer";
 import { GoogleSignInPopup } from "@/components/GoogleSignInPopup";
+import { JoinGroupsPopup } from "@/components/JoinGroupsPopup";
 import { useProducts } from "@/hooks/useProducts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -83,6 +84,10 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <GoogleSignInPopup delayMs={8000} />
+      <JoinGroupsPopup 
+        whatsappLink="https://chat.whatsapp.com/seu-grupo-whatsapp"
+        telegramLink="https://t.me/seu-grupo-telegram"
+      />
       <Header
         onSearch={handleSearch}
         onCategorySelect={handleCategorySelect}

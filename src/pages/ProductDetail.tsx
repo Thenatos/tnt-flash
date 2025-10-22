@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CommentSection } from "@/components/CommentSection";
 import { ProductReactions } from "@/components/ProductReactions";
+import { JoinGroupsPopup } from "@/components/JoinGroupsPopup";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
@@ -77,6 +78,10 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <JoinGroupsPopup 
+        whatsappLink="https://chat.whatsapp.com/seu-grupo-whatsapp"
+        telegramLink="https://t.me/seu-grupo-telegram"
+      />
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header />

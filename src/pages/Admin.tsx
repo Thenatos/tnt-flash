@@ -8,6 +8,7 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import { BannersManager } from "@/components/admin/BannersManager";
 import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsManager";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
+import { MassEmailSender } from "@/components/admin/MassEmailSender";
 import {
   Dialog,
   DialogContent,
@@ -166,6 +167,7 @@ export default function Admin() {
             <TabsTrigger value="banners">Banners</TabsTrigger>
             <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -272,6 +274,10 @@ export default function Admin() {
 
           <TabsContent value="analytics">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="mass-email">
+            <MassEmailSender />
           </TabsContent>
         </Tabs>
       </div>

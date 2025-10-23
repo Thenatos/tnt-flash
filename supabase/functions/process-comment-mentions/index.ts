@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY")!;
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -10,12 +11,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CommentMentionRequest {
-  commentId: string;
-  content: string;
-  authorId: string;
-  productId: string;
-}
+const CommentMentionSchema = z.object({
+  commentId: z.string().uuid(),
+  content: z.string().min(1).max(5000),
+  authorId: z.string().uuid(),
+  productId: z.string().uuid()
+});
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -23,7 +24,8 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { commentId, content, authorId, productId }: CommentMentionRequest = await req.json();
+    const requestData = await req.json();
+    const { commentId, content, authorId, productId } = CommentMentionSchema.parse(requestData);
     
     console.log("Processing mentions for comment:", commentId);
     
@@ -119,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
               "Authorization": `Bearer ${resendApiKey}`,
             },
             body: JSON.stringify({
-              from: "Descola <onboarding@resend.dev>",
+              from: "TNT Ofertas <noreply@tntofertas.com.br>",
               to: [email],
               subject: "Você foi mencionado em um comentário",
               html: `

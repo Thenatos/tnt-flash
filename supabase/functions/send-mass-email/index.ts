@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -10,12 +11,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface MassEmailRequest {
-  subject: string;
-  message: string;
-  percentage?: number;
-  emailType?: string;
-}
+const MassEmailSchema = z.object({
+  subject: z.string().min(1).max(200),
+  message: z.string().min(1).max(5000),
+  percentage: z.number().min(1).max(100).default(100),
+  emailType: z.enum(["informational", "promotional", "warning", "other"]).default("promotional")
+});
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -49,15 +50,8 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Unauthorized: Admin access required");
     }
 
-    const { subject, message, percentage = 100, emailType = "promotional" }: MassEmailRequest = await req.json();
-
-    if (!subject || !message) {
-      throw new Error("Subject and message are required");
-    }
-
-    if (percentage < 1 || percentage > 100) {
-      throw new Error("Percentage must be between 1 and 100");
-    }
+    const requestData = await req.json();
+    const { subject, message, percentage, emailType } = MassEmailSchema.parse(requestData);
 
     // Configurações de tema baseado no tipo de email
     const emailThemes = {

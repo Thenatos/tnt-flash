@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -17,18 +19,18 @@ interface ProductAlert {
   store_id: string | null;
 }
 
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  image_url: string;
-  original_price: number;
-  promotional_price: number;
-  discount_percentage: number;
-  affiliate_link: string;
-  category_id: string;
-  store_id: string;
-}
+const ProductSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1).max(500),
+  description: z.string().max(5000).optional(),
+  image_url: z.string().url(),
+  original_price: z.number().min(0),
+  promotional_price: z.number().min(0),
+  discount_percentage: z.number().min(0).max(100),
+  affiliate_link: z.string().url(),
+  category_id: z.string().uuid(),
+  store_id: z.string().uuid()
+});
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -37,7 +39,8 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const { product }: { product: Product } = await req.json();
+    const requestData = await req.json();
+    const product = ProductSchema.parse(requestData.product);
 
     console.log("Verificando alertas para produto:", product.title);
 

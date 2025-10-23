@@ -14,6 +14,7 @@ interface MassEmailRequest {
   subject: string;
   message: string;
   percentage?: number;
+  emailType?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -48,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Unauthorized: Admin access required");
     }
 
-    const { subject, message, percentage = 100 }: MassEmailRequest = await req.json();
+    const { subject, message, percentage = 100, emailType = "promotional" }: MassEmailRequest = await req.json();
 
     if (!subject || !message) {
       throw new Error("Subject and message are required");
@@ -57,6 +58,44 @@ const handler = async (req: Request): Promise<Response> => {
     if (percentage < 1 || percentage > 100) {
       throw new Error("Percentage must be between 1 and 100");
     }
+
+    // Configurações de tema baseado no tipo de email
+    const emailThemes = {
+      informational: {
+        gradient: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 50%, #1E40AF 100%)",
+        emoji: "📰",
+        boxBg: "#DBEAFE",
+        boxBorder: "#3B82F6",
+        textColor: "#1E3A8A",
+        footerText: "Fique informado sobre as melhores ofertas! 📢"
+      },
+      promotional: {
+        gradient: "linear-gradient(135deg, #9b87f5 0%, #D946EF 50%, #F97316 100%)",
+        emoji: "🎉",
+        boxBg: "#FEF7CD",
+        boxBorder: "#FBBF24",
+        textColor: "#451A03",
+        footerText: "Economize mais, compre melhor! 💰"
+      },
+      warning: {
+        gradient: "linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #DC2626 100%)",
+        emoji: "⚠️",
+        boxBg: "#FEE2E2",
+        boxBorder: "#EF4444",
+        textColor: "#7F1D1D",
+        footerText: "Atenção importante para você! ⚡"
+      },
+      other: {
+        gradient: "linear-gradient(135deg, #6B7280 0%, #4B5563 50%, #374151 100%)",
+        emoji: "📧",
+        boxBg: "#F3F4F6",
+        boxBorder: "#9CA3AF",
+        textColor: "#1F2937",
+        footerText: "Mensagem importante de TNT Ofertas 📬"
+      }
+    };
+
+    const theme = emailThemes[emailType as keyof typeof emailThemes] || emailThemes.promotional;
 
     // Buscar usuários que optaram por receber emails em massa
     const { data: emailPreferences, error: preferencesError } = await supabase
@@ -117,7 +156,7 @@ const handler = async (req: Request): Promise<Response> => {
           },
           body: JSON.stringify({
             from: "TNT Ofertas <noreply@tntofertas.com.br>",
-            to: [email], // Enviar apenas para um destinatário por vez
+            to: [email],
             subject: subject,
             html: `
               <!DOCTYPE html>
@@ -127,12 +166,12 @@ const handler = async (req: Request): Promise<Response> => {
                   <style>
                     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f6f6f6; }
                     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: linear-gradient(135deg, #9b87f5 0%, #D946EF 50%, #F97316 100%); border-radius: 12px 12px 0 0; padding: 40px 30px; text-align: center; }
+                    .header { background: ${theme.gradient}; border-radius: 12px 12px 0 0; padding: 40px 30px; text-align: center; }
                     .header h1 { color: #ffffff; font-size: 32px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
                     .content { background-color: #ffffff; padding: 30px; border-radius: 0 0 12px 12px; }
                     .paragraph { color: #333333; font-size: 16px; line-height: 26px; margin: 16px 0; }
-                    .message-box { background-color: #FEF7CD; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 24px 0; }
-                    .message-content { color: #451A03; font-size: 15px; line-height: 24px; }
+                    .message-box { background-color: ${theme.boxBg}; border: 2px solid ${theme.boxBorder}; border-radius: 12px; padding: 20px; margin: 24px 0; }
+                    .message-content { color: ${theme.textColor}; font-size: 15px; line-height: 24px; }
                     .footer { background-color: #f6f6f6; padding: 20px 30px; text-align: center; margin-top: 20px; }
                     .footer-text { color: #666666; font-size: 14px; line-height: 24px; margin: 8px 0; }
                   </style>
@@ -140,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <body>
                   <div class="container">
                     <div class="header">
-                      <h1>🎉 ${subject} 🎉</h1>
+                      <h1>${theme.emoji} ${subject} ${theme.emoji}</h1>
                     </div>
                     <div class="content">
                       <div class="message-box">
@@ -153,7 +192,7 @@ const handler = async (req: Request): Promise<Response> => {
                       </p>
                     </div>
                     <div class="footer">
-                      <p class="footer-text">Economize mais, compre melhor! 💰</p>
+                      <p class="footer-text">${theme.footerText}</p>
                       <p class="footer-text">
                         Você está recebendo este email porque é cadastrado em nossa plataforma de ofertas.
                       </p>

@@ -13,6 +13,7 @@ export const MassEmailSender = () => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [percentage, setPercentage] = useState("100");
+  const [emailType, setEmailType] = useState("promotional");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendEmails = async () => {
@@ -24,7 +25,7 @@ export const MassEmailSender = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-mass-email", {
-        body: { subject, message, percentage: parseInt(percentage) },
+        body: { subject, message, percentage: parseInt(percentage), emailType },
       });
 
       if (error) throw error;
@@ -50,6 +51,21 @@ export const MassEmailSender = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="emailType">Tipo de Email</Label>
+            <Select value={emailType} onValueChange={setEmailType} disabled={isLoading}>
+              <SelectTrigger id="emailType">
+                <SelectValue placeholder="Selecione o tipo de email" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="informational">📰 Email Informativo</SelectItem>
+                <SelectItem value="promotional">🎁 Email Promocional</SelectItem>
+                <SelectItem value="warning">⚠️ Email de Aviso</SelectItem>
+                <SelectItem value="other">📧 Outros</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="subject">Assunto</Label>
             <Input

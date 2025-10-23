@@ -13,6 +13,7 @@ const corsHeaders = {
 interface MassEmailRequest {
   subject: string;
   message: string;
+  percentage?: number;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -47,10 +48,14 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Unauthorized: Admin access required");
     }
 
-    const { subject, message }: MassEmailRequest = await req.json();
+    const { subject, message, percentage = 100 }: MassEmailRequest = await req.json();
 
     if (!subject || !message) {
       throw new Error("Subject and message are required");
+    }
+
+    if (percentage < 1 || percentage > 100) {
+      throw new Error("Percentage must be between 1 and 100");
     }
 
     // Buscar usuários que optaram por receber emails em massa
@@ -72,8 +77,20 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Buscar emails dos usuários que optaram por receber
-    const userIds = emailPreferences.map(p => p.user_id);
+    // Selecionar porcentagem aleatória dos usuários
+    let selectedPreferences = emailPreferences;
+    if (percentage < 100) {
+      const targetCount = Math.ceil((emailPreferences.length * percentage) / 100);
+      // Embaralhar array aleatoriamente e pegar apenas a quantidade necessária
+      selectedPreferences = emailPreferences
+        .sort(() => Math.random() - 0.5)
+        .slice(0, targetCount);
+      
+      console.log(`Selected ${selectedPreferences.length} out of ${emailPreferences.length} users (${percentage}%)`);
+    }
+
+    // Buscar emails dos usuários selecionados
+    const userIds = selectedPreferences.map(p => p.user_id);
     const emails: string[] = [];
 
     for (const userId of userIds) {

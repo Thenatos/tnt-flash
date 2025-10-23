@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Send } from "lucide-react";
@@ -11,6 +12,7 @@ import { Loader2, Send } from "lucide-react";
 export const MassEmailSender = () => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [percentage, setPercentage] = useState("100");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendEmails = async () => {
@@ -22,7 +24,7 @@ export const MassEmailSender = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-mass-email", {
-        body: { subject, message },
+        body: { subject, message, percentage: parseInt(percentage) },
       });
 
       if (error) throw error;
@@ -70,6 +72,27 @@ export const MassEmailSender = () => {
               rows={10}
               className="resize-none"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="percentage">Porcentagem da Base</Label>
+            <Select value={percentage} onValueChange={setPercentage} disabled={isLoading}>
+              <SelectTrigger id="percentage">
+                <SelectValue placeholder="Selecione a porcentagem" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10% da base</SelectItem>
+                <SelectItem value="20">20% da base</SelectItem>
+                <SelectItem value="30">30% da base</SelectItem>
+                <SelectItem value="40">40% da base</SelectItem>
+                <SelectItem value="50">50% da base</SelectItem>
+                <SelectItem value="60">60% da base</SelectItem>
+                <SelectItem value="70">70% da base</SelectItem>
+                <SelectItem value="80">80% da base</SelectItem>
+                <SelectItem value="90">90% da base</SelectItem>
+                <SelectItem value="100">100% da base (todos)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Button

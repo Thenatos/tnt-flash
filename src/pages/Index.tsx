@@ -82,9 +82,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <JoinGroupsPopup
+      <JoinGroupsPopup 
         whatsappLink="https://chat.whatsapp.com/seu-grupo-whatsapp"
-        telegramLink="https://t.me/seu-grupo-telegram"
       />
       <Header
         onSearch={handleSearch}

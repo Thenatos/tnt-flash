@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Send } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -11,10 +11,9 @@ const WhatsAppIcon = () => (
 
 interface JoinGroupsPopupProps {
   whatsappLink: string;
-  telegramLink: string;
 }
 
-export const JoinGroupsPopup = ({ whatsappLink, telegramLink }: JoinGroupsPopupProps) => {
+export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -61,7 +60,7 @@ export const JoinGroupsPopup = ({ whatsappLink, telegramLink }: JoinGroupsPopupP
               </Button>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <WhatsAppIcon />
-                Junte-se aos nossos grupos!
+                Junte-se ao nosso grupo!
               </CardTitle>
               <CardDescription>
                 Receba as melhores ofertas em primeira mão
@@ -69,40 +68,23 @@ export const JoinGroupsPopup = ({ whatsappLink, telegramLink }: JoinGroupsPopupP
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Participe das nossas comunidades e não perca nenhuma promoção imperdível! 🔥
+                Participe da nossa comunidade e não perca nenhuma promoção imperdível! 🔥
               </p>
 
-              <div className="space-y-2">
-                <a
-                  href={whatsappLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2 hover:bg-green-50 hover:border-green-500 hover:text-green-700 transition-all"
                 >
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start gap-2 hover:bg-green-50 hover:border-green-500 hover:text-green-700 transition-all"
-                  >
-                    <WhatsAppIcon />
-                    Entrar no WhatsApp
-                  </Button>
-                </a>
-
-                <a
-                  href={telegramLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start gap-2 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-700 transition-all"
-                  >
-                    <Send className="h-4 w-4" />
-                    Entrar no Telegram
-                  </Button>
-                </a>
-              </div>
+                  <WhatsAppIcon />
+                  Entrar no WhatsApp
+                </Button>
+              </a>
 
               <Button
                 variant="ghost"

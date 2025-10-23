@@ -80,7 +80,6 @@ const ProductDetail = () => {
     <div className="min-h-screen flex flex-col">
       <JoinGroupsPopup 
         whatsappLink="https://chat.whatsapp.com/seu-grupo-whatsapp"
-        telegramLink="https://t.me/seu-grupo-telegram"
       />
       {/* Desktop Header */}
       <div className="hidden md:block">

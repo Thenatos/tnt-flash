@@ -119,19 +119,6 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                         <p className="text-xs text-muted-foreground">Participe do nosso grupo</p>
                       </div>
                     </a>
-                    <a
-                      href="https://t.me/seu-grupo"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={handleTelegramClick}
-                      className="flex items-center gap-3 px-4 py-2 hover:bg-accent rounded-md transition-colors"
-                    >
-                      <MessageCircle className="h-5 w-5 text-blue-500" />
-                      <div>
-                        <div className="text-sm font-medium">Telegram</div>
-                        <p className="text-xs text-muted-foreground">Entre no nosso canal</p>
-                      </div>
-                    </a>
                   </div>
                 </div>
 
@@ -218,25 +205,6 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                           <div className="text-sm font-medium leading-none">WhatsApp</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
                             Participe do nosso grupo
-                          </p>
-                        </div>
-                      </a>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <a
-                        href="https://t.me/seu-grupo"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={handleTelegramClick}
-                        className="flex items-center gap-3 select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <MessageCircle className="h-5 w-5 text-blue-500" />
-                        <div>
-                          <div className="text-sm font-medium leading-none">Telegram</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                            Entre no nosso canal
                           </p>
                         </div>
                       </a>

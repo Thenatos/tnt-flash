@@ -215,9 +215,9 @@ const handler = async (req: Request): Promise<Response> => {
         console.error(`Erro ao processar email ${email}:`, error);
       }
 
-      // Pequeno delay entre emails para não sobrecarregar a API
+      // Delay de 1 segundo entre emails
       if (i < emails.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 

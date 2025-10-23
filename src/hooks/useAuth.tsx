@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Verifique seu email para confirmar sua conta antes de fazer login.",
+        description: "Você já pode fazer login. Confira seu email de boas-vindas!",
       });
       
       return { error: null };

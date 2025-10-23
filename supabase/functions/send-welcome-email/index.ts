@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "TNT Ofertas <canaltntofertas@gmail.com>",
+        from: "TNT Ofertas <noreply@tntofertas.com.br>",
         to: [email],
         subject: "🎉 Bem-vindo ao clube das melhores ofertas!",
         html,

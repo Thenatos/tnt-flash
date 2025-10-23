@@ -103,13 +103,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             },
           });
         } catch (emailError) {
-          console.log('Email de boas-vindas falhou, mas não bloqueia o cadastro');
+          // Email de boas-vindas é opcional - não bloqueia o signup
         }
       }
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Você já pode fazer login no TNT Ofertas!",
+        description: "Verifique seu email para confirmar sua conta antes de fazer login.",
       });
       
       return { error: null };

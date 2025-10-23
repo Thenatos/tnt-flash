@@ -103,16 +103,47 @@ const handler = async (req: Request): Promise<Response> => {
           to: batch,
           subject: subject,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #333;">${subject}</h1>
-              <div style="color: #666; line-height: 1.6;">
-                ${message.replace(/\n/g, '<br>')}
-              </div>
-              <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-              <p style="color: #999; font-size: 12px;">
-                Você está recebendo este email porque é cadastrado em nossa plataforma de ofertas.
-              </p>
-            </div>
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8">
+                <style>
+                  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f6f6f6; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: linear-gradient(135deg, #9b87f5 0%, #D946EF 50%, #F97316 100%); border-radius: 12px 12px 0 0; padding: 40px 30px; text-align: center; }
+                  .header h1 { color: #ffffff; font-size: 32px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                  .content { background-color: #ffffff; padding: 30px; border-radius: 0 0 12px 12px; }
+                  .paragraph { color: #333333; font-size: 16px; line-height: 26px; margin: 16px 0; }
+                  .message-box { background-color: #FEF7CD; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 24px 0; }
+                  .message-content { color: #451A03; font-size: 15px; line-height: 24px; }
+                  .footer { background-color: #f6f6f6; padding: 20px 30px; text-align: center; margin-top: 20px; }
+                  .footer-text { color: #666666; font-size: 14px; line-height: 24px; margin: 8px 0; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>🎉 ${subject} 🎉</h1>
+                  </div>
+                  <div class="content">
+                    <div class="message-box">
+                      <div class="message-content">
+                        ${message.replace(/\n/g, '<br>')}
+                      </div>
+                    </div>
+                    <p class="paragraph">
+                      Não perca esta oportunidade! Aproveite as <strong>melhores ofertas</strong> agora mesmo.
+                    </p>
+                  </div>
+                  <div class="footer">
+                    <p class="footer-text">Economize mais, compre melhor! 💰</p>
+                    <p class="footer-text">
+                      Você está recebendo este email porque é cadastrado em nossa plataforma de ofertas.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
           `,
         }),
       });

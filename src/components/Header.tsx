@@ -107,7 +107,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                   <h3 className="font-semibold text-sm text-muted-foreground">Grupos</h3>
                   <div className="flex flex-col gap-1">
                     <a
-                      href="https://chat.whatsapp.com/seu-grupo"
+                      href="https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={handleWhatsAppClick}
@@ -194,7 +194,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                   <li>
                     <NavigationMenuLink asChild>
                       <a
-                        href="https://chat.whatsapp.com/seu-grupo"
+                        href="https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e"
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={handleWhatsAppClick}

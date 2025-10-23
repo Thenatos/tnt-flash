@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Ofertas <onboarding@resend.dev>",
+          from: "TNT Ofertas <noreply@tntofertas.com.br>",
           to: batch,
           subject: subject,
           html: `

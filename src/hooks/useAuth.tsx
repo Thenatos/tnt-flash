@@ -92,21 +92,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error };
       }
 
-      // Enviar email de boas-vindas
-      if (data.user) {
-        try {
-          await supabase.functions.invoke('send-welcome-email', {
-            body: {
-              userId: data.user.id,
-              email: data.user.email,
-              fullName: fullName,
-            },
-          });
-        } catch (emailError) {
-          // Email de boas-vindas é opcional - não bloqueia o signup
-        }
-      }
-
       toast({
         title: "Conta criada com sucesso!",
         description: "Verifique seu email para confirmar sua conta antes de fazer login.",

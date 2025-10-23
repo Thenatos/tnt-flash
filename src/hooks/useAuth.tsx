@@ -92,6 +92,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error };
       }
 
+      // Enviar email de boas-vindas
+      if (data.user) {
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              userId: data.user.id,
+              email: data.user.email,
+              fullName: fullName,
+            },
+          });
+        } catch (emailError) {
+          console.log('Email de boas-vindas falhou, mas não bloqueia o cadastro');
+        }
+      }
+
       toast({
         title: "Conta criada com sucesso!",
         description: "Você já pode fazer login no TNT Ofertas!",

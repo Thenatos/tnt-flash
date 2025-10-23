@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Verifique seu email para confirmar sua conta antes de fazer login.",
+        description: "Você já pode fazer login no TNT Ofertas!",
       });
       
       return { error: null };

@@ -85,80 +85,83 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending emails to ${emails.length} users`);
 
-    // Enviar emails em lotes
-    const batchSize = 50;
+    // Enviar emails individualmente para cada usuário
     let sentCount = 0;
 
-    for (let i = 0; i < emails.length; i += batchSize) {
-      const batch = emails.slice(i, i + batchSize);
+    for (let i = 0; i < emails.length; i++) {
+      const email = emails[i];
       
-      const emailResponse = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${resendApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "TNT Ofertas <noreply@tntofertas.com.br>",
-          to: batch,
-          subject: subject,
-          html: `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <meta charset="utf-8">
-                <style>
-                  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f6f6f6; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                  .header { background: linear-gradient(135deg, #9b87f5 0%, #D946EF 50%, #F97316 100%); border-radius: 12px 12px 0 0; padding: 40px 30px; text-align: center; }
-                  .header h1 { color: #ffffff; font-size: 32px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-                  .content { background-color: #ffffff; padding: 30px; border-radius: 0 0 12px 12px; }
-                  .paragraph { color: #333333; font-size: 16px; line-height: 26px; margin: 16px 0; }
-                  .message-box { background-color: #FEF7CD; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 24px 0; }
-                  .message-content { color: #451A03; font-size: 15px; line-height: 24px; }
-                  .footer { background-color: #f6f6f6; padding: 20px 30px; text-align: center; margin-top: 20px; }
-                  .footer-text { color: #666666; font-size: 14px; line-height: 24px; margin: 8px 0; }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <div class="header">
-                    <h1>🎉 ${subject} 🎉</h1>
-                  </div>
-                  <div class="content">
-                    <div class="message-box">
-                      <div class="message-content">
-                        ${message.replace(/\n/g, '<br>')}
-                      </div>
+      try {
+        const emailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${resendApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "TNT Ofertas <noreply@tntofertas.com.br>",
+            to: [email], // Enviar apenas para um destinatário por vez
+            subject: subject,
+            html: `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <meta charset="utf-8">
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f6f6f6; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: linear-gradient(135deg, #9b87f5 0%, #D946EF 50%, #F97316 100%); border-radius: 12px 12px 0 0; padding: 40px 30px; text-align: center; }
+                    .header h1 { color: #ffffff; font-size: 32px; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                    .content { background-color: #ffffff; padding: 30px; border-radius: 0 0 12px 12px; }
+                    .paragraph { color: #333333; font-size: 16px; line-height: 26px; margin: 16px 0; }
+                    .message-box { background-color: #FEF7CD; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 24px 0; }
+                    .message-content { color: #451A03; font-size: 15px; line-height: 24px; }
+                    .footer { background-color: #f6f6f6; padding: 20px 30px; text-align: center; margin-top: 20px; }
+                    .footer-text { color: #666666; font-size: 14px; line-height: 24px; margin: 8px 0; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="header">
+                      <h1>🎉 ${subject} 🎉</h1>
                     </div>
-                    <p class="paragraph">
-                      Não perca esta oportunidade! Aproveite as <strong>melhores ofertas</strong> agora mesmo.
-                    </p>
+                    <div class="content">
+                      <div class="message-box">
+                        <div class="message-content">
+                          ${message.replace(/\n/g, '<br>')}
+                        </div>
+                      </div>
+                      <p class="paragraph">
+                        Não perca esta oportunidade! Aproveite as <strong>melhores ofertas</strong> agora mesmo.
+                      </p>
+                    </div>
+                    <div class="footer">
+                      <p class="footer-text">Economize mais, compre melhor! 💰</p>
+                      <p class="footer-text">
+                        Você está recebendo este email porque é cadastrado em nossa plataforma de ofertas.
+                      </p>
+                    </div>
                   </div>
-                  <div class="footer">
-                    <p class="footer-text">Economize mais, compre melhor! 💰</p>
-                    <p class="footer-text">
-                      Você está recebendo este email porque é cadastrado em nossa plataforma de ofertas.
-                    </p>
-                  </div>
-                </div>
-              </body>
-            </html>
-          `,
-        }),
-      });
+                </body>
+              </html>
+            `,
+          }),
+        });
 
-      if (emailResponse.ok) {
-        sentCount += batch.length;
-        console.log(`Batch ${Math.floor(i / batchSize) + 1} sent successfully`);
-      } else {
-        const errorText = await emailResponse.text();
-        console.error(`Error sending batch ${Math.floor(i / batchSize) + 1}:`, errorText);
+        if (emailResponse.ok) {
+          sentCount++;
+          console.log(`Email ${i + 1}/${emails.length} enviado com sucesso para ${email}`);
+        } else {
+          const errorText = await emailResponse.text();
+          console.error(`Erro ao enviar email para ${email}:`, errorText);
+        }
+      } catch (error) {
+        console.error(`Erro ao processar email ${email}:`, error);
       }
 
-      // Pequeno delay entre lotes para não sobrecarregar a API
-      if (i + batchSize < emails.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      // Pequeno delay entre emails para não sobrecarregar a API
+      if (i < emails.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
 

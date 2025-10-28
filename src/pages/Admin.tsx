@@ -9,6 +9,7 @@ import { BannersManager } from "@/components/admin/BannersManager";
 import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsManager";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { MassEmailSender } from "@/components/admin/MassEmailSender";
+import { UserManagement } from "@/components/admin/UserManagement";
 import {
   Dialog,
   DialogContent,
@@ -168,6 +169,7 @@ export default function Admin() {
             <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
+            <TabsTrigger value="user-management">Gerenciar Usuários</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -278,6 +280,10 @@ export default function Admin() {
 
           <TabsContent value="mass-email">
             <MassEmailSender />
+          </TabsContent>
+
+          <TabsContent value="user-management">
+            <UserManagement />
           </TabsContent>
         </Tabs>
       </div>

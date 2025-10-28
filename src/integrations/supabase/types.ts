@@ -141,6 +141,38 @@ export type Database = {
           },
         ]
       }
+      comment_reports: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          report_type: string
+          reported_by: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          report_type: string
+          reported_by: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          report_type?: string
+          reported_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -506,6 +538,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_punishments: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          punishment_type: string
+          reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          punishment_type: string
+          reason?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          punishment_type?: string
+          reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -532,6 +600,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_user_comment: { Args: { user_uuid: string }; Returns: boolean }
       generate_unique_username: { Args: { email: string }; Returns: string }
       has_role: {
         Args: {

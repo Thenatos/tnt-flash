@@ -9,10 +9,19 @@ import { useComments } from "@/hooks/useComments";
 import { useCommentUsers } from "@/hooks/useCommentUsers";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
-import { MessageSquare, Send, Trash2, Reply } from "lucide-react";
+import { useCommentReports } from "@/hooks/useCommentReports";
+import { validateCommentContent } from "@/utils/linkValidator";
+import { MessageSquare, Send, Trash2, Reply, MoreVertical, Flag } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface CommentSectionProps {
   productId: string;
@@ -26,10 +35,18 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
   const { data: commentUsers = [] } = useCommentUsers(productId);
   const { user } = useAuth();
   const { data: isAdmin } = useAdmin();
+  const { reportComment } = useCommentReports();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !user) return;
+
+    // Validar se contém links
+    const validation = validateCommentContent(newComment);
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return;
+    }
 
     createComment.mutate(
       { content: newComment, userId: user.id },
@@ -43,6 +60,13 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
 
   const handleReply = (commentId: string) => {
     if (!replyContent.trim() || !user) return;
+
+    // Validar se contém links
+    const validation = validateCommentContent(replyContent);
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return;
+    }
 
     createComment.mutate(
       { content: replyContent, userId: user.id, parentId: commentId },
@@ -59,6 +83,10 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
     if (confirm("Tem certeza que deseja remover este comentário?")) {
       deleteComment.mutate(commentId);
     }
+  };
+
+  const handleReport = (commentId: string, reportType: string) => {
+    reportComment.mutate({ commentId, reportType });
   };
 
   return (
@@ -157,6 +185,25 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
+                          )}
+                          {user && user.id !== comment.user_id && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleReport(comment.id, "spam")}>
+                                  <Flag className="mr-2 h-4 w-4" />
+                                  Denunciar como Spam
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReport(comment.id, "offensive")}>
+                                  <Flag className="mr-2 h-4 w-4" />
+                                  Denunciar como Ofensivo
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           )}
                         </div>
                       </div>

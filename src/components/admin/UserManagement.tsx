@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useUserPunishments } from "@/hooks/useUserPunishments";
+import { useCommentReports } from "@/hooks/useCommentReports";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,18 +30,22 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Ban, UserX, Clock, Shield } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Ban, UserX, Clock, Shield, ExternalLink, Archive } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const UserManagement = () => {
   const { punishments, isLoading, createPunishment, removePunishment } = useUserPunishments();
+  const { reports, isLoading: isLoadingReports, deleteReport } = useCommentReports();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchEmail, setSearchEmail] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [punishmentType, setPunishmentType] = useState("comment_ban");
   const [reason, setReason] = useState("");
   const [duration, setDuration] = useState("");
+  const [selectedReport, setSelectedReport] = useState<any>(null);
 
   const handleSearchUser = async () => {
     if (!searchEmail.trim()) return;
@@ -84,6 +90,7 @@ export const UserManagement = () => {
           setSearchEmail("");
           setReason("");
           setDuration("");
+          setSelectedReport(null);
         },
       }
     );
@@ -115,97 +122,219 @@ export const UserManagement = () => {
     }
   };
 
+  const handleApplyPunishmentFromReport = (report: any) => {
+    const commentAuthor = report.comments;
+    setSelectedUser({
+      user_id: commentAuthor.user_id,
+      full_name: report.reported_user?.full_name,
+      username: report.reported_user?.username,
+    });
+    setSelectedReport(report);
+    setIsDialogOpen(true);
+  };
+
+  const handleArchiveReport = (reportId: string) => {
+    if (confirm("Deseja arquivar esta denúncia?")) {
+      deleteReport.mutate(reportId);
+    }
+  };
+
+  const getReportTypeLabel = (type: string) => {
+    switch (type) {
+      case "spam":
+        return "Spam";
+      case "offensive":
+        return "Ofensivo";
+      default:
+        return type;
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gerenciar Usuários</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="secondary">
-              <Ban className="mr-2 h-4 w-4" />
-              Aplicar Punição
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Aplicar Punição</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Buscar Usuário</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Digite o username..."
-                    value={searchEmail}
-                    onChange={(e) => setSearchEmail(e.target.value)}
-                  />
-                  <Button onClick={handleSearchUser}>Buscar</Button>
+    <div className="space-y-8">
+      {/* Seção de Denúncias */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">Denúncias Recebidas</h2>
+        
+        {isLoadingReports ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : reports && reports.length > 0 ? (
+          <div className="grid gap-4">
+            {reports.map((report: any) => (
+              <Card key={report.id} className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive">
+                          {getReportTypeLabel(report.report_type)}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          Denunciado por @{report.reporter?.username}
+                        </span>
+                      </div>
+                      <p className="text-sm">
+                        <span className="font-semibold">Autor do comentário:</span>{" "}
+                        {report.reported_user?.full_name} (@{report.reported_user?.username})
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleArchiveReport(report.id)}
+                      >
+                        <Archive className="h-4 w-4 mr-2" />
+                        Arquivar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="bg-muted p-3 rounded-md">
+                    <p className="text-sm font-medium mb-1">Comentário denunciado:</p>
+                    <p className="text-sm">{report.comments.content}</p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Link
+                      to={`/produto/${report.comments.product_id}`}
+                      target="_blank"
+                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                    >
+                      Ver conversa completa em "{report.comments.products.title}"
+                      <ExternalLink className="h-3 w-3" />
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => handleApplyPunishmentFromReport(report)}
+                    >
+                      Aplicar Punição
+                    </Button>
+                  </div>
                 </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">Nenhuma denúncia pendente</p>
+          </Card>
+        )}
+      </div>
+
+      <Separator />
+
+      {/* Seção de Punições Aplicadas */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Punições Aplicadas</h2>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setSelectedUser(null);
+                  setSelectedReport(null);
+                  setIsDialogOpen(true);
+                }}
+              >
+                <Ban className="mr-2 h-4 w-4" />
+                Aplicar Punição
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Aplicar Punição</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {selectedReport && (
+                  <Card className="p-3 bg-muted">
+                    <p className="text-sm font-medium mb-1">Comentário denunciado:</p>
+                    <p className="text-sm">{selectedReport.comments.content}</p>
+                  </Card>
+                )}
+
+                {!selectedUser && (
+                  <div className="space-y-2">
+                    <Label>Buscar Usuário</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Digite o username..."
+                        value={searchEmail}
+                        onChange={(e) => setSearchEmail(e.target.value)}
+                      />
+                      <Button onClick={handleSearchUser}>Buscar</Button>
+                    </div>
+                  </div>
+                )}
+
                 {selectedUser && (
                   <div className="p-3 bg-muted rounded-md">
                     <p className="font-semibold">{selectedUser.full_name}</p>
                     <p className="text-sm text-muted-foreground">@{selectedUser.username}</p>
                   </div>
                 )}
+
+                <div className="space-y-2">
+                  <Label>Tipo de Punição</Label>
+                  <Select value={punishmentType} onValueChange={setPunishmentType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="comment_ban">Bloqueio de Comentários</SelectItem>
+                      <SelectItem value="site_ban">Banimento do Site</SelectItem>
+                      <SelectItem value="temporary_ban">Suspensão Temporária</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Duração</Label>
+                  <Select value={duration} onValueChange={setDuration}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a duração" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 dia</SelectItem>
+                      <SelectItem value="3">3 dias</SelectItem>
+                      <SelectItem value="7">7 dias</SelectItem>
+                      <SelectItem value="30">30 dias</SelectItem>
+                      <SelectItem value="permanent">Permanente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Motivo (opcional)</Label>
+                  <Textarea
+                    placeholder="Descreva o motivo da punição..."
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleApplyPunishment}
+                  disabled={!selectedUser || createPunishment.isPending}
+                  className="w-full"
+                >
+                  Aplicar Punição
+                </Button>
               </div>
-
-              <div className="space-y-2">
-                <Label>Tipo de Punição</Label>
-                <Select value={punishmentType} onValueChange={setPunishmentType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="comment_ban">Bloqueio de Comentários</SelectItem>
-                    <SelectItem value="site_ban">Banimento do Site</SelectItem>
-                    <SelectItem value="temporary_ban">Suspensão Temporária</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Duração</Label>
-                <Select value={duration} onValueChange={setDuration}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a duração" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 dia</SelectItem>
-                    <SelectItem value="3">3 dias</SelectItem>
-                    <SelectItem value="7">7 dias</SelectItem>
-                    <SelectItem value="30">30 dias</SelectItem>
-                    <SelectItem value="permanent">Permanente</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Motivo (opcional)</Label>
-                <Textarea
-                  placeholder="Descreva o motivo da punição..."
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <Button
-                onClick={handleApplyPunishment}
-                disabled={!selectedUser || createPunishment.isPending}
-                className="w-full"
-              >
-                Aplicar Punição
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </DialogContent>
+          </Dialog>
         </div>
-      ) : (
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
         <div className="bg-card rounded-lg shadow-md overflow-hidden">
           <Table>
             <TableHeader>
@@ -282,7 +411,8 @@ export const UserManagement = () => {
             </TableBody>
           </Table>
         </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

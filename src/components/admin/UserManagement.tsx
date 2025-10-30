@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserPunishments } from "@/hooks/useUserPunishments";
 import { useCommentReports } from "@/hooks/useCommentReports";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,13 +33,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Ban, UserX, Clock, Shield, ExternalLink, Archive } from "lucide-react";
+import { Ban, UserX, Clock, Shield, ExternalLink, Archive, CheckCircle, History } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const UserManagement = () => {
   const { punishments, isLoading, createPunishment, removePunishment } = useUserPunishments();
-  const { reports, isLoading: isLoadingReports, deleteReport } = useCommentReports();
+  const { reports: pendingReports, isLoading: isLoadingPending, updateReportStatus: updatePendingStatus } = useCommentReports('pending');
+  const { reports: historyReports, isLoading: isLoadingHistory } = useCommentReports('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchEmail, setSearchEmail] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -133,9 +135,13 @@ export const UserManagement = () => {
     setIsDialogOpen(true);
   };
 
-  const handleArchiveReport = (reportId: string) => {
-    if (confirm("Deseja arquivar esta denúncia?")) {
-      deleteReport.mutate(reportId);
+  const handleResolveReport = (reportId: string) => {
+    updatePendingStatus.mutate({ reportId, status: 'resolved' });
+  };
+
+  const handleDismissReport = (reportId: string) => {
+    if (confirm("Deseja arquivar esta denúncia sem ação?")) {
+      updatePendingStatus.mutate({ reportId, status: 'dismissed' });
     }
   };
 
@@ -152,78 +158,159 @@ export const UserManagement = () => {
 
   return (
     <div className="space-y-8">
-      {/* Seção de Denúncias */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold">Denúncias Recebidas</h2>
-        
-        {isLoadingReports ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        ) : reports && reports.length > 0 ? (
-          <div className="grid gap-4">
-            {reports.map((report: any) => (
-              <Card key={report.id} className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="destructive">
-                          {getReportTypeLabel(report.report_type)}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          Denunciado por @{report.reporter?.username}
-                        </span>
+      {/* Tabs para Denúncias Pendentes e Histórico */}
+      <Tabs defaultValue="pending" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="pending">Denúncias Pendentes</TabsTrigger>
+          <TabsTrigger value="history">
+            <History className="h-4 w-4 mr-2" />
+            Histórico
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Denúncias Pendentes */}
+        <TabsContent value="pending" className="space-y-6">
+          <h2 className="text-2xl font-bold">Denúncias Pendentes</h2>
+          
+          {isLoadingPending ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : pendingReports && pendingReports.length > 0 ? (
+            <div className="grid gap-4">
+              {pendingReports.map((report: any) => (
+                <Card key={report.id} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="destructive">
+                            {getReportTypeLabel(report.report_type)}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            Denunciado por @{report.reporter?.username}
+                          </span>
+                        </div>
+                        <p className="text-sm">
+                          <span className="font-semibold">Autor do comentário:</span>{" "}
+                          {report.reported_user?.full_name} (@{report.reported_user?.username})
+                        </p>
                       </div>
-                      <p className="text-sm">
-                        <span className="font-semibold">Autor do comentário:</span>{" "}
-                        {report.reported_user?.full_name} (@{report.reported_user?.username})
-                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDismissReport(report.id)}
+                        >
+                          <Archive className="h-4 w-4 mr-2" />
+                          Arquivar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => handleResolveReport(report.id)}
+                        >
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Resolver
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="text-sm font-medium mb-1">Comentário denunciado:</p>
+                      <p className="text-sm">{report.comments.content}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Link
+                        to={`/produto/${report.comments.product_id}`}
+                        target="_blank"
+                        className="text-sm text-primary hover:underline flex items-center gap-1"
+                      >
+                        Ver conversa completa em "{report.comments.products.title}"
+                        <ExternalLink className="h-3 w-3" />
+                      </Link>
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => handleArchiveReport(report.id)}
+                        variant="secondary"
+                        onClick={() => handleApplyPunishmentFromReport(report)}
                       >
-                        <Archive className="h-4 w-4 mr-2" />
-                        Arquivar
+                        Aplicar Punição
                       </Button>
                     </div>
                   </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground">Nenhuma denúncia pendente</p>
+            </Card>
+          )}
+        </TabsContent>
 
-                  <div className="bg-muted p-3 rounded-md">
-                    <p className="text-sm font-medium mb-1">Comentário denunciado:</p>
-                    <p className="text-sm">{report.comments.content}</p>
-                  </div>
+        {/* Histórico de Denúncias */}
+        <TabsContent value="history" className="space-y-6">
+          <h2 className="text-2xl font-bold">Histórico de Denúncias</h2>
+          
+          {isLoadingHistory ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : historyReports && historyReports.length > 0 ? (
+            <div className="grid gap-4">
+              {historyReports.filter((r: any) => r.status !== 'pending').map((report: any) => (
+                <Card key={report.id} className="p-4 opacity-75">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant={report.status === 'resolved' ? 'default' : 'secondary'}>
+                            {report.status === 'resolved' ? 'Resolvida' : 'Arquivada'}
+                          </Badge>
+                          <Badge variant="outline">
+                            {getReportTypeLabel(report.report_type)}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            Denunciado por @{report.reporter?.username}
+                          </span>
+                        </div>
+                        <p className="text-sm">
+                          <span className="font-semibold">Autor:</span>{" "}
+                          {report.reported_user?.full_name} (@{report.reported_user?.username})
+                        </p>
+                        {report.verifier && (
+                          <p className="text-sm text-muted-foreground">
+                            Verificado por {report.verifier.full_name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                  <div className="flex items-center justify-between">
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="text-sm font-medium mb-1">Comentário:</p>
+                      <p className="text-sm">{report.comments.content}</p>
+                    </div>
+
                     <Link
                       to={`/produto/${report.comments.product_id}`}
                       target="_blank"
                       className="text-sm text-primary hover:underline flex items-center gap-1"
                     >
-                      Ver conversa completa em "{report.comments.products.title}"
+                      Ver produto "{report.comments.products.title}"
                       <ExternalLink className="h-3 w-3" />
                     </Link>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleApplyPunishmentFromReport(report)}
-                    >
-                      Aplicar Punição
-                    </Button>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Nenhuma denúncia pendente</p>
-          </Card>
-        )}
-      </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground">Nenhum histórico disponível</p>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
 
       <Separator />
 

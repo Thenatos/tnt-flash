@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export const useCommentReports = () => {
+export const useCommentReports = (status: 'pending' | 'resolved' | 'dismissed' | 'all' = 'pending') => {
   const queryClient = useQueryClient();
 
   const { data: reports, isLoading } = useQuery({
-    queryKey: ["comment-reports"],
+    queryKey: ["comment-reports", status],
     queryFn: async () => {
-      const { data: reportsData, error } = await supabase
+      let query = supabase
         .from("comment_reports")
         .select(`
           *,
@@ -22,6 +22,12 @@ export const useCommentReports = () => {
         `)
         .order("created_at", { ascending: false });
 
+      if (status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      const { data: reportsData, error } = await query;
+
       if (error) throw error;
 
       // Buscar informações dos perfis separadamente
@@ -29,7 +35,8 @@ export const useCommentReports = () => {
 
       const reporterIds = [...new Set(reportsData.map(r => r.reported_by))];
       const reportedUserIds = [...new Set(reportsData.map(r => r.comments.user_id))];
-      const allUserIds = [...new Set([...reporterIds, ...reportedUserIds])];
+      const verifierIds = [...new Set(reportsData.filter(r => r.verified_by).map(r => r.verified_by))];
+      const allUserIds = [...new Set([...reporterIds, ...reportedUserIds, ...verifierIds])];
 
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
@@ -45,6 +52,7 @@ export const useCommentReports = () => {
         ...report,
         reporter: profilesMap.get(report.reported_by),
         reported_user: profilesMap.get(report.comments.user_id),
+        verifier: report.verified_by ? profilesMap.get(report.verified_by) : null,
       }));
     },
   });
@@ -75,23 +83,31 @@ export const useCommentReports = () => {
     },
   });
 
-  const deleteReport = useMutation({
-    mutationFn: async (reportId: string) => {
+  const updateReportStatus = useMutation({
+    mutationFn: async ({ reportId, status }: { reportId: string; status: 'resolved' | 'dismissed' }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
       const { error } = await supabase
         .from("comment_reports")
-        .delete()
+        .update({ 
+          status,
+          verified_at: new Date().toISOString(),
+          verified_by: user.id
+        })
         .eq("id", reportId);
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Denúncia arquivada!");
+    onSuccess: (_, { status }) => {
+      const message = status === 'resolved' ? 'Denúncia marcada como resolvida!' : 'Denúncia arquivada!';
+      toast.success(message);
       queryClient.invalidateQueries({ queryKey: ["comment-reports"] });
     },
     onError: () => {
-      toast.error("Erro ao arquivar denúncia");
+      toast.error("Erro ao atualizar denúncia");
     },
   });
 
-  return { reports, isLoading, reportComment, deleteReport };
+  return { reports, isLoading, reportComment, updateReportStatus };
 };

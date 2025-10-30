@@ -148,6 +148,9 @@ export type Database = {
           id: string
           report_type: string
           reported_by: string
+          status: string
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           comment_id: string
@@ -155,6 +158,9 @@ export type Database = {
           id?: string
           report_type: string
           reported_by: string
+          status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           comment_id?: string
@@ -162,6 +168,9 @@ export type Database = {
           id?: string
           report_type?: string
           reported_by?: string
+          status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: [
           {

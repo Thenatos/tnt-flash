@@ -8,7 +8,7 @@ export const useCommentReports = () => {
   const { data: reports, isLoading } = useQuery({
     queryKey: ["comment-reports"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: reportsData, error } = await supabase
         .from("comment_reports")
         .select(`
           *,
@@ -18,21 +18,34 @@ export const useCommentReports = () => {
             product_id,
             user_id,
             products!inner(id, title)
-          ),
-          reported_user:profiles!comment_reports_comment_id_fkey(
-            full_name,
-            username,
-            avatar_url
-          ),
-          reporter:profiles!comment_reports_reported_by_fkey(
-            full_name,
-            username
           )
         `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      // Buscar informações dos perfis separadamente
+      if (!reportsData || reportsData.length === 0) return [];
+
+      const reporterIds = [...new Set(reportsData.map(r => r.reported_by))];
+      const reportedUserIds = [...new Set(reportsData.map(r => r.comments.user_id))];
+      const allUserIds = [...new Set([...reporterIds, ...reportedUserIds])];
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, username, avatar_url")
+        .in("user_id", allUserIds);
+
+      if (profilesError) throw profilesError;
+
+      // Mapear perfis para as denúncias
+      const profilesMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      return reportsData.map(report => ({
+        ...report,
+        reporter: profilesMap.get(report.reported_by),
+        reported_user: profilesMap.get(report.comments.user_id),
+      }));
     },
   });
 

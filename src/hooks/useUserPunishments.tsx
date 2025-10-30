@@ -8,17 +8,35 @@ export const useUserPunishments = () => {
   const { data: punishments, isLoading } = useQuery({
     queryKey: ["user-punishments"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: punishmentsData, error } = await supabase
         .from("user_punishments")
-        .select(`
-          *,
-          profiles!user_punishments_user_id_fkey(full_name, username, avatar_url),
-          admin:profiles!user_punishments_created_by_fkey(full_name)
-        `)
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      // Buscar informações dos perfis separadamente
+      if (!punishmentsData || punishmentsData.length === 0) return [];
+
+      const userIds = [...new Set(punishmentsData.map(p => p.user_id))];
+      const adminIds = [...new Set(punishmentsData.map(p => p.created_by))];
+      const allUserIds = [...new Set([...userIds, ...adminIds])];
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, username, avatar_url")
+        .in("user_id", allUserIds);
+
+      if (profilesError) throw profilesError;
+
+      // Mapear perfis para as punições
+      const profilesMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      return punishmentsData.map(punishment => ({
+        ...punishment,
+        profiles: profilesMap.get(punishment.user_id),
+        admin: profilesMap.get(punishment.created_by),
+      }));
     },
   });
 

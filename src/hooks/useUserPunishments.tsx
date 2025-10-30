@@ -64,6 +64,32 @@ export const useUserPunishments = () => {
       });
 
       if (error) throw error;
+
+      // Criar notificação para o usuário punido
+      const punishmentLabels: Record<string, string> = {
+        comment_ban: "Bloqueio de Comentários",
+        site_ban: "Banimento do Site",
+        temporary_ban: "Suspensão Temporária",
+      };
+
+      let durationText = "permanente";
+      if (expiresAt) {
+        const expiryDate = new Date(expiresAt);
+        const now = new Date();
+        const diffDays = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        durationText = `${diffDays} dia${diffDays > 1 ? "s" : ""}`;
+      }
+
+      const notificationMessage = `Tipo: ${punishmentLabels[punishmentType] || punishmentType}
+Duração: ${durationText}
+${reason ? `Motivo: ${reason}` : ""}`;
+
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Você recebeu uma punição",
+        message: notificationMessage,
+        type: "punishment",
+      });
     },
     onSuccess: () => {
       toast.success("Punição aplicada com sucesso!");

@@ -158,7 +158,7 @@ const Profile = () => {
       const resizedBlob = await resizeImage(file);
       
       const fileExt = 'jpg'; // Sempre salvar como JPEG
-      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user?.id}/avatar-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")

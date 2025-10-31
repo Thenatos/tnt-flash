@@ -95,6 +95,55 @@ const Profile = () => {
     }
   };
 
+  const resizeImage = (file: File, maxSize: number = 400): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Calcular novas dimensões mantendo proporção
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error('Erro ao processar imagem'));
+              }
+            },
+            'image/jpeg',
+            0.85
+          );
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleUploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
@@ -104,12 +153,19 @@ const Profile = () => {
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
+      
+      // Redimensionar imagem para economizar espaço
+      const resizedBlob = await resizeImage(file);
+      
+      const fileExt = 'jpg'; // Sempre salvar como JPEG
       const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, resizedBlob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -121,7 +177,7 @@ const Profile = () => {
 
       setAvatarUrl(publicUrl);
       setSelectedPreset(null);
-      toast.success("Foto enviada com sucesso!");
+      toast.success("Foto enviada e otimizada com sucesso!");
     } catch (error: any) {
       toast.error(error?.message || "Erro ao enviar foto");
     } finally {

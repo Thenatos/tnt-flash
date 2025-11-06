@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { User, UserCog } from "lucide-react";
 
 const HAIR_TYPES = [
-  { value: "short", label: "Curto", emoji: "✂️" },
-  { value: "long", label: "Longo", emoji: "💇" },
-  { value: "curly", label: "Cacheado", emoji: "🌀" },
-  { value: "bald", label: "Careca", emoji: "🔆" },
+  { value: "variant01", label: "Curto", emoji: "✂️" },
+  { value: "variant02", label: "Longo", emoji: "💇" },
+  { value: "variant03", label: "Cacheado", emoji: "🌀" },
+  { value: "variant04", label: "Careca", emoji: "🔆" },
 ];
 
 const HAIR_COLORS = [
@@ -50,7 +50,7 @@ interface AvatarCreatorProps {
 }
 
 export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
-  const [hairType, setHairType] = useState("short");
+  const [hairType, setHairType] = useState("variant01");
   const [hairColor, setHairColor] = useState("0e0e0e");
   const [skinColor, setSkinColor] = useState("ffdbb4");
   const [eyeColor, setEyeColor] = useState("blue");
@@ -58,16 +58,36 @@ export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
   const [accessories, setAccessories] = useState("none");
 
   const generateAvatarUrl = () => {
-    const seed = `${gender}-${Date.now()}`;
+    const seed = `${gender}-${hairType}-${hairColor}-${skinColor}-${eyeColor}-${accessories}`;
+    
+    // Mapear cores dos olhos para hexadecimal
+    const eyeColorMap: Record<string, string> = {
+      blue: "4a90e2",
+      green: "7cb342",
+      brown: "8d6e63",
+      gray: "9e9e9e",
+    };
+
+    // Mapear acessórios
+    const accessoryMap: Record<string, string> = {
+      glasses: "variant01",
+      sunglasses: "variant02",
+    };
+
     const params = new URLSearchParams({
       seed,
       skinColor,
-      hairColor,
       backgroundColor: "transparent",
     });
 
-    if (accessories !== "none") {
-      params.append("accessories", accessories);
+    // Adicionar parâmetros de array como strings separadas por vírgula
+    params.append("hairColor", hairColor);
+    params.append("hair", hairType);
+    params.append("eyesColor", eyeColorMap[eyeColor] || eyeColor);
+
+    // Adicionar acessórios se não for "none"
+    if (accessories !== "none" && accessoryMap[accessories]) {
+      params.append("accessories", accessoryMap[accessories]);
     }
 
     return `https://api.dicebear.com/7.x/big-smile/svg?${params.toString()}`;

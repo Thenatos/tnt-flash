@@ -10,52 +10,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductAlertsSection } from "@/components/ProductAlertsSection";
 import { EmailPreferences } from "@/components/admin/EmailPreferences";
+import { AvatarCreator } from "@/components/AvatarCreator";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, User, ArrowLeft, Bell, Mail } from "lucide-react";
-
-const PRESET_AVATARS = [
-  // Homens brancos
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Felix&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Max&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Charlie&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Oliver&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Leo&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Cooper&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Duke&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Jack&skinColor=ffdbb4",
-  
-  // Homens negros
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Rocky&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Milo&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Buddy&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Bailey&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Bear&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Toby&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Zeus&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Oscar&skinColor=8d5524",
-  
-  // Mulheres brancas
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Aneka&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Luna&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Bella&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Lucy&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Lily&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Chloe&skinColor=ffdbb4",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Stella&skinColor=f4c8a8",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Penny&skinColor=ffdbb4",
-  
-  // Mulheres negras
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Sophie&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Daisy&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Molly&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Sadie&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Zoe&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Ruby&skinColor=8d5524",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Rosie&skinColor=ae7242",
-  "https://api.dicebear.com/7.x/big-smile/svg?seed=Ellie&skinColor=8d5524",
-];
 
 const Profile = () => {
   const { user } = useAuth();
@@ -64,7 +23,6 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -176,7 +134,6 @@ const Profile = () => {
         .getPublicUrl(filePath);
 
       setAvatarUrl(publicUrl);
-      setSelectedPreset(null);
       toast.success("Foto enviada e otimizada com sucesso!");
     } catch (error: any) {
       toast.error(error?.message || "Erro ao enviar foto");
@@ -185,9 +142,9 @@ const Profile = () => {
     }
   };
 
-  const handleSelectPreset = (presetUrl: string) => {
-    setAvatarUrl(presetUrl);
-    setSelectedPreset(presetUrl);
+  const handleAvatarCreated = (createdAvatarUrl: string) => {
+    setAvatarUrl(createdAvatarUrl);
+    toast.success("Avatar criado com sucesso!");
   };
 
   const handleSaveProfile = async () => {
@@ -288,26 +245,10 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  {/* Avatares predefinidos */}
+                  {/* Criador de Avatar */}
                   <div className="space-y-3">
-                    <Label>Ou escolha um avatar:</Label>
-                    <div className="grid grid-cols-4 md:grid-cols-8 gap-3 max-h-96 overflow-y-auto p-2 border rounded-lg">
-                      {PRESET_AVATARS.map((preset) => (
-                        <div
-                          key={preset}
-                          onClick={() => handleSelectPreset(preset)}
-                          className={`cursor-pointer rounded-full border-2 transition-all hover:scale-110 ${
-                            selectedPreset === preset || avatarUrl === preset
-                              ? "border-primary shadow-lg"
-                              : "border-transparent"
-                          }`}
-                        >
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={preset} />
-                          </Avatar>
-                        </div>
-                      ))}
-                    </div>
+                    <Label>Ou crie seu avatar personalizado:</Label>
+                    <AvatarCreator onAvatarCreated={handleAvatarCreated} />
                   </div>
 
                   {/* Nome completo */}

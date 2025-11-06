@@ -4,6 +4,13 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { User, UserCog } from "lucide-react";
 
+const AVATAR_STYLES = [
+  { value: "big-smile", label: "Cartoon", emoji: "😊", description: "Estilo divertido e colorido" },
+  { value: "avataaars", label: "Moderno", emoji: "🎨", description: "Estilo flat design" },
+  { value: "lorelei", label: "Realista", emoji: "👤", description: "Aparência mais realista" },
+  { value: "bottts", label: "Robô", emoji: "🤖", description: "Estilo futurista" },
+];
+
 const HAIR_TYPES = [
   { value: "variant01", label: "Curto", emoji: "✂️" },
   { value: "variant02", label: "Longo", emoji: "💇" },
@@ -50,6 +57,7 @@ interface AvatarCreatorProps {
 }
 
 export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
+  const [avatarStyle, setAvatarStyle] = useState("big-smile");
   const [hairType, setHairType] = useState("variant01");
   const [hairColor, setHairColor] = useState("0e0e0e");
   const [skinColor, setSkinColor] = useState("ffdbb4");
@@ -76,21 +84,27 @@ export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
 
     const params = new URLSearchParams({
       seed,
-      skinColor,
       backgroundColor: "transparent",
     });
 
-    // Adicionar parâmetros de array como strings separadas por vírgula
-    params.append("hairColor", hairColor);
-    params.append("hair", hairType);
-    params.append("eyesColor", eyeColorMap[eyeColor] || eyeColor);
+    // Adicionar skinColor apenas para estilos que suportam
+    if (avatarStyle !== "bottts") {
+      params.append("skinColor", skinColor);
+    }
+
+    // Adicionar parâmetros de cabelo apenas para estilos humanoides
+    if (avatarStyle !== "bottts") {
+      params.append("hairColor", hairColor);
+      params.append("hair", hairType);
+      params.append("eyesColor", eyeColorMap[eyeColor] || eyeColor);
+    }
 
     // Adicionar acessórios se não for "none"
     if (accessories !== "none" && accessoryMap[accessories]) {
       params.append("accessories", accessoryMap[accessories]);
     }
 
-    return `https://api.dicebear.com/7.x/big-smile/svg?${params.toString()}`;
+    return `https://api.dicebear.com/7.x/${avatarStyle}/svg?${params.toString()}`;
   };
 
   const previewUrl = generateAvatarUrl();
@@ -107,6 +121,30 @@ export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
           <AvatarImage src={previewUrl} />
         </Avatar>
         <p className="text-sm font-medium">Preview</p>
+      </div>
+
+      {/* Estilo do Avatar */}
+      <div className="space-y-2">
+        <Label className="text-base">Estilo do Avatar</Label>
+        <div className="grid grid-cols-2 gap-3">
+          {AVATAR_STYLES.map((style) => (
+            <button
+              key={style.value}
+              onClick={() => setAvatarStyle(style.value)}
+              className={`flex flex-col items-start gap-1 p-3 rounded-lg border-2 transition-all ${
+                avatarStyle === style.value
+                  ? "border-primary bg-primary/10 shadow-sm"
+                  : "border-border hover:border-primary/50 hover:bg-accent"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{style.emoji}</span>
+                <span className="font-medium">{style.label}</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{style.description}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Sexo */}

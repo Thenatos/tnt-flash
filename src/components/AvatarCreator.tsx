@@ -1,55 +1,15 @@
 import { useState } from "react";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, UserCog } from "lucide-react";
+import { Shuffle } from "lucide-react";
 
 const AVATAR_STYLES = [
-  { value: "big-smile", label: "Cartoon", emoji: "😊", description: "Estilo divertido e colorido" },
-  { value: "avataaars", label: "Moderno", emoji: "🎨", description: "Estilo flat design" },
-  { value: "lorelei", label: "Realista", emoji: "👤", description: "Aparência mais realista" },
-  { value: "bottts", label: "Robô", emoji: "🤖", description: "Estilo futurista" },
-];
-
-const HAIR_TYPES = [
-  { value: "variant01", label: "Curto", emoji: "✂️" },
-  { value: "variant02", label: "Longo", emoji: "💇" },
-  { value: "variant03", label: "Cacheado", emoji: "🌀" },
-  { value: "variant04", label: "Careca", emoji: "🔆" },
-];
-
-const HAIR_COLORS = [
-  { value: "0e0e0e", color: "#0e0e0e" },
-  { value: "4a312c", color: "#4a312c" },
-  { value: "a55728", color: "#a55728" },
-  { value: "e8a87c", color: "#e8a87c" },
-  { value: "f59797", color: "#f59797" },
-];
-
-const SKIN_COLORS = [
-  { value: "ffdbb4", color: "#ffdbb4" },
-  { value: "f4c8a8", color: "#f4c8a8" },
-  { value: "d08b5b", color: "#d08b5b" },
-  { value: "ae7242", color: "#ae7242" },
-  { value: "8d5524", color: "#8d5524" },
-];
-
-const EYE_COLORS = [
-  { value: "blue", color: "#4a90e2" },
-  { value: "green", color: "#7cb342" },
-  { value: "brown", color: "#8d6e63" },
-  { value: "gray", color: "#9e9e9e" },
-];
-
-const GENDERS = [
-  { value: "male", label: "Masculino", icon: User },
-  { value: "female", label: "Feminino", icon: UserCog },
-];
-
-const ACCESSORIES = [
-  { value: "none", label: "Sem acessórios", emoji: "👤" },
-  { value: "glasses", label: "Óculos", emoji: "👓" },
-  { value: "sunglasses", label: "Óculos de Sol", emoji: "🕶️" },
+  { id: "adventurer", name: "Aventureiro", emoji: "🎯" },
+  { id: "avataaars", name: "Moderno", emoji: "🎨" },
+  { id: "big-smile", name: "Cartoon", emoji: "😊" },
+  { id: "bottts", name: "Robô", emoji: "🤖" },
+  { id: "lorelei", name: "Realista", emoji: "👤" },
+  { id: "micah", name: "Ilustrado", emoji: "✨" },
 ];
 
 interface AvatarCreatorProps {
@@ -57,229 +17,70 @@ interface AvatarCreatorProps {
 }
 
 export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
-  const [avatarStyle, setAvatarStyle] = useState("big-smile");
-  const [hairType, setHairType] = useState("variant01");
-  const [hairColor, setHairColor] = useState("0e0e0e");
-  const [skinColor, setSkinColor] = useState("ffdbb4");
-  const [eyeColor, setEyeColor] = useState("blue");
-  const [gender, setGender] = useState("male");
-  const [accessories, setAccessories] = useState("none");
+  const [selectedStyle, setSelectedStyle] = useState("big-smile");
+  const [seed, setSeed] = useState(Math.random().toString(36).substring(7));
 
-  const generateAvatarUrl = () => {
-    const seed = `${gender}-${hairType}-${hairColor}-${skinColor}-${eyeColor}-${accessories}`;
-    
-    // Mapear cores dos olhos para hexadecimal
-    const eyeColorMap: Record<string, string> = {
-      blue: "4a90e2",
-      green: "7cb342",
-      brown: "8d6e63",
-      gray: "9e9e9e",
-    };
-
-    // Mapear acessórios
-    const accessoryMap: Record<string, string> = {
-      glasses: "variant01",
-      sunglasses: "variant02",
-    };
-
-    const params = new URLSearchParams({
-      seed,
-      backgroundColor: "transparent",
-    });
-
-    // Adicionar skinColor apenas para estilos que suportam
-    if (avatarStyle !== "bottts") {
-      params.append("skinColor", skinColor);
-    }
-
-    // Adicionar parâmetros de cabelo apenas para estilos humanoides
-    if (avatarStyle !== "bottts") {
-      params.append("hairColor", hairColor);
-      params.append("hair", hairType);
-      params.append("eyesColor", eyeColorMap[eyeColor] || eyeColor);
-    }
-
-    // Adicionar acessórios se não for "none"
-    if (accessories !== "none" && accessoryMap[accessories]) {
-      params.append("accessories", accessoryMap[accessories]);
-    }
-
-    return `https://api.dicebear.com/7.x/${avatarStyle}/svg?${params.toString()}`;
+  const generateAvatarUrl = (style: string, seedValue: string) => {
+    return `https://api.dicebear.com/7.x/${style}/svg?seed=${seedValue}&backgroundColor=transparent`;
   };
 
-  const previewUrl = generateAvatarUrl();
+  const currentAvatarUrl = generateAvatarUrl(selectedStyle, seed);
 
-  const handleCreateAvatar = () => {
-    onAvatarCreated(previewUrl);
+  const handleRandomize = () => {
+    setSeed(Math.random().toString(36).substring(7));
+  };
+
+  const handleUseAvatar = () => {
+    onAvatarCreated(currentAvatarUrl);
   };
 
   return (
     <div className="space-y-6">
       {/* Preview */}
-      <div className="flex flex-col items-center gap-3 p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border">
-        <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-          <AvatarImage src={previewUrl} />
+      <div className="flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 rounded-xl border-2 border-primary/20">
+        <Avatar className="h-40 w-40 border-4 border-background shadow-2xl">
+          <AvatarImage src={currentAvatarUrl} />
         </Avatar>
-        <p className="text-sm font-medium">Preview</p>
+        <Button
+          onClick={handleRandomize}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+        >
+          <Shuffle className="h-4 w-4" />
+          Gerar Novo
+        </Button>
       </div>
 
-      {/* Estilo do Avatar */}
-      <div className="space-y-2">
-        <Label className="text-base">Estilo do Avatar</Label>
-        <div className="grid grid-cols-2 gap-3">
+      {/* Seletor de Estilo */}
+      <div className="space-y-3">
+        <h3 className="font-semibold">Escolha o Estilo</h3>
+        <div className="grid grid-cols-3 gap-3">
           {AVATAR_STYLES.map((style) => (
             <button
-              key={style.value}
-              onClick={() => setAvatarStyle(style.value)}
-              className={`flex flex-col items-start gap-1 p-3 rounded-lg border-2 transition-all ${
-                avatarStyle === style.value
-                  ? "border-primary bg-primary/10 shadow-sm"
+              key={style.id}
+              onClick={() => setSelectedStyle(style.id)}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                selectedStyle === style.id
+                  ? "border-primary bg-primary text-primary-foreground shadow-md"
                   : "border-border hover:border-primary/50 hover:bg-accent"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{style.emoji}</span>
-                <span className="font-medium">{style.label}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">{style.description}</span>
+              <span className="text-3xl">{style.emoji}</span>
+              <span className="text-xs font-medium text-center">{style.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Sexo */}
-      <div className="space-y-2">
-        <Label className="text-base">Sexo</Label>
-        <div className="grid grid-cols-2 gap-3">
-          {GENDERS.map((g) => {
-            const Icon = g.icon;
-            return (
-              <button
-                key={g.value}
-                onClick={() => setGender(g.value)}
-                className={`flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${
-                  gender === g.value
-                    ? "border-primary bg-primary text-primary-foreground shadow-md"
-                    : "border-border hover:border-primary/50 hover:bg-accent"
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{g.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Tipo de Cabelo */}
-      <div className="space-y-2">
-        <Label className="text-base">Cabelo</Label>
-        <div className="grid grid-cols-4 gap-2">
-          {HAIR_TYPES.map((type) => (
-            <button
-              key={type.value}
-              onClick={() => setHairType(type.value)}
-              className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all ${
-                hairType === type.value
-                  ? "border-primary bg-primary/10 shadow-sm"
-                  : "border-border hover:border-primary/50 hover:bg-accent"
-              }`}
-            >
-              <span className="text-2xl">{type.emoji}</span>
-              <span className="text-xs font-medium">{type.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Cores */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Cor do Cabelo */}
-        <div className="space-y-2">
-          <Label className="text-sm">Cor do Cabelo</Label>
-          <div className="flex gap-2 flex-wrap">
-            {HAIR_COLORS.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => setHairColor(color.value)}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${
-                  hairColor === color.value
-                    ? "border-primary scale-110 shadow-md"
-                    : "border-border hover:scale-105"
-                }`}
-                style={{ backgroundColor: color.color }}
-                title={color.value}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Cor da Pele */}
-        <div className="space-y-2">
-          <Label className="text-sm">Cor da Pele</Label>
-          <div className="flex gap-2 flex-wrap">
-            {SKIN_COLORS.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => setSkinColor(color.value)}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${
-                  skinColor === color.value
-                    ? "border-primary scale-110 shadow-md"
-                    : "border-border hover:scale-105"
-                }`}
-                style={{ backgroundColor: color.color }}
-                title={color.value}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Cor dos Olhos */}
-        <div className="space-y-2">
-          <Label className="text-sm">Cor dos Olhos</Label>
-          <div className="flex gap-2 flex-wrap">
-            {EYE_COLORS.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => setEyeColor(color.value)}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${
-                  eyeColor === color.value
-                    ? "border-primary scale-110 shadow-md"
-                    : "border-border hover:scale-105"
-                }`}
-                style={{ backgroundColor: color.color }}
-                title={color.value}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Acessórios */}
-      <div className="space-y-2">
-        <Label className="text-base">Acessórios</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {ACCESSORIES.map((acc) => (
-            <button
-              key={acc.value}
-              onClick={() => setAccessories(acc.value)}
-              className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all ${
-                accessories === acc.value
-                  ? "border-primary bg-primary/10 shadow-sm"
-                  : "border-border hover:border-primary/50 hover:bg-accent"
-              }`}
-            >
-              <span className="text-2xl">{acc.emoji}</span>
-              <span className="text-xs text-center font-medium">{acc.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <Button onClick={handleCreateAvatar} className="w-full" size="lg">
+      {/* Botão Usar */}
+      <Button 
+        onClick={handleUseAvatar} 
+        className="w-full"
+        size="lg"
+      >
         Usar Este Avatar
       </Button>
     </div>
   );
 };
-

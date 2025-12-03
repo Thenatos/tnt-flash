@@ -10,10 +10,7 @@ export const useComments = (productId: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("comments")
-        .select(`
-          *,
-          profile:user_id(user_id, full_name, avatar_url, username)
-        `)
+        .select("*")
         .eq("product_id", productId)
         .is("parent_id", null) // Apenas comentários principais
         .order("created_at", { ascending: false });
@@ -25,10 +22,7 @@ export const useComments = (productId: string) => {
         (data || []).map(async (comment) => {
           const { data: replies } = await supabase
             .from("comments")
-            .select(`
-              *,
-              profile:user_id(user_id, full_name, avatar_url, username)
-            `)
+            .select("*")
             .eq("parent_id", comment.id)
             .order("created_at", { ascending: true });
 
@@ -36,7 +30,25 @@ export const useComments = (productId: string) => {
         })
       );
 
-      return commentsWithReplies;
+      // Buscar perfis de todos os usuários (comentários + respostas)
+      const allComments = [...commentsWithReplies, ...commentsWithReplies.flatMap(c => c.replies)];
+      const userIds = [...new Set(allComments.map((c) => c.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, avatar_url, username")
+        .in("user_id", userIds);
+
+      // Combinar comentários e respostas com perfis
+      const commentsWithProfiles = commentsWithReplies.map((comment) => ({
+        ...comment,
+        profile: profiles?.find((p) => p.user_id === comment.user_id),
+        replies: comment.replies.map((reply: any) => ({
+          ...reply,
+          profile: profiles?.find((p) => p.user_id === reply.user_id),
+        })),
+      }));
+
+      return commentsWithProfiles;
     },
   });
 

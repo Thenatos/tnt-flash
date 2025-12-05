@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY")!;
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,6 +30,29 @@ const handler = async (req: Request): Promise<Response> => {
 
     const userName = fullName || email.split("@")[0];
     const siteUrl = "https://tntofertas.com.br";
+
+    // Criar cliente Supabase com service role para gerar link de confirmação
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Gerar link de confirmação via admin API
+    const { data: confirmationData, error: confirmError } = await supabase.auth.admin.generateLink({
+      type: "signup",
+      email: email,
+      options: {
+        redirectTo: `${siteUrl}/`,
+      },
+    });
+
+    if (confirmError) {
+      console.warn("Aviso ao gerar link de confirmação:", confirmError.message);
+      // Continua mesmo se falhar (email ainda é enviado, apenas sem link)
+    }
+
+    // Extrair o token de confirmação do link (se gerado com sucesso)
+    let confirmationLink = `${siteUrl}/auth`;
+    if (confirmationData?.properties?.action_link) {
+      confirmationLink = confirmationData.properties.action_link;
+    }
 
     // Create HTML email template with site colors
     const html = `
@@ -76,7 +101,13 @@ const handler = async (req: Request): Promise<Response> => {
                 Não perca tempo! As <strong>melhores ofertas</strong> podem acabar a qualquer momento.
               </p>
               <div class="button-container">
-                <a href="${siteUrl}" class="button">🛍️ EXPLORAR OFERTAS AGORA</a>
+                <a href="${confirmationLink}" class="button">✅ CONFIRMAR MEU EMAIL</a>
+              </div>
+              <p class="paragraph" style="font-size: 14px; color: #666; margin-top: 24px;">
+                Após confirmar seu email, você terá acesso completo a todas as ofertas e poderá criar alertas personalizados!
+              </p>
+              <div class="button-container" style="margin-top: 20px;">
+                <a href="${siteUrl}" class="button" style="background: #E5E7EB; color: #374151;">🛍️ EXPLORAR OFERTAS (sem confirmar)</a>
               </div>
               <p class="tip">
                 💡 <strong>Dica de ouro:</strong> Configure seus alertas personalizados para nunca perder 

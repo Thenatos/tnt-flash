@@ -112,6 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
         to: [email],
         subject: "🔐 Redefinir sua senha - TNT Ofertas 🔥",
         html,
+        track_clicks: false,
       }),
     });
 

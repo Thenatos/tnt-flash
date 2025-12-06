@@ -186,9 +186,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const resetPassword = async (email: string) => {
     try {
-      // Use Supabase's built-in email (not our custom one) to preserve the hash with token
-      // This ensures the reset link includes the access_token in the hash
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth?mode=reset-password`,
       });
 
@@ -199,6 +197,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           description: error.message,
         });
         return { error };
+      }
+
+      // Enviar email de reset de senha com estilo personalizado
+      // Usa track_clicks: false para preservar o hash com o token
+      try {
+        const resetLink = data?.properties?.action_link || `${window.location.origin}/auth?mode=reset-password`;
+        
+        await supabase.functions.invoke('send-reset-password-email', {
+          body: {
+            email: email,
+            resetLink: resetLink,
+            fullName: email.split("@")[0],
+          },
+        });
+      } catch (emailError) {
+        // Email de reset é opcional - não bloqueia o processo
+        console.warn("Aviso ao enviar email de reset:", emailError);
       }
 
       toast({

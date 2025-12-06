@@ -67,12 +67,17 @@ const Auth = () => {
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
   const [signupErrors, setSignupErrors] = useState<any>({});
 
-  // Redirect if already logged in
+  // Redirect if already logged in, except when handling a password recovery flow
   useEffect(() => {
-    if (user) {
+    const mode = searchParams.get("mode");
+    // Check URL hash for recovery tokens (Supabase places tokens in the hash)
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const isRecoveryHash = hash.includes("type=recovery") || hash.includes("access_token");
+
+    if (user && mode !== "reset-password" && !isRecoveryHash) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [user, navigate, searchParams]);
 
   // Check if we're in reset password mode and handle auth session
   useEffect(() => {

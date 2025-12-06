@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Zap, Mail, Lock, User as UserIcon, Flame } from "lucide-react";
+import { Zap, Mail, Lock, User as UserIcon, Flame, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -29,12 +29,31 @@ const signupSchema = z.object({
   path: ["confirmPassword"],
 });
 
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
+
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, signIn, signUp, signInWithGoogle } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { user, signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [forgotPasswordErrors, setForgotPasswordErrors] = useState<any>({});
+  const [resetPasswordMsg, setResetPasswordMsg] = useState("");
+  
+  // Reset password form
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const [resetPasswordErrors, setResetPasswordErrors] = useState<any>({});
   
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
@@ -54,6 +73,14 @@ const Auth = () => {
       navigate("/");
     }
   }, [user, navigate]);
+
+  // Check if we're in reset password mode
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "reset-password") {
+      setShowResetPasswordDialog(true);
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,6 +189,79 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotPasswordErrors({});
+
+    try {
+      const validated = z.object({
+        email: z.string().email({ message: "Email inválido" }),
+      }).parse({ email: forgotPasswordEmail });
+
+      setIsLoading(true);
+
+      const { error } = await resetPassword(validated.email);
+
+      if (!error) {
+        setResetPasswordMsg("Email de recuperação enviado com sucesso! Verifique sua caixa de entrada.");
+        setForgotPasswordEmail("");
+        setTimeout(() => {
+          setShowForgotPasswordDialog(false);
+          setResetPasswordMsg("");
+        }, 3000);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: any = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setForgotPasswordErrors(errors);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetPasswordErrors({});
+
+    try {
+      const validated = resetPasswordSchema.parse({
+        newPassword: resetNewPassword,
+        confirmPassword: resetConfirmPassword,
+      });
+
+      setIsLoading(true);
+
+      const { error } = await updatePassword(validated.newPassword);
+
+      if (!error) {
+        setResetNewPassword("");
+        setResetConfirmPassword("");
+        setShowResetPasswordDialog(false);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: any = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setResetPasswordErrors(errors);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center gradient-explosive py-12 px-4">
       <Card className="w-full max-w-md shadow-2xl">
@@ -233,6 +333,16 @@ const Auth = () => {
                   disabled={isLoading}
                 >
                   {isLoading ? "Entrando..." : "Entrar"}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-sm"
+                  onClick={() => setShowForgotPasswordDialog(true)}
+                  disabled={isLoading}
+                >
+                  Esqueci minha senha
                 </Button>
               </form>
             </TabsContent>
@@ -398,6 +508,127 @@ const Auth = () => {
               {isLoading ? "Criando conta..." : "Continuar"}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPasswordDialog} onOpenChange={setShowForgotPasswordDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-gradient-accent rounded-full p-3">
+                <Mail className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              Recuperar Senha
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Insira seu email para receber um link de redefinição de senha
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleForgotPassword} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="forgot-email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  className="pl-10"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              {forgotPasswordErrors.email && (
+                <p className="text-sm text-destructive">{forgotPasswordErrors.email}</p>
+              )}
+            </div>
+
+            {resetPasswordMsg && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                <p className="text-sm text-green-800">{resetPasswordMsg}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full gradient-accent font-bold"
+              disabled={isLoading || !!resetPasswordMsg}
+            >
+              {isLoading ? "Enviando..." : "Enviar Email"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={showResetPasswordDialog} onOpenChange={setShowResetPasswordDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-gradient-accent rounded-full p-3">
+                <Lock className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              Redefinir Senha
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Digite sua nova senha para recuperar o acesso à sua conta
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleResetPassword} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-password">Nova Senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="reset-password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="pl-10"
+                  value={resetNewPassword}
+                  onChange={(e) => setResetNewPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              {resetPasswordErrors.newPassword && (
+                <p className="text-sm text-destructive">{resetPasswordErrors.newPassword}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reset-confirm">Confirmar Senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="reset-confirm"
+                  type="password"
+                  placeholder="••••••••"
+                  className="pl-10"
+                  value={resetConfirmPassword}
+                  onChange={(e) => setResetConfirmPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              {resetPasswordErrors.confirmPassword && (
+                <p className="text-sm text-destructive">{resetPasswordErrors.confirmPassword}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full gradient-accent font-bold"
+              disabled={isLoading}
+            >
+              {isLoading ? "Atualizando..." : "Redefinir Senha"}
+            </Button>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

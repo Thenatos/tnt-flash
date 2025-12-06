@@ -11,6 +11,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -169,6 +171,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao solicitar redefinição",
+          description: error.message,
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Email enviado!",
+        description: "Verifique seu email para redefinir sua senha.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      return { error };
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao atualizar senha",
+          description: error.message,
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Senha atualizada!",
+        description: "Sua senha foi redefinida com sucesso.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      return { error };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -179,6 +233,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signUp,
         signInWithGoogle,
         signOut,
+        resetPassword,
+        updatePassword,
       }}
     >
       {children}

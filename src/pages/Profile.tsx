@@ -11,6 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductAlertsSection } from "@/components/ProductAlertsSection";
 import { EmailPreferences } from "@/components/admin/EmailPreferences";
 import { AvatarCreator } from "@/components/AvatarCreator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -23,6 +31,10 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -276,6 +288,17 @@ const Profile = () => {
                     </p>
                   </div>
 
+                  {/* Trocar senha in-site */}
+                  <div>
+                    <Button
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => setShowChangePasswordDialog(true)}
+                    >
+                      Trocar Senha
+                    </Button>
+                  </div>
+
                   {/* Botão salvar */}
                   <Button
                     onClick={handleSaveProfile}
@@ -287,6 +310,78 @@ const Profile = () => {
                 </div>
               </Card>
             </TabsContent>
+
+            {/* Dialog para trocar senha */}
+            <Dialog open={showChangePasswordDialog} onOpenChange={setShowChangePasswordDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Trocar Senha</DialogTitle>
+                  <DialogDescription>Altere sua senha com segurança.</DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4 mt-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">Nova Senha</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Digite a nova senha"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirme a Nova Senha</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirme a nova senha"
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <div className="flex w-full gap-2">
+                    <Button variant="outline" className="w-full" onClick={() => setShowChangePasswordDialog(false)}>
+                      Cancelar
+                    </Button>
+                    <Button
+                      className="w-full"
+                      disabled={changingPassword}
+                      onClick={async () => {
+                        if (newPassword.length < 8) {
+                          toast.error('A senha deve ter pelo menos 8 caracteres');
+                          return;
+                        }
+                        if (newPassword !== confirmPassword) {
+                          toast.error('As senhas não coincidem');
+                          return;
+                        }
+
+                        try {
+                          setChangingPassword(true);
+                          const { error } = await supabase.auth.updateUser({ password: newPassword });
+                          if (error) throw error;
+                          toast.success('Senha alterada com sucesso');
+                          setShowChangePasswordDialog(false);
+                          setNewPassword('');
+                          setConfirmPassword('');
+                        } catch (err: any) {
+                          toast.error(err?.message || 'Erro ao alterar senha');
+                        } finally {
+                          setChangingPassword(false);
+                        }
+                      }}
+                    >
+                      {changingPassword ? 'Alterando...' : 'Salvar'}
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <TabsContent value="alerts">
               <ProductAlertsSection />

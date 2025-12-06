@@ -74,9 +74,9 @@ export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
       </div>
 
       {/* Botão Usar */}
-      <Button 
-        onClick={handleUseAvatar} 
-        className="w-full"
+      <Button
+        onClick={handleUseAvatar}
+        className="w-full bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-300"
         size="lg"
       >
         Usar Este Avatar

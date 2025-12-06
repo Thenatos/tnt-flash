@@ -30,6 +30,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -50,7 +51,7 @@ const Profile = () => {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("full_name, avatar_url")
+      .select("full_name, avatar_url, username")
       .eq("user_id", user.id)
       .single();
 
@@ -61,6 +62,7 @@ const Profile = () => {
 
     if (data) {
       setFullName(data.full_name || "");
+      setUsername(data.username || "");
       setAvatarUrl(data.avatar_url || "");
     }
   };
@@ -170,6 +172,7 @@ const Profile = () => {
         .update({
           full_name: fullName,
           avatar_url: avatarUrl,
+          username: username,
         })
         .eq("user_id", user.id);
 
@@ -272,6 +275,22 @@ const Profile = () => {
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Seu nome completo"
                     />
+                  </div>
+
+                  {/* Username (@) */}
+                  <div className="space-y-2">
+                    <Label htmlFor="username">@</Label>
+                    <div className="flex items-center">
+                      <span className="px-3 py-2 bg-muted text-sm rounded-l-md">@</span>
+                      <Input
+                        id="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="seu_usuario"
+                        className="rounded-l-none flex-1"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Seu identificador público (sem espaços).</p>
                   </div>
 
                   {/* Email (readonly) */}

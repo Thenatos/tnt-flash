@@ -188,12 +188,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Enviar email de reset de senha com estilo personalizado
       try {
-        const resetLink = `${window.location.origin}/auth?mode=reset-password&token=${data?.properties?.action_link?.split('#')[1] || ''}`;
+        // O data?.properties?.action_link contém o link completo com o token
+        const resetLink = data?.properties?.action_link || `${window.location.origin}/auth?mode=reset-password`;
         
         await supabase.functions.invoke('send-reset-password-email', {
           body: {
             email: email,
-            resetLink: data?.properties?.action_link || `${window.location.origin}/auth?mode=reset-password`,
+            resetLink: resetLink,
             fullName: email.split("@")[0],
           },
         });
@@ -215,17 +216,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updatePassword = async (newPassword: string) => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
+      // Obter a sessão atual
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error("Auth session missing! Please try clicking the reset link again.");
+      }
+
+      // Usar a sessão para atualizar a senha
+      const { error } = await supabase.auth.updateUser(
+        { password: newPassword },
+        { shouldCreateSession: false }
+      );
 
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Erro ao atualizar senha",
-          description: error.message,
-        });
-        return { error };
+        throw error;
       }
 
       toast({
@@ -235,6 +240,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { error: null };
     } catch (error: any) {
+      const errorMsg = error?.message || "Erro ao atualizar senha";
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar senha",
+        description: errorMsg,
+      });
       return { error };
     }
   };

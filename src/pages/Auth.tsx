@@ -74,10 +74,12 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  // Check if we're in reset password mode
+  // Check if we're in reset password mode and handle auth session
   useEffect(() => {
     const mode = searchParams.get("mode");
     if (mode === "reset-password") {
+      // Supabase adiciona o access_token na URL após o hash
+      // Se houver um token na URL, o Supabase já configurou a sessão automaticamente
       setShowResetPasswordDialog(true);
     }
   }, [searchParams]);

@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Enviando email de boas-vindas para: ${email}`);
 
     const userName = fullName || email.split("@")[0];
-    const siteUrl = "https://tntofertas.com.br";
+    const siteUrl = "https://www.tntofertas.com.br";
 
     // Criar cliente Supabase com service role para gerar link de confirmação
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🎉 Bem-vindo, ${userName}! 🎉</h1>
+              <h1>🎉 Bem-vindo(a), ${userName}! 🎉</h1>
             </div>
             <div class="content">
               <p class="paragraph">
@@ -103,6 +103,12 @@ const handler = async (req: Request): Promise<Response> => {
               <div class="button-container">
                 <a href="${confirmationLink}" class="button">✅ CONFIRMAR MEU EMAIL</a>
               </div>
+              <div style="text-align:center; margin: 16px 0 0 0;">
+                <span style="display:inline-block; font-size:13px; color:#666; background:#F3F4F6; border-radius:6px; padding:8px 12px; word-break:break-all;">
+                  Ou copie e cole este link no seu navegador:<br>
+                  <strong>${confirmationLink}</strong>
+                </span>
+              </div>
               <p class="paragraph" style="font-size: 14px; color: #666; margin-top: 24px;">
                 Após confirmar seu email, você terá acesso completo a todas as ofertas e poderá criar alertas personalizados!
               </p>
@@ -117,6 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div class="footer">
               <p class="footer-text">Economize mais, compre melhor! 💰</p>
               <p class="footer-text">Se você tiver alguma dúvida, estamos aqui para ajudar.</p>
+              <p class="footer-text">É um prazer ter você conosto!.🌟</p>
             </div>
           </div>
         </body>
@@ -131,9 +138,9 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "TNT Ofertas <noreply@tntofertas.com.br>",
+        from: "TNT Ofertas 🔥 <noreply@tntofertas.com.br>",
         to: [email],
-        subject: "🎉 Bem-vindo ao clube das melhores ofertas!",
+        subject: "🎉 Bem-vindo ao clube das melhores ofertas! 🔥",
         html,
       }),
     });

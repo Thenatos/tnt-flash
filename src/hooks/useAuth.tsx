@@ -27,18 +27,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, !!session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // THEN check for existing session and handle recovery tokens from URL
+    const initAuth = async () => {
+      // First, check if there's a recovery token in the URL hash
+      const hash = window.location.hash;
+      if (hash.includes('type=recovery') && hash.includes('access_token')) {
+        console.log("Recovery token detected in URL");
+        // Let Supabase handle the session creation from the hash
+        // It will call the onAuthStateChange listener
+      }
+
+      // Get the current session (might be created from hash)
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-    });
+    };
+
+    initAuth();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -216,17 +229,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updatePassword = async (newPassword: string) => {
     try {
-      // Obter a sessão atual
+      // Supabase automatically handles the session from the URL hash
+      // when resetPasswordForEmail is used with the correct redirect URL
+      
+      // First, verify we have a valid session from the reset link
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-      if (sessionError || !session) {
-        throw new Error("Auth session missing! Please try clicking the reset link again.");
+      if (!session) {
+        // Try to extract and use the token from URL hash
+        const hash = window.location.hash;
+        if (hash.includes('access_token')) {
+          // Parse the access token from the hash
+          const params = new URLSearchParams(hash.replace('#', '?'));
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+          const type = params.get('type');
+
+          if (accessToken && type === 'recovery') {
+            // Set the session manually with the token from the URL
+            const { error: setSessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || '',
+            });
+
+            if (setSessionError) {
+              throw new Error(`Session setup failed: ${setSessionError.message}`);
+            }
+          } else {
+            throw new Error("Reset link is invalid or expired. Please request a new password reset.");
+          }
+        } else {
+          throw new Error("Auth session missing! Please try clicking the reset link again.");
+        }
       }
 
-      // Usar a sessão para atualizar a senha
+      // Now update the password with the valid session
       const { error } = await supabase.auth.updateUser(
-        { password: newPassword },
-        { shouldCreateSession: false }
+        { password: newPassword }
       );
 
       if (error) {
@@ -237,6 +276,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Senha atualizada!",
         description: "Sua senha foi redefinida com sucesso.",
       });
+
+      // Sign out after password reset for security
+      await supabase.auth.signOut();
 
       return { error: null };
     } catch (error: any) {

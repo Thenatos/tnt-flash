@@ -78,9 +78,16 @@ const Auth = () => {
   useEffect(() => {
     const mode = searchParams.get("mode");
     if (mode === "reset-password") {
-      // Supabase adiciona o access_token na URL após o hash
-      // Se houver um token na URL, o Supabase já configurou a sessão automaticamente
-      setShowResetPasswordDialog(true);
+      // Check if we have a reset token in the URL hash
+      const hash = window.location.hash;
+      if (hash.includes('type=recovery') && hash.includes('access_token')) {
+        // Supabase will automatically create a session from the hash
+        // Just show the dialog
+        setShowResetPasswordDialog(true);
+      } else if (!hash.includes('access_token')) {
+        // If no hash, the link might have been clicked but no token present
+        setShowResetPasswordDialog(true);
+      }
     }
   }, [searchParams]);
 

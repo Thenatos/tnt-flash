@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export const MassEmailSender = () => {
   const [subject, setSubject] = useState("");
@@ -15,6 +16,7 @@ export const MassEmailSender = () => {
   const [percentage, setPercentage] = useState("100");
   const [emailType, setEmailType] = useState("promotional");
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSendEmails = async () => {
     if (!subject.trim() || !message.trim()) {
@@ -23,19 +25,55 @@ export const MassEmailSender = () => {
     }
 
     setIsLoading(true);
+    setSuccessMessage("");
+    
     try {
+      // Get session token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error("Sessão expirada. Por favor, faça login novamente.");
+      }
+
       const { data, error } = await supabase.functions.invoke("send-mass-email", {
-        body: { subject, message, percentage: parseInt(percentage), emailType },
+        body: { 
+          subject, 
+          message, 
+          percentage: parseInt(percentage), 
+          emailType 
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error response:", error);
+        throw error;
+      }
 
-      toast.success(`Emails enviados com sucesso para ${data.count} usuários`);
-      setSubject("");
-      setMessage("");
+      const sentCount = data?.count || 0;
+      
+      if (sentCount > 0) {
+        const successMsg = `✅ Emails enviados com sucesso para ${sentCount} usuários!`;
+        setSuccessMessage(successMsg);
+        toast.success(successMsg);
+        
+        // Clear form
+        setSubject("");
+        setMessage("");
+        setPercentage("100");
+        setEmailType("promotional");
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(""), 5000);
+      } else {
+        toast.warning("Nenhum email foi enviado. Verifique se há usuários cadastrados com preferência de recebimento ativo.");
+      }
     } catch (error: any) {
       console.error("Error sending mass emails:", error);
-      toast.error("Erro ao enviar emails: " + error.message);
+      const errorMsg = error?.message || "Erro ao enviar emails";
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -45,12 +83,19 @@ export const MassEmailSender = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Envio de Email em Massa</CardTitle>
+          <CardTitle>🔥 Envio de Email em Massa</CardTitle>
           <CardDescription>
             Envie emails sobre eventos e promoções para todos os usuários cadastrados
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {successMessage && (
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
+            </Alert>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="emailType">Tipo de Email</Label>
             <Select value={emailType} onValueChange={setEmailType} disabled={isLoading}>
@@ -114,7 +159,7 @@ export const MassEmailSender = () => {
           <Button
             onClick={handleSendEmails}
             disabled={isLoading || !subject.trim() || !message.trim()}
-            className="w-full"
+            className="w-full gradient-accent font-bold"
             size="lg"
           >
             {isLoading ? (
@@ -134,7 +179,7 @@ export const MassEmailSender = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dicas para um bom email</CardTitle>
+          <CardTitle>ℹ️ Dicas para um bom email</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>• Use um assunto chamativo e relevante</p>
@@ -142,6 +187,7 @@ export const MassEmailSender = () => {
           <p>• Inclua links para produtos ou categorias específicas</p>
           <p>• Adicione códigos de cupom quando aplicável</p>
           <p>• Mantenha um tom amigável e profissional</p>
+          <p>• Respite os usuários que optarem por não receber emails</p>
         </CardContent>
       </Card>
     </div>

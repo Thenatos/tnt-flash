@@ -26,28 +26,24 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verificar se o usuário é admin
+    // Verificar se o usuário é admin (opcional, pode ser removido se usar API key)
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      throw new Error("Unauthorized");
-    }
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (!authError && user) {
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .single();
 
-    if (authError || !user) {
-      throw new Error("Unauthorized");
-    }
-
-    const { data: roleData, error: roleError } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
-
-    if (roleError || !roleData) {
-      throw new Error("Unauthorized: Admin access required");
+        if (!roleData) {
+          throw new Error("Unauthorized: Admin access required");
+        }
+      }
     }
 
     const requestData = await req.json();

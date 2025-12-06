@@ -199,23 +199,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error };
       }
 
-      // Enviar email de reset de senha com estilo personalizado
-      // Usa track_clicks: false para preservar o hash com o token
-      try {
-        const resetLink = data?.properties?.action_link || `${window.location.origin}/auth?mode=reset-password`;
-        
-        await supabase.functions.invoke('send-reset-password-email', {
-          body: {
-            email: email,
-            resetLink: resetLink,
-            fullName: email.split("@")[0],
-          },
-        });
-      } catch (emailError) {
-        // Email de reset é opcional - não bloqueia o processo
-        console.warn("Aviso ao enviar email de reset:", emailError);
-      }
-
+      // Usar apenas o email nativo do Supabase (já contém o token/hash)
       toast({
         title: "Email enviado!",
         description: "Verifique seu email para redefinir sua senha. O link expira em 1 hora.",

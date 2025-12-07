@@ -62,35 +62,26 @@ export const AccessManagement = () => {
   const loadAdmins = async () => {
     setIsLoading(true);
     try {
+      // Usar a view que já traz os dados completos
       const { data, error } = await supabase
-        .from("user_roles")
-        .select(`
-          user_id,
-          profiles!inner(
-            user_id,
-            full_name
-          )
-        `)
-        .eq("role", "admin");
+        .from("admin_users_with_email")
+        .select("*");
 
       if (error) throw error;
 
-      // Buscar emails dos usuários auth
-      const { data: { users: authUsers } } = await supabase.auth.admin.listUsers();
-      
-      const adminsData = data.map((item: any) => {
-        const authUser = authUsers?.find((u: any) => u.id === item.user_id);
-        return {
-          user_id: item.user_id,
-          email: authUser?.email || "Sem email",
-          full_name: item.profiles?.full_name || "Sem nome",
-        };
-      });
+      console.log("Admin users from view:", data);
 
+      const adminsData = data.map((item: any) => ({
+        user_id: item.user_id,
+        email: item.email || "Sem email",
+        full_name: item.full_name || "Admin",
+      }));
+
+      console.log("Admins data processed:", adminsData);
       setAdmins(adminsData);
     } catch (error: any) {
-      toast.error("Erro ao carregar administradores");
-      console.error(error);
+      toast.error("Erro ao carregar administradores: " + error.message);
+      console.error("Error loading admins:", error);
     } finally {
       setIsLoading(false);
     }
@@ -172,7 +163,7 @@ export const AccessManagement = () => {
 
       const { error } = await supabase
         .from("admin_permissions")
-        .upsert(permissionsData, {
+        .upsert(permissionsData as any, {
           onConflict: "user_id",
         });
 

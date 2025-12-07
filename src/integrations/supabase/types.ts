@@ -678,7 +678,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_users_with_email: {
+        Row: {
+          user_id: string
+          role: Database["public"]["Enums"]["user_role"]
+          full_name: string | null
+          email: string
+        }
+      }
     }
     Functions: {
       can_user_comment: { Args: { user_uuid: string }; Returns: boolean }

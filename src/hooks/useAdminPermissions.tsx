@@ -13,6 +13,7 @@ export interface AdminPermissions {
   can_view_mass_email: boolean;
   can_view_user_management: boolean;
   can_view_access_management: boolean;
+  can_view_commissioned_links: boolean;
   // CRUD Produtos
   can_create_products: boolean;
   can_edit_products: boolean;
@@ -25,6 +26,10 @@ export interface AdminPermissions {
   can_create_alert_suggestions: boolean;
   can_edit_alert_suggestions: boolean;
   can_delete_alert_suggestions: boolean;
+  // CRUD Links Comissionados
+  can_create_commissioned_links: boolean;
+  can_edit_commissioned_links: boolean;
+  can_delete_commissioned_links: boolean;
   // Email em Massa
   can_send_mass_email: boolean;
 }
@@ -56,6 +61,7 @@ export const useAdminPermissions = () => {
           can_view_mass_email: true,
           can_view_user_management: true,
           can_view_access_management: true,
+          can_view_commissioned_links: true,
           can_create_products: true,
           can_edit_products: true,
           can_delete_products: true,
@@ -65,6 +71,9 @@ export const useAdminPermissions = () => {
           can_create_alert_suggestions: true,
           can_edit_alert_suggestions: true,
           can_delete_alert_suggestions: true,
+          can_create_commissioned_links: true,
+          can_edit_commissioned_links: true,
+          can_delete_commissioned_links: true,
           can_send_mass_email: true,
         };
       }

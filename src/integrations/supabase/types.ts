@@ -25,6 +25,7 @@ export type Database = {
           can_view_mass_email: boolean
           can_view_user_management: boolean
           can_view_access_management: boolean
+          can_view_commissioned_links: boolean
           can_create_products: boolean
           can_edit_products: boolean
           can_delete_products: boolean
@@ -34,6 +35,9 @@ export type Database = {
           can_create_alert_suggestions: boolean
           can_edit_alert_suggestions: boolean
           can_delete_alert_suggestions: boolean
+          can_create_commissioned_links: boolean
+          can_edit_commissioned_links: boolean
+          can_delete_commissioned_links: boolean
           can_send_mass_email: boolean
           created_at: string
           updated_at: string
@@ -48,6 +52,7 @@ export type Database = {
           can_view_mass_email?: boolean
           can_view_user_management?: boolean
           can_view_access_management?: boolean
+          can_view_commissioned_links?: boolean
           can_create_products?: boolean
           can_edit_products?: boolean
           can_delete_products?: boolean
@@ -57,6 +62,9 @@ export type Database = {
           can_create_alert_suggestions?: boolean
           can_edit_alert_suggestions?: boolean
           can_delete_alert_suggestions?: boolean
+          can_create_commissioned_links?: boolean
+          can_edit_commissioned_links?: boolean
+          can_delete_commissioned_links?: boolean
           can_send_mass_email?: boolean
           created_at?: string
           updated_at?: string
@@ -71,6 +79,7 @@ export type Database = {
           can_view_mass_email?: boolean
           can_view_user_management?: boolean
           can_view_access_management?: boolean
+          can_view_commissioned_links?: boolean
           can_create_products?: boolean
           can_edit_products?: boolean
           can_delete_products?: boolean
@@ -80,6 +89,9 @@ export type Database = {
           can_create_alert_suggestions?: boolean
           can_edit_alert_suggestions?: boolean
           can_delete_alert_suggestions?: boolean
+          can_create_commissioned_links?: boolean
+          can_edit_commissioned_links?: boolean
+          can_delete_commissioned_links?: boolean
           can_send_mass_email?: boolean
           created_at?: string
           updated_at?: string

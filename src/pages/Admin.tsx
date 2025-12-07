@@ -193,7 +193,7 @@ export default function Admin() {
             {(permissions?.can_view_access_management ?? true) && (
               <TabsTrigger value="access-management">Gestão de Acessos</TabsTrigger>
             )}
-            {(permissions?.can_view_products ?? true) && (
+            {(permissions?.can_view_commissioned_links ?? true) && (
               <TabsTrigger value="commissioned-links">Links Comissionados</TabsTrigger>
             )}
           </TabsList>

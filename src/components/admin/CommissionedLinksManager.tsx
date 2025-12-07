@@ -285,7 +285,7 @@ export const CommissionedLinksManager = () => {
                   </SelectContent>
                 </Select>
               </div>
-              {selectedStore && (permissions?.can_create_products ?? true) && (
+              {selectedStore && (permissions?.can_create_commissioned_links ?? true) && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button onClick={() => handleDialogClose()}>
@@ -362,7 +362,7 @@ export const CommissionedLinksManager = () => {
                 ) : affiliateIds.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     Nenhum ID de afiliado cadastrado para esta loja.
-                    {(permissions?.can_create_products ?? true) && (
+                    {(permissions?.can_create_commissioned_links ?? true) && (
                       <p className="mt-2">Clique em "Novo ID" para adicionar o primeiro.</p>
                     )}
                   </div>
@@ -405,7 +405,7 @@ export const CommissionedLinksManager = () => {
                                 >
                                   <Switch checked={affiliateId.is_active} />
                                 </Button>
-                                {(permissions?.can_edit_products ?? true) && (
+                                {(permissions?.can_edit_commissioned_links ?? true) && (
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -414,7 +414,7 @@ export const CommissionedLinksManager = () => {
                                     <Pencil className="h-4 w-4" />
                                   </Button>
                                 )}
-                                {(permissions?.can_delete_products ?? true) && (
+                                {(permissions?.can_delete_commissioned_links ?? true) && (
                                   <Button
                                     variant="ghost"
                                     size="icon"

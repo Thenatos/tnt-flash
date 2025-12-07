@@ -30,6 +30,7 @@ interface AdminPermissions {
   can_view_mass_email: boolean;
   can_view_user_management: boolean;
   can_view_access_management: boolean;
+  can_view_commissioned_links: boolean;
   can_create_products: boolean;
   can_edit_products: boolean;
   can_delete_products: boolean;
@@ -39,6 +40,9 @@ interface AdminPermissions {
   can_create_alert_suggestions: boolean;
   can_edit_alert_suggestions: boolean;
   can_delete_alert_suggestions: boolean;
+  can_create_commissioned_links: boolean;
+  can_edit_commissioned_links: boolean;
+  can_delete_commissioned_links: boolean;
   can_send_mass_email: boolean;
 }
 
@@ -114,6 +118,7 @@ export const AccessManagement = () => {
           can_view_mass_email: false,
           can_view_user_management: true,
           can_view_access_management: false,
+          can_view_commissioned_links: true,
           can_create_products: true,
           can_edit_products: true,
           can_delete_products: false,
@@ -123,6 +128,9 @@ export const AccessManagement = () => {
           can_create_alert_suggestions: true,
           can_edit_alert_suggestions: true,
           can_delete_alert_suggestions: false,
+          can_create_commissioned_links: true,
+          can_edit_commissioned_links: true,
+          can_delete_commissioned_links: false,
           can_send_mass_email: false,
         };
         setPermissions(defaultPermissions);
@@ -307,6 +315,12 @@ export const AccessManagement = () => {
                 permissionKey="can_view_access_management"
                 description="Acesso à aba de gestão de acessos (esta aba)"
               />
+              <PermissionSwitch
+                label="Links Comissionados"
+                icon={Eye}
+                permissionKey="can_view_commissioned_links"
+                description="Acesso à aba de gerenciamento de links comissionados"
+              />
             </CardContent>
           </Card>
 
@@ -410,6 +424,35 @@ export const AccessManagement = () => {
                 icon={Shield}
                 permissionKey="can_send_mass_email"
                 description="Permite enviar emails para todos os usuários (permissão sensível)"
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Permissões - Links Comissionados</CardTitle>
+              <CardDescription>
+                Configure as ações que o usuário pode realizar com links comissionados
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <PermissionSwitch
+                label="Criar Links Comissionados"
+                icon={Plus}
+                permissionKey="can_create_commissioned_links"
+                description="Permite criar novos IDs de afiliado para lojas"
+              />
+              <PermissionSwitch
+                label="Editar Links Comissionados"
+                icon={Edit}
+                permissionKey="can_edit_commissioned_links"
+                description="Permite editar IDs de afiliado existentes"
+              />
+              <PermissionSwitch
+                label="Excluir Links Comissionados"
+                icon={Trash2}
+                permissionKey="can_delete_commissioned_links"
+                description="Permite excluir IDs de afiliado (ação irreversível)"
               />
             </CardContent>
           </Card>

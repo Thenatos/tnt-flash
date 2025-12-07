@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Menu, User, LogIn, LogOut, Shield, ChevronDown, MessageCircle, Bell } from "lucide-react";
+import { Search, Menu, User, LogIn, LogOut, Shield, ChevronDown, MessageCircle, Bell, Instagram } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,7 +118,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
                         <div className="text-sm font-medium">WhatsApp</div>
                         <p className="text-xs text-muted-foreground">Participe do nosso grupo</p>
                       </div>
-                    </a>
+                    </a> 
                   </div>
                 </div>
 

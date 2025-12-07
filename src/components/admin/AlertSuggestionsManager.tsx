@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,7 @@ import { toast } from "sonner";
 
 export const AlertSuggestionsManager = () => {
   const queryClient = useQueryClient();
+  const { data: permissions } = useAdminPermissions();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSuggestion, setEditingSuggestion] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");

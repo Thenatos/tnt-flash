@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAdminHeroBanners } from "@/hooks/useHeroBanners";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { Button } from "@/components/ui/button";
 import { BannerForm } from "./BannerForm";
 import {
@@ -22,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 
 export const BannersManager = () => {
   const { banners, isLoading, createBanner, updateBanner, deleteBanner } = useAdminHeroBanners();
+  const { data: permissions } = useAdminPermissions();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
 
@@ -56,18 +58,19 @@ export const BannersManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gerenciar Banners</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditingBanner(null);
-                setIsDialogOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Banner
-            </Button>
-          </DialogTrigger>
+        {permissions?.can_create_banners && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => {
+                  setEditingBanner(null);
+                  setIsDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Banner
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
@@ -80,7 +83,8 @@ export const BannersManager = () => {
               isLoading={createBanner.isPending || updateBanner.isPending}
             />
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        )}
       </div>
 
       {isLoading ? (
@@ -139,20 +143,26 @@ export const BannersManager = () => {
                           <Eye className="h-4 w-4" />
                         )}
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(banner)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(banner.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      {permissions?.can_edit_banners && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(banner)}
+                          title="Editar"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {permissions?.can_delete_banners && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(banner.id)}
+                          title="Excluir"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

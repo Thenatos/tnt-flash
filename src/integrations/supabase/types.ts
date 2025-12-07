@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_permissions: {
+        Row: {
+          id: string
+          user_id: string
+          can_view_products: boolean
+          can_view_banners: boolean
+          can_view_alert_suggestions: boolean
+          can_view_analytics: boolean
+          can_view_mass_email: boolean
+          can_view_user_management: boolean
+          can_view_access_management: boolean
+          can_create_products: boolean
+          can_edit_products: boolean
+          can_delete_products: boolean
+          can_create_banners: boolean
+          can_edit_banners: boolean
+          can_delete_banners: boolean
+          can_create_alert_suggestions: boolean
+          can_edit_alert_suggestions: boolean
+          can_delete_alert_suggestions: boolean
+          can_send_mass_email: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          can_view_products?: boolean
+          can_view_banners?: boolean
+          can_view_alert_suggestions?: boolean
+          can_view_analytics?: boolean
+          can_view_mass_email?: boolean
+          can_view_user_management?: boolean
+          can_view_access_management?: boolean
+          can_create_products?: boolean
+          can_edit_products?: boolean
+          can_delete_products?: boolean
+          can_create_banners?: boolean
+          can_edit_banners?: boolean
+          can_delete_banners?: boolean
+          can_create_alert_suggestions?: boolean
+          can_edit_alert_suggestions?: boolean
+          can_delete_alert_suggestions?: boolean
+          can_send_mass_email?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          can_view_products?: boolean
+          can_view_banners?: boolean
+          can_view_alert_suggestions?: boolean
+          can_view_analytics?: boolean
+          can_view_mass_email?: boolean
+          can_view_user_management?: boolean
+          can_view_access_management?: boolean
+          can_create_products?: boolean
+          can_edit_products?: boolean
+          can_delete_products?: boolean
+          can_create_banners?: boolean
+          can_edit_banners?: boolean
+          can_delete_banners?: boolean
+          can_create_alert_suggestions?: boolean
+          can_edit_alert_suggestions?: boolean
+          can_delete_alert_suggestions?: boolean
+          can_send_mass_email?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       alert_suggestions: {
         Row: {
           created_at: string

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { useProducts } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsMana
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { MassEmailSender } from "@/components/admin/MassEmailSender";
 import { UserManagement } from "@/components/admin/UserManagement";
+import { AccessManagement } from "@/components/admin/AccessManagement";
 import {
   Dialog,
   DialogContent,
@@ -33,13 +35,14 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function Admin() {
   const navigate = useNavigate();
   const { data: isAdmin, isLoading: isCheckingAdmin } = useAdmin();
+  const { data: permissions, isLoading: isLoadingPermissions } = useAdminPermissions();
   const { data: products, isLoading: isLoadingProducts } = useProducts();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (isCheckingAdmin) {
+  if (isCheckingAdmin || isLoadingPermissions) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -164,43 +167,60 @@ export default function Admin() {
 
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
-            <TabsTrigger value="banners">Banners</TabsTrigger>
-            <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
-            <TabsTrigger value="user-management">Gerenciar Denúncias</TabsTrigger>
+            {permissions?.can_view_products && (
+              <TabsTrigger value="products">Produtos</TabsTrigger>
+            )}
+            {permissions?.can_view_banners && (
+              <TabsTrigger value="banners">Banners</TabsTrigger>
+            )}
+            {permissions?.can_view_alert_suggestions && (
+              <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
+            )}
+            {permissions?.can_view_analytics && (
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            )}
+            {permissions?.can_view_mass_email && (
+              <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
+            )}
+            {permissions?.can_view_user_management && (
+              <TabsTrigger value="user-management">Gerenciar Denúncias</TabsTrigger>
+            )}
+            {permissions?.can_view_access_management && (
+              <TabsTrigger value="access-management">Gestão de Acessos</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gerenciar Produtos</h2>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setEditingProduct(null);
-                      setIsDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nova Oferta
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>
-                      {editingProduct ? "Editar Oferta" : "Nova Oferta"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <ProductForm
-                    onSubmit={handleSubmit}
-                    defaultValues={editingProduct}
-                    isLoading={isSubmitting}
-                  />
-                </DialogContent>
-              </Dialog>
+              {permissions?.can_create_products && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setEditingProduct(null);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Nova Oferta
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingProduct ? "Editar Oferta" : "Nova Oferta"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <ProductForm
+                      onSubmit={handleSubmit}
+                      defaultValues={editingProduct}
+                      isLoading={isSubmitting}
+                    />
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             {isLoadingProducts ? (
@@ -242,20 +262,26 @@ export default function Admin() {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(product)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(product.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                            {permissions?.can_edit_products && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEdit(product)}
+                                title="Editar"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {permissions?.can_delete_products && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(product.id)}
+                                title="Excluir"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -284,6 +310,10 @@ export default function Admin() {
 
           <TabsContent value="user-management">
             <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="access-management">
+            <AccessManagement />
           </TabsContent>
         </Tabs>
       </div>

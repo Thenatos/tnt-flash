@@ -8,15 +8,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import { Loader2, Send, AlertCircle, CheckCircle2, ShieldAlert } from "lucide-react";
 
 export const MassEmailSender = () => {
+  const { data: permissions } = useAdminPermissions();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [percentage, setPercentage] = useState("100");
   const [emailType, setEmailType] = useState("promotional");
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Verificar se tem permissão
+  if (!permissions?.can_send_mass_email) {
+    return (
+      <Card>
+        <CardContent className="py-12">
+          <div className="text-center text-muted-foreground">
+            <ShieldAlert className="h-12 w-12 mx-auto mb-4 text-destructive opacity-50" />
+            <p className="text-lg font-semibold mb-2">Acesso Negado</p>
+            <p>Você não tem permissão para enviar emails em massa.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleSendEmails = async () => {
     if (!subject.trim() || !message.trim()) {

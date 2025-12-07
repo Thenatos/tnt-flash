@@ -169,7 +169,7 @@ export default function Admin() {
             <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
-            <TabsTrigger value="user-management">Gerenciar Usuários</TabsTrigger>
+            <TabsTrigger value="user-management">Gerenciar Denúncias</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">

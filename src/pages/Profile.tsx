@@ -279,7 +279,7 @@ const Profile = () => {
 
                   {/* Username (@) */}
                   <div className="space-y-2">
-                    <Label htmlFor="username">@</Label>
+                    <Label htmlFor="username">Nome de Usuário</Label>
                     <div className="flex items-center">
                       <span className="px-3 py-2 bg-muted text-sm rounded-l-md">@</span>
                       <Input

@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🎉 Bem-vindo(a), ${userName}! 🎉</h1>
+              <h1>🎉 Uhull Seja Muito Bem-vindo(a), ${userName}! 🎉</h1>
             </div>
             <div class="content">
               <p class="paragraph">

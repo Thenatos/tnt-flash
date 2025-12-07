@@ -159,17 +159,46 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
     setLinkValidationError(null);
 
     try {
+      let urlToValidate = link;
+
+      // Check if it's a shortened URL (common patterns)
+      const isShortened = /^https?:\/\/(s\.|bit\.ly|tinyurl\.|goo\.gl|short\.|t\.co)/i.test(link);
+
+      if (isShortened) {
+        // Expand the URL first
+        const { data: expandData, error: expandError } = await supabase.functions.invoke(
+          "expand-url",
+          {
+            body: { url: link },
+          }
+        );
+
+        if (expandError) {
+          toast.error("Erro ao expandir link encurtado: " + expandError.message);
+          setValidatingLink(false);
+          return;
+        }
+
+        if (expandData?.expandedUrl) {
+          urlToValidate = expandData.expandedUrl;
+          toast.success("Link expandido para validação");
+        }
+      }
+
+      // Validate the (possibly expanded) URL
       const { data, error } = await supabase.rpc("validate_affiliate_link", {
         p_store_id: storeId,
-        p_link: link,
+        p_link: urlToValidate,
       });
 
       if (error) throw error;
 
       if (!data) {
         setLinkValidationError(
-          "O link não contém um ID de afiliado válido para esta loja. Por favor, verifique o link."
+          `O link ${isShortened ? "expandido" : ""} não contém um ID de afiliado válido para esta loja. Por favor, verifique o link.`
         );
+      } else if (isShortened) {
+        toast.success("Link encurtado validado com sucesso!");
       }
     } catch (error: any) {
       toast.error("Erro ao validar link: " + error.message);
@@ -188,15 +217,40 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
     // Final validation check
     setValidatingLink(true);
     try {
+      let urlToValidate = data.affiliate_link;
+
+      // Check if it's a shortened URL
+      const isShortened = /^https?:\/\/(s\.|bit\.ly|tinyurl\.|goo\.gl|short\.|t\.co)/i.test(data.affiliate_link);
+
+      if (isShortened) {
+        // Expand the URL first
+        const { data: expandData, error: expandError } = await supabase.functions.invoke(
+          "expand-url",
+          {
+            body: { url: data.affiliate_link },
+          }
+        );
+
+        if (expandError) {
+          toast.error("Erro ao expandir link encurtado: " + expandError.message);
+          setValidatingLink(false);
+          return;
+        }
+
+        if (expandData?.expandedUrl) {
+          urlToValidate = expandData.expandedUrl;
+        }
+      }
+
       const { data: isValid, error } = await supabase.rpc("validate_affiliate_link", {
         p_store_id: data.store_id,
-        p_link: data.affiliate_link,
+        p_link: urlToValidate,
       });
 
       if (error) throw error;
 
       if (!isValid) {
-        toast.error("O link não contém um ID de afiliado válido para esta loja.");
+        toast.error(`O link ${isShortened ? "expandido" : ""} não contém um ID de afiliado válido para esta loja.`);
         setLinkValidationError("Link inválido");
         return;
       }

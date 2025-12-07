@@ -68,6 +68,8 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
 
   const [useImageUpload, setUseImageUpload] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [validatingLink, setValidatingLink] = useState(false);
+  const [linkValidationError, setLinkValidationError] = useState<string | null>(null);
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -150,9 +152,67 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
     }
   };
 
+  const validateAffiliateLink = async (link: string, storeId: string) => {
+    if (!link || !storeId) return;
+
+    setValidatingLink(true);
+    setLinkValidationError(null);
+
+    try {
+      const { data, error } = await supabase.rpc("validate_affiliate_link", {
+        p_store_id: storeId,
+        p_link: link,
+      });
+
+      if (error) throw error;
+
+      if (!data) {
+        setLinkValidationError(
+          "O link não contém um ID de afiliado válido para esta loja. Por favor, verifique o link."
+        );
+      }
+    } catch (error: any) {
+      toast.error("Erro ao validar link: " + error.message);
+    } finally {
+      setValidatingLink(false);
+    }
+  };
+
+  const handleFormSubmit = async (data: ProductFormData) => {
+    // Validate affiliate link before submitting
+    if (linkValidationError) {
+      toast.error("Corrija o erro no link de afiliado antes de continuar.");
+      return;
+    }
+
+    // Final validation check
+    setValidatingLink(true);
+    try {
+      const { data: isValid, error } = await supabase.rpc("validate_affiliate_link", {
+        p_store_id: data.store_id,
+        p_link: data.affiliate_link,
+      });
+
+      if (error) throw error;
+
+      if (!isValid) {
+        toast.error("O link não contém um ID de afiliado válido para esta loja.");
+        setLinkValidationError("Link inválido");
+        return;
+      }
+
+      // Link is valid, proceed with submission
+      onSubmit(data);
+    } catch (error: any) {
+      toast.error("Erro ao validar link: " + error.message);
+    } finally {
+      setValidatingLink(false);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="title"
@@ -339,8 +399,27 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
             <FormItem>
               <FormLabel>Link de Afiliado</FormLabel>
               <FormControl>
-                <Input placeholder="https://loja.com/produto?ref=..." {...field} />
+                <Input 
+                  placeholder="https://loja.com/produto?ref=..." 
+                  {...field}
+                  onBlur={(e) => {
+                    field.onBlur();
+                    const storeId = form.getValues("store_id");
+                    if (e.target.value && storeId) {
+                      validateAffiliateLink(e.target.value, storeId);
+                    }
+                  }}
+                />
               </FormControl>
+              {validatingLink && (
+                <p className="text-sm text-muted-foreground">Validando link...</p>
+              )}
+              {linkValidationError && (
+                <p className="text-sm text-destructive">{linkValidationError}</p>
+              )}
+              <FormDescription>
+                O link deve conter um ID de afiliado configurado para a loja selecionada.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

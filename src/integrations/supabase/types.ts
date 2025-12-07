@@ -619,6 +619,47 @@ export type Database = {
         }
         Relationships: []
       }
+      store_affiliate_ids: {
+        Row: {
+          id: string
+          store_id: string
+          affiliate_id: string
+          description: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          store_id: string
+          affiliate_id: string
+          description?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          store_id?: string
+          affiliate_id?: string
+          description?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_affiliate_ids_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       user_punishments: {
         Row: {
           created_at: string
@@ -694,6 +735,13 @@ export type Database = {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      validate_affiliate_link: {
+        Args: {
+          p_store_id: string
+          p_link: string
         }
         Returns: boolean
       }

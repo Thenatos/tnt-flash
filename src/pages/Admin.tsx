@@ -12,6 +12,7 @@ import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { MassEmailSender } from "@/components/admin/MassEmailSender";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { AccessManagement } from "@/components/admin/AccessManagement";
+import { CommissionedLinksManager } from "@/components/admin/CommissionedLinksManager";
 import {
   Dialog,
   DialogContent,
@@ -192,6 +193,9 @@ export default function Admin() {
             {(permissions?.can_view_access_management ?? true) && (
               <TabsTrigger value="access-management">Gestão de Acessos</TabsTrigger>
             )}
+            {(permissions?.can_view_products ?? true) && (
+              <TabsTrigger value="commissioned-links">Links Comissionados</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -318,6 +322,10 @@ export default function Admin() {
 
           <TabsContent value="access-management">
             <AccessManagement />
+          </TabsContent>
+
+          <TabsContent value="commissioned-links">
+            <CommissionedLinksManager />
           </TabsContent>
         </Tabs>
       </div>

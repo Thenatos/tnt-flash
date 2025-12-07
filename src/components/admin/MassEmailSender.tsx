@@ -21,7 +21,7 @@ export const MassEmailSender = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   // Verificar se tem permissão
-  if (!permissions?.can_send_mass_email) {
+  if (permissions && !permissions.can_send_mass_email) {
     return (
       <Card>
         <CardContent className="py-12">

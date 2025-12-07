@@ -42,6 +42,10 @@ export default function Admin() {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Debug: log permissions
+  console.log("Admin Permissions:", permissions);
+  console.log("Is Loading Permissions:", isLoadingPermissions);
+
   if (isCheckingAdmin || isLoadingPermissions) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -167,25 +171,25 @@ export default function Admin() {
 
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList>
-            {permissions?.can_view_products && (
+            {(permissions?.can_view_products ?? true) && (
               <TabsTrigger value="products">Produtos</TabsTrigger>
             )}
-            {permissions?.can_view_banners && (
+            {(permissions?.can_view_banners ?? true) && (
               <TabsTrigger value="banners">Banners</TabsTrigger>
             )}
-            {permissions?.can_view_alert_suggestions && (
+            {(permissions?.can_view_alert_suggestions ?? true) && (
               <TabsTrigger value="alert-suggestions">Sugestões de Alertas</TabsTrigger>
             )}
-            {permissions?.can_view_analytics && (
+            {(permissions?.can_view_analytics ?? true) && (
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             )}
-            {permissions?.can_view_mass_email && (
+            {(permissions?.can_view_mass_email ?? true) && (
               <TabsTrigger value="mass-email">Email em Massa</TabsTrigger>
             )}
-            {permissions?.can_view_user_management && (
+            {(permissions?.can_view_user_management ?? true) && (
               <TabsTrigger value="user-management">Gerenciar Denúncias</TabsTrigger>
             )}
-            {permissions?.can_view_access_management && (
+            {(permissions?.can_view_access_management ?? true) && (
               <TabsTrigger value="access-management">Gestão de Acessos</TabsTrigger>
             )}
           </TabsList>
@@ -193,7 +197,7 @@ export default function Admin() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gerenciar Produtos</h2>
-              {permissions?.can_create_products && (
+              {(permissions?.can_create_products ?? true) && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -262,7 +266,7 @@ export default function Admin() {
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            {permissions?.can_edit_products && (
+                            {(permissions?.can_edit_products ?? true) && (
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -272,7 +276,7 @@ export default function Admin() {
                                 <Pencil className="h-4 w-4" />
                               </Button>
                             )}
-                            {permissions?.can_delete_products && (
+                            {(permissions?.can_delete_products ?? true) && (
                               <Button
                                 variant="ghost"
                                 size="icon"

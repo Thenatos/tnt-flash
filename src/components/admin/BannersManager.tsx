@@ -58,7 +58,7 @@ export const BannersManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gerenciar Banners</h2>
-        {permissions?.can_create_banners && (
+        {(permissions?.can_create_banners ?? true) && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -143,7 +143,7 @@ export const BannersManager = () => {
                           <Eye className="h-4 w-4" />
                         )}
                       </Button>
-                      {permissions?.can_edit_banners && (
+                      {(permissions?.can_edit_banners ?? true) && (
                         <Button
                           variant="ghost"
                           size="icon"
@@ -153,7 +153,7 @@ export const BannersManager = () => {
                           <Pencil className="h-4 w-4" />
                         </Button>
                       )}
-                      {permissions?.can_delete_banners && (
+                      {(permissions?.can_delete_banners ?? true) && (
                         <Button
                           variant="ghost"
                           size="icon"

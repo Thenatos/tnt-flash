@@ -45,7 +45,7 @@ export const useAdminPermissions = () => {
 
       if (error) {
         console.error("Error fetching admin permissions:", error);
-        // Retornar permissões padrão se não existir registro
+        // Retornar permissões COMPLETAS por padrão para admins sem registro
         return {
           id: "",
           user_id: user.id,
@@ -55,17 +55,17 @@ export const useAdminPermissions = () => {
           can_view_analytics: true,
           can_view_mass_email: true,
           can_view_user_management: true,
-          can_view_access_management: false,
+          can_view_access_management: true,
           can_create_products: true,
           can_edit_products: true,
-          can_delete_products: false,
+          can_delete_products: true,
           can_create_banners: true,
           can_edit_banners: true,
-          can_delete_banners: false,
+          can_delete_banners: true,
           can_create_alert_suggestions: true,
           can_edit_alert_suggestions: true,
-          can_delete_alert_suggestions: false,
-          can_send_mass_email: false,
+          can_delete_alert_suggestions: true,
+          can_send_mass_email: true,
         };
       }
 

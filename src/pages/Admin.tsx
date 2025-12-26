@@ -13,6 +13,7 @@ import { MassEmailSender } from "@/components/admin/MassEmailSender";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { AccessManagement } from "@/components/admin/AccessManagement";
 import { CommissionedLinksManager } from "@/components/admin/CommissionedLinksManager";
+import { SocialGroupsManager } from "@/components/admin/SocialGroupsManager";
 import {
   Dialog,
   DialogContent,
@@ -198,6 +199,7 @@ export default function Admin() {
             {(permissions?.can_view_commissioned_links ?? true) && (
               <TabsTrigger value="commissioned-links">Links Comissionados</TabsTrigger>
             )}
+            <TabsTrigger value="social-groups">Grupos WhatsApp e Telegram</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -328,6 +330,10 @@ export default function Admin() {
 
           <TabsContent value="commissioned-links">
             <CommissionedLinksManager />
+          </TabsContent>
+
+          <TabsContent value="social-groups">
+            <SocialGroupsManager />
           </TabsContent>
         </Tabs>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useActiveSocialGroups } from "@/hooks/useSocialGroups";
 
 const WhatsAppIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
@@ -9,13 +10,16 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-interface JoinGroupsPopupProps {
-  whatsappLink: string;
-}
+const TelegramIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.23.171.324.016.094.037.308.021.475z"/>
+  </svg>
+);
 
-export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
+export const JoinGroupsPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const { data: groups, isLoading } = useActiveSocialGroups();
 
   useEffect(() => {
     // Mostrar popup minimizado após 3 segundos
@@ -41,7 +45,12 @@ export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
     setIsMinimized(false);
   };
 
+  if (isLoading || !groups || groups.length === 0) return null;
+
   if (!isOpen && !isMinimized) return null;
+
+  const hasWhatsApp = groups.some(g => g.platform === "whatsapp");
+  const hasTelegram = groups.some(g => g.platform === "telegram");
 
   return (
     <>
@@ -59,8 +68,9 @@ export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
                 <X className="h-4 w-4" />
               </Button>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <WhatsAppIcon />
-                Junte-se ao nosso grupo!
+                {hasWhatsApp && <WhatsAppIcon />}
+                {hasTelegram && <TelegramIcon />}
+                Junte-se aos nossos grupos!
               </CardTitle>
               <CardDescription>
                 Receba as melhores ofertas em primeira mão
@@ -71,20 +81,29 @@ export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
                 Participe da nossa comunidade e não perca nenhuma promoção imperdível! 🔥
               </p>
 
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2 hover:bg-green-50 hover:border-green-500 hover:text-green-700 transition-all"
-                >
-                  <WhatsAppIcon />
-                  Entrar no WhatsApp
-                </Button>
-              </a>
+              <div className="space-y-2">
+                {groups.map((group) => (
+                  <a
+                    key={group.id}
+                    href={group.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start gap-2 transition-all ${
+                        group.platform === "whatsapp"
+                          ? "hover:bg-green-50 hover:border-green-500 hover:text-green-700"
+                          : "hover:bg-blue-50 hover:border-blue-500 hover:text-blue-700"
+                      }`}
+                    >
+                      {group.platform === "whatsapp" ? <WhatsAppIcon /> : <TelegramIcon />}
+                      {group.name}
+                    </Button>
+                  </a>
+                ))}
+              </div>
 
               <Button
                 variant="ghost"
@@ -103,9 +122,12 @@ export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
       {isMinimized && !isOpen && (
         <button
           onClick={handleExpand}
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-green-500 text-white shadow-2xl hover:scale-110 transition-all duration-200 animate-in zoom-in-50 fade-in flex items-center justify-center group hover:bg-green-600"
+          className={`fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl hover:scale-110 transition-all duration-200 animate-in zoom-in-50 fade-in flex items-center justify-center group ${
+            hasWhatsApp ? "bg-green-500 hover:bg-green-600" : "bg-blue-500 hover:bg-blue-600"
+          } text-white`}
         >
-          <WhatsAppIcon />
+          {hasWhatsApp && <WhatsAppIcon />}
+          {!hasWhatsApp && hasTelegram && <TelegramIcon />}
           <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive rounded-full animate-ping"></span>
           <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive rounded-full"></span>
           

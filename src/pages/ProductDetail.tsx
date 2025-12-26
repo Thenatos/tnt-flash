@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CommentSection } from "@/components/CommentSection";
@@ -21,6 +21,7 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useProduct(id!);
   const { createAlert } = useProductAlerts();
   const { trackEvent } = useAnalytics();
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -87,9 +88,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <JoinGroupsPopup 
-        whatsappLink="https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e"
-      />
+      <JoinGroupsPopup />
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header onSearch={handleSearch} />
@@ -191,7 +190,17 @@ const ProductDetail = () => {
             {product.description && (
               <div className="space-y-2">
                 <h3 className="font-semibold">Descrição</h3>
-                <p className="text-sm text-muted-foreground">{product.description}</p>
+                <div>
+                  <p className={`text-sm text-muted-foreground ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                    {product.description}
+                  </p>
+                  <button
+                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                    className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1"
+                  >
+                    {isDescriptionExpanded ? 'Exibir menos' : 'Exibir mais...'}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -279,7 +288,17 @@ const ProductDetail = () => {
                   <h1 className="text-3xl md:text-4xl font-bold mb-4">{product.title}</h1>
                   
                   {product.description && (
-                    <p className="text-muted-foreground">{product.description}</p>
+                    <div>
+                      <p className={`text-muted-foreground ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                        {product.description}
+                      </p>
+                      <button
+                        onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                        className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1"
+                      >
+                        {isDescriptionExpanded ? 'Exibir menos' : 'Exibir mais...'}
+                      </button>
+                    </div>
                   )}
                   
                   {isExpired && (

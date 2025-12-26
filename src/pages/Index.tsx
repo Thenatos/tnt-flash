@@ -118,9 +118,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <JoinGroupsPopup 
-        whatsappLink="https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e"
-      />
+      <JoinGroupsPopup />
       <Header
         onSearch={handleSearch}
         onCategorySelect={handleCategorySelect}

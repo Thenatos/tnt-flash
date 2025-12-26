@@ -29,7 +29,7 @@ export const Footer = () => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-white hover:text-white hover:bg-white/10"
-                onClick={() => window.open('https://t.me/tntofertas', '_blank')}
+                onClick={() => window.open('https://t.me/+NZ_5GVaIt342NTRh', '_blank')}
               >
                 <Send className="h-5 w-5 mr-2" />
                 Canal Telegram
@@ -76,7 +76,7 @@ export const Footer = () => {
             variant="ghost" 
             size="icon" 
             className="text-white hover:text-white hover:bg-white/10 rounded-full"
-            onClick={() => window.open('https://t.me/tntofertas', '_blank')}
+            onClick={() => window.open('https://t.me/+NZ_5GVaIt342NTRh', '_blank')}
           >
             <Send className="h-5 w-5" />
           </Button>

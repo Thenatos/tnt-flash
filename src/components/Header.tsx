@@ -156,7 +156,6 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
             fetchpriority="high"
             className="h-10 w-auto md:h-12"
           />
-          </picture>
           <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent hidden sm:inline ml-3">
             TNT Ofertas
           </span>

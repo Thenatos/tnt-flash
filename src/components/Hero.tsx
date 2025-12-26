@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { ChevronLeft, ChevronRight, Zap, Percent, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHeroBanners } from "@/hooks/useHeroBanners";
@@ -12,6 +13,9 @@ export const Hero = () => {
     ...(banners || []),
     { id: 'special-banner', isSpecial: true } as any
   ];
+
+  // Primeiro banner real (não o especial)
+  const firstBanner = banners?.[0];
 
   useEffect(() => {
     if (allBanners.length === 0) return;
@@ -48,7 +52,18 @@ export const Hero = () => {
   const isSpecialBanner = currentBanner?.isSpecial;
 
   return (
-    <section className="relative overflow-hidden">
+    <>
+      {firstBanner && !firstBanner.isSpecial && (
+        <Helmet>
+          <link 
+            rel="preload" 
+            as="image" 
+            href={firstBanner.image_url}
+            fetchpriority="high"
+          />
+        </Helmet>
+      )}
+      <section className="relative overflow-hidden">
       <div className="relative h-[400px] md:h-[500px]">
         {/* Banners normais com imagem */}
         {allBanners.map((banner, index) => {
@@ -206,5 +221,6 @@ export const Hero = () => {
         )}
       </div>
     </section>
+    </>
   );
 };

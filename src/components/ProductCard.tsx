@@ -93,9 +93,14 @@ export const ProductCard = ({
                   R$ {originalPrice.toFixed(2).replace(".", ",")}
                 </span>
                 {discount > 0 && (
-                  <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-[10px] font-bold">
-                    -{discount}%
-                  </span>
+                  <>
+                    <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-[10px] font-bold">
+                      {discount}%
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      de Desconto
+                    </span>
+                  </>
                 )}
               </div>
             )}
@@ -180,9 +185,14 @@ export const ProductCard = ({
                   R$ {originalPrice.toFixed(2).replace(".", ",")}
                 </span>
                 {discount > 0 && (
-                  <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-xs font-bold">
-                    -{discount}%
-                  </span>
+                  <>
+                    <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-xs font-bold">
+                      {discount}%
+                    </span>
+                    <span className="text-xs text-muted-foreground font-medium">
+                      de Desconto
+                    </span>
+                  </>
                 )}
               </div>
             )}

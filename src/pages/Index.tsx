@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { CategorySection } from "@/components/CategorySection";
@@ -11,15 +12,34 @@ import { ptBR } from "date-fns/locale";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Index = () => {
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [showBestDeals, setShowBestDeals] = useState(false);
   const { data: products, isLoading } = useProducts(searchQuery, selectedCategory);
   const { trackEvent } = useAnalytics();
+  const productsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     trackEvent('page_view');
   }, []);
+
+  // Aplicar busca vinda de outra página
+  useEffect(() => {
+    if (location.state?.searchQuery) {
+      setSearchQuery(location.state.searchQuery);
+      setShowBestDeals(false);
+      setSelectedCategory(undefined);
+      
+      // Scroll para produtos após aplicar busca
+      setTimeout(() => {
+        productsRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 300);
+    }
+  }, [location.state]);
 
   const handleBestDealsFilter = () => {
     setShowBestDeals(true);
@@ -34,6 +54,22 @@ const Index = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setShowBestDeals(false);
+    
+    // Scroll suave para a seção de produtos quando uma busca é realizada
+    if (query && productsRef.current) {
+      setTimeout(() => {
+        productsRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  };
+
+  const handleReset = () => {
+    setSearchQuery("");
+    setSelectedCategory(undefined);
     setShowBestDeals(false);
   };
 
@@ -89,6 +125,7 @@ const Index = () => {
         onSearch={handleSearch}
         onCategorySelect={handleCategorySelect}
         onBestDealsFilter={handleBestDealsFilter}
+        onReset={handleReset}
       />
       <Hero />
       <CategorySection 
@@ -97,7 +134,7 @@ const Index = () => {
       />
       
       {/* Products Section */}
-      <section className="py-12 flex-1">
+      <section ref={productsRef} className="py-12 flex-1">
         <div className="container px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl md:text-4xl font-bold">

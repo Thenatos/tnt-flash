@@ -37,9 +37,10 @@ interface HeaderProps {
   onSearch?: (query: string) => void;
   onCategorySelect?: (slug: string | undefined) => void;
   onBestDealsFilter?: () => void;
+  onReset?: () => void;
 }
 
-export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: HeaderProps) => {
+export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset }: HeaderProps) => {
   const { user, signOut } = useAuth();
   const { data: isAdmin } = useAdmin();
   const { data: categories } = useCategories();
@@ -54,6 +55,12 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
 
   const handleTelegramClick = () => {
     trackEvent('telegram_click', { source: 'header' });
+  };
+
+  const handleLogoClick = () => {
+    setSearchInput("");
+    onReset?.();
+    navigate("/");
   };
 
   return (
@@ -137,7 +144,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
             </SheetContent>
           </Sheet>
           <button 
-            onClick={() => navigate("/")}
+            onClick={handleLogoClick}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
             <img src={logo} alt="TNT Ofertas" className="h-12 w-auto" />
@@ -234,9 +241,11 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
               placeholder="Buscar ofertas..."
               className="pl-10 bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-secondary"
               value={searchInput}
-              onChange={(e) => {
-                setSearchInput(e.target.value);
-                onSearch?.(e.target.value);
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onSearch?.(searchInput);
+                }
               }}
             />
           </div>
@@ -325,9 +334,11 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter }: Header
             placeholder="Buscar ofertas..."
             className="pl-10 bg-muted/50 border-0"
             value={searchInput}
-            onChange={(e) => {
-              setSearchInput(e.target.value);
-              onSearch?.(e.target.value);
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onSearch?.(searchInput);
+              }
             }}
           />
         </div>

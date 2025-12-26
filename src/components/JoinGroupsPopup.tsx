@@ -18,9 +18,9 @@ export const JoinGroupsPopup = ({ whatsappLink }: JoinGroupsPopupProps) => {
   const [isMinimized, setIsMinimized] = useState(false);
 
   useEffect(() => {
-    // Mostrar popup após 3 segundos
+    // Mostrar popup minimizado após 3 segundos
     const timer = setTimeout(() => {
-      setIsOpen(true);
+      setIsMinimized(true);
     }, 3000);
 
     return () => clearTimeout(timer);

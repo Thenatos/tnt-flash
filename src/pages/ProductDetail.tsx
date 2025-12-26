@@ -76,6 +76,10 @@ const ProductDetail = () => {
     });
   };
 
+  const handleSearch = (query: string) => {
+    navigate("/", { state: { searchQuery: query } });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <JoinGroupsPopup 
@@ -83,7 +87,7 @@ const ProductDetail = () => {
       />
       {/* Desktop Header */}
       <div className="hidden md:block">
-        <Header />
+        <Header onSearch={handleSearch} />
       </div>
       
       <main className="flex-1">

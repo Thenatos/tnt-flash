@@ -67,6 +67,7 @@ export default function Admin() {
 
   const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
+    toast.loading("Salvando Promoção, Aguarde!", { id: "saving-product" });
     try {
       let expiresAt = null;
       if (data.expires_in_days === "expired") {
@@ -90,7 +91,8 @@ export default function Admin() {
         image_url: data.image_url,
         affiliate_link: data.affiliate_link,
         coupon_code: data.coupon_code || null,
-        installment_info: data.installment_info || null,
+        installment_count: data.installment_count ? parseInt(data.installment_count) : null,
+        has_interest: data.has_interest || false,
         is_hot: data.is_hot || false,
         expires_at: expiresAt,
       };
@@ -102,7 +104,7 @@ export default function Admin() {
           .eq("id", editingProduct.id);
 
         if (error) throw error;
-        toast.success("Produto atualizado com sucesso!");
+        toast.success("Produto atualizado com sucesso!", { id: "saving-product" });
       } else {
         const { data: newProduct, error } = await supabase
           .from("products")
@@ -121,14 +123,14 @@ export default function Admin() {
           // Notificação de alertas é opcional - não bloqueia criação do produto
         }
         
-        toast.success("Produto criado com sucesso!");
+        toast.success("Produto criado com sucesso!", { id: "saving-product" });
       }
 
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setIsDialogOpen(false);
       setEditingProduct(null);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar produto");
+      toast.error(error.message || "Erro ao salvar produto", { id: "saving-product" });
     } finally {
       setIsSubmitting(false);
     }

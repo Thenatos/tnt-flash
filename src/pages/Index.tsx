@@ -172,6 +172,8 @@ const Index = () => {
                     isHot={product.is_hot || false}
                     commentCount={product.comments?.[0]?.count || 0}
                     isExpired={isExpired}
+                    installmentCount={product.installment_count}
+                    hasInterest={product.has_interest}
                   />
                 );
               })}

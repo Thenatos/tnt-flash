@@ -38,8 +38,8 @@ const productSchema = z.object({
   image_url: z.string().min(1, "Imagem é obrigatória"),
   affiliate_link: z.string().url("Link de afiliado inválido"),
   coupon_code: z.string().optional(),
-  installment_info: z.string().optional(),
   installment_count: z.string().optional(),
+  has_interest: z.boolean().default(false),
   is_hot: z.boolean().default(false),
   expires_in_days: z.string().optional(),
 });
@@ -84,8 +84,8 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       image_url: "",
       affiliate_link: "",
       coupon_code: "",
-      installment_info: "",
       installment_count: "",
+      has_interest: false,
       is_hot: false,
       expires_in_days: "never",
     },
@@ -101,20 +101,6 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
         if (original > 0 && promotional > 0 && promotional < original) {
           const discount = Math.round(((original - promotional) / original) * 100);
           form.setValue("discount_percentage", discount.toString());
-        }
-      }
-
-      // Calcular parcelamento automaticamente
-      if (name === "promotional_price" || name === "installment_count") {
-        const promotional = parseFloat(value.promotional_price || "0");
-        const installments = parseInt(value.installment_count || "1");
-        
-        if (promotional > 0 && installments > 0) {
-          const installmentValue = (promotional / installments).toFixed(2);
-          form.setValue(
-            "installment_info",
-            `${installments}x de R$ ${installmentValue.replace(".", ",")}`
-          );
         }
       }
     });
@@ -521,14 +507,21 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
 
           <FormField
             control={form.control}
-            name="installment_info"
+            name="has_interest"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Info Parcelamento</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled />
-                </FormControl>
-                <FormDescription>Calculado automaticamente</FormDescription>
+              <FormItem className="flex flex-col justify-end">
+                <FormLabel>Tipo de Parcelamento</FormLabel>
+                <Select onValueChange={(value) => field.onChange(value === "true")} value={field.value?.toString()}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="false">Sem Juros</SelectItem>
+                    <SelectItem value="true">Com Juros</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -565,8 +558,8 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
           )}
         />
 
-        <Button type="submit" variant="secondary" className="w-full" disabled={isLoading}>
-          {isLoading ? "Salvando..." : "Salvar Produto"}
+        <Button type="submit" variant="secondary" className="w-full" disabled={isLoading || uploading || validatingLink}>
+          {isLoading ? "Salvando Promoção..." : "Salvar Produto"}
         </Button>
       </form>
     </Form>

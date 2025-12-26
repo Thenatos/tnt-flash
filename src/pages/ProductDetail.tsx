@@ -287,8 +287,15 @@ const ProductDetail = () => {
                       R$ {Number(product.original_price).toFixed(2)}
                     </span>
                   </div>
-                  {product.installment_info && (
-                    <p className="text-sm text-muted-foreground">{product.installment_info}</p>
+                  {product.installment_count && (
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-muted-foreground">
+                        {product.installment_count}x de R$ {(Number(product.promotional_price) / product.installment_count).toFixed(2).replace(".", ",")}
+                      </p>
+                      <Badge variant={product.has_interest ? "destructive" : "secondary"} className="text-xs">
+                        {product.has_interest ? "Com Juros" : "Sem Juros"}
+                      </Badge>
+                    </div>
                   )}
                 </div>
 

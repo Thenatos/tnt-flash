@@ -18,6 +18,8 @@ interface ProductCardProps {
   isHot?: boolean;
   commentCount?: number;
   isExpired?: boolean;
+  installmentCount?: number;
+  hasInterest?: boolean;
 }
 
 export const ProductCard = ({
@@ -33,6 +35,8 @@ export const ProductCard = ({
   isHot = false,
   commentCount = 0,
   isExpired = false,
+  installmentCount,
+  hasInterest,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   return (
@@ -90,6 +94,16 @@ export const ProductCard = ({
             {originalPrice > promotionalPrice && (
               <div className="text-xs text-muted-foreground line-through">
                 R$ {originalPrice.toFixed(2).replace(".", ",")}
+              </div>
+            )}
+            {installmentCount && installmentCount > 1 && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-xs text-muted-foreground">
+                  {installmentCount}x R$ {(promotionalPrice / installmentCount).toFixed(2).replace(".", ",")}
+                </span>
+                <Badge variant={hasInterest ? "destructive" : "secondary"} className="text-[10px] px-1.5 py-0">
+                  {hasInterest ? "C/ Juros" : "S/ Juros"}
+                </Badge>
               </div>
             )}
           </div>
@@ -171,6 +185,16 @@ export const ProductCard = ({
                 <span className="text-sm text-muted-foreground line-through">
                   R$ {originalPrice.toFixed(2).replace(".", ",")}
                 </span>
+              </div>
+            )}
+            {installmentCount && installmentCount > 1 && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-muted-foreground">
+                  {installmentCount}x R$ {(promotionalPrice / installmentCount).toFixed(2).replace(".", ",")}
+                </span>
+                <Badge variant={hasInterest ? "destructive" : "secondary"} className="text-xs">
+                  {hasInterest ? "Com Juros" : "Sem Juros"}
+                </Badge>
               </div>
             )}
           </div>

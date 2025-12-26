@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { optimizeImage, isImageFile, formatFileSize } from "@/utils/imageOptimizer";
 
 const productSchema = z.object({
   title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
@@ -113,15 +114,32 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       const file = event.target.files?.[0];
       if (!file) return;
 
-      setUploading(true);
+      // Valida se é uma imagem
+      if (!isImageFile(file)) {
+        toast.error("Por favor, selecione uma imagem válida");
+        return;
+      }
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const originalSize = file.size;
+      console.log(`📸 Imagem original: ${formatFileSize(originalSize)}`);
+
+      setUploading(true);
+      toast.loading("Otimizando imagem...", { id: "image-upload" });
+
+      // Otimiza a imagem (converte para WebP e redimensiona)
+      const optimizedFile = await optimizeImage(file, 800, 800, 0.85);
+      const optimizedSize = optimizedFile.size;
+      const savings = Math.round((1 - optimizedSize / originalSize) * 100);
+
+      console.log(`✅ Imagem otimizada: ${formatFileSize(optimizedSize)} (${savings}% menor)`);
+      toast.loading(`Enviando imagem otimizada (${savings}% menor)...`, { id: "image-upload" });
+
+      const fileName = `${Math.random()}.webp`;
       const filePath = `${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from("product-images")
-        .upload(filePath, file);
+        .upload(filePath, optimizedFile);
 
       if (uploadError) throw uploadError;
 
@@ -130,9 +148,10 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
         .getPublicUrl(filePath);
 
       form.setValue("image_url", publicUrl);
-      toast.success("Imagem enviada com sucesso!");
+      toast.success(`Imagem otimizada e enviada! (${savings}% menor)`, { id: "image-upload" });
     } catch (error: any) {
-      toast.error(error?.message || "Erro ao enviar imagem");
+      console.error("Erro ao processar imagem:", error);
+      toast.error(error?.message || "Erro ao processar imagem", { id: "image-upload" });
     } finally {
       setUploading(false);
     }

@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { optimizeImage, isImageFile, formatFileSize } from "@/utils/imageOptimizer";
 
 interface BannerFormProps {
   onSubmit: (data: any) => void;
@@ -40,26 +41,38 @@ export const BannerForm = ({
     if (!file) return;
 
     // Validação de tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      toast.error("Por favor, selecione apenas imagens");
+    if (!isImageFile(file)) {
+      toast.error("Por favor, selecione uma imagem válida");
       return;
     }
 
-    // Validação de tamanho (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 5MB");
+    // Validação de tamanho (10MB antes da otimização)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 10MB");
       return;
     }
+
+    const originalSize = file.size;
+    console.log(`📸 Banner original: ${formatFileSize(originalSize)}`);
 
     setUploading(true);
+    toast.loading("Otimizando banner...", { id: "banner-upload" });
+
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      // Otimiza a imagem (banners em resolução maior: 1920x600)
+      const optimizedFile = await optimizeImage(file, 1920, 600, 0.85);
+      const optimizedSize = optimizedFile.size;
+      const savings = Math.round((1 - optimizedSize / originalSize) * 100);
+
+      console.log(`✅ Banner otimizado: ${formatFileSize(optimizedSize)} (${savings}% menor)`);
+      toast.loading(`Enviando banner otimizado (${savings}% menor)...`, { id: "banner-upload" });
+
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.webp`;
       const filePath = fileName;
 
       const { error: uploadError, data } = await supabase.storage
         .from('banner-images')
-        .upload(filePath, file);
+        .upload(filePath, optimizedFile);
 
       if (uploadError) throw uploadError;
 
@@ -69,9 +82,10 @@ export const BannerForm = ({
 
       setValue('image_url', publicUrl);
       setPreviewUrl(publicUrl);
-      toast.success("Imagem enviada com sucesso!");
+      toast.success(`Banner otimizado e enviado! (${savings}% menor)`, { id: "banner-upload" });
     } catch (error: any) {
-      toast.error(error?.message || "Erro ao fazer upload da imagem");
+      console.error("Erro ao processar banner:", error);
+      toast.error(error?.message || "Erro ao fazer upload do banner", { id: "banner-upload" });
     } finally {
       setUploading(false);
     }

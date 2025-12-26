@@ -16,30 +16,33 @@ export const Footer = () => {
 
           {/* Social Channels */}
           <div>
-            <h4 className="text-xl font-bold mb-3">Nossos Canais</h4>
-            <div className="space-y-2">
+            <h4 className="text-xl font-bold mb-2">Nossos Canais</h4>
+            <div className="space-y-1">
               <Button 
                 variant="ghost" 
-                className="w-full justify-start text-white hover:text-white hover:bg-white/10"
+                size="sm"
+                className="w-full justify-start text-white hover:text-white hover:bg-white/10 h-8"
                 onClick={() => window.open('https://www.instagram.com/canaltntofertas/', '_blank')}
               >
-                <Instagram className="h-5 w-5 mr-2" />
+                <Instagram className="h-4 w-4 mr-2" />
                 Instagram
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start text-white hover:text-white hover:bg-white/10"
+                size="sm"
+                className="w-full justify-start text-white hover:text-white hover:bg-white/10 h-8"
                 onClick={() => window.open('https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e', '_blank')}
               >
-                <MessageCircle className="h-5 w-5 mr-2" />
+                <MessageCircle className="h-4 w-4 mr-2" />
                 Grupo WhatsApp
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start text-white hover:text-white hover:bg-white/10"
+                size="sm"
+                className="w-full justify-start text-white hover:text-white hover:bg-white/10 h-8"
                 onClick={() => window.open('https://t.me/+NZ_5GVaIt342NTRh', '_blank')}
               >
-                <Send className="h-5 w-5 mr-2" />
+                <Send className="h-4 w-4 mr-2" />
                 Canal Telegram
               </Button>
             </div>
@@ -47,15 +50,15 @@ export const Footer = () => {
 
           {/* Links */}
           <div>
-            <h4 className="text-xl font-bold mb-3">Links Rápidos</h4>
-            <div className="space-y-2">
-              <a href="/termos" className="block text-white/80 hover:text-white transition-colors">
+            <h4 className="text-xl font-bold mb-2">Links Rápidos</h4>
+            <div className="space-y-1">
+              <a href="/termos" className="block text-white/80 hover:text-white transition-colors text-sm py-1">
                 Termos de Uso
               </a>
-              <a href="/privacidade" className="block text-white/80 hover:text-white transition-colors">
+              <a href="/privacidade" className="block text-white/80 hover:text-white transition-colors text-sm py-1">
                 Política de Privacidade
               </a>
-              <a href="/conduta" className="block text-white/80 hover:text-white transition-colors">
+              <a href="/conduta" className="block text-white/80 hover:text-white transition-colors text-sm py-1">
                 Código de Conduta
               </a>
             </div>

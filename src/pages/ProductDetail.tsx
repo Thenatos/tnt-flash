@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { CommentSection } from "@/components/CommentSection";
 import { ProductReactions } from "@/components/ProductReactions";
 import { JoinGroupsPopup } from "@/components/JoinGroupsPopup";
+import { ProductSEO } from "@/components/ProductSEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
@@ -88,6 +89,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ProductSEO product={product} />
       <JoinGroupsPopup />
       {/* Desktop Header */}
       <div className="hidden md:block">

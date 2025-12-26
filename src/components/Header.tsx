@@ -253,10 +253,6 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Search className="h-5 w-5" />
-          </Button>
-          
           {/* Notification Bell */}
           <NotificationBell />
           
@@ -325,14 +321,14 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
         </div>
       </div>
 
-      {/* Mobile Search */}
-      <div className="md:hidden border-t px-4 py-3">
+      {/* Mobile Search - Integrated */}
+      <div className="md:hidden border-t px-4 py-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Buscar ofertas..."
-            className="pl-10 bg-muted/50 border-0"
+            className="pl-10 bg-muted/50 border-0 h-9"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Clock, Flame, ExternalLink, MessageCircle, MessageSquare, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ProductReactionCount } from "./ProductReactionCount";
+import { StoreTag } from "./StoreTag";
 
 interface ProductCardProps {
   id: string;
@@ -77,9 +78,7 @@ export const ProductCard = ({
         <div className="flex-1 flex flex-col justify-between min-w-0">
           {/* Store and Time */}
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-xs text-muted-foreground font-medium truncate">
-              {store}
-            </span>
+            <StoreTag storeName={store} size="sm" />
             <span className="text-xs text-muted-foreground flex-shrink-0">{timeAgo}</span>
           </div>
 
@@ -161,10 +160,7 @@ export const ProductCard = ({
           {/* Store and Time */}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              {storeLogo && (
-                <img src={storeLogo} alt={store} className="h-4 w-auto object-contain" />
-              )}
-              <span className="font-medium">{store}</span>
+              <StoreTag storeName={store} size="sm" />
             </div>
             <span>{timeAgo}</span>
           </div>

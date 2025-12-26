@@ -27,6 +27,7 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { optimizeImage, isImageFile, formatFileSize } from "@/utils/imageOptimizer";
+import { StoreTag } from "@/components/StoreTag";
 
 const productSchema = z.object({
   title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
@@ -391,6 +392,14 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
                     ))}
                   </SelectContent>
                 </Select>
+                {field.value && stores && (
+                  <div className="mt-2">
+                    <StoreTag 
+                      storeName={stores.find(s => s.id === field.value)?.name || ""} 
+                      size="sm" 
+                    />
+                  </div>
+                )}
                 <FormMessage />
               </FormItem>
             )}

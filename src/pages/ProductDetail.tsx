@@ -8,6 +8,7 @@ import { JoinGroupsPopup } from "@/components/JoinGroupsPopup";
 import { ProductSEO } from "@/components/ProductSEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoreTag } from "@/components/StoreTag";
 import { useProduct } from "@/hooks/useProducts";
 import { useProductAlerts } from "@/hooks/useProductAlerts";
 import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical } from "lucide-react";
@@ -107,8 +108,8 @@ const ProductDetail = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="text-sm text-muted-foreground">
-              Vendido por <span className="font-semibold text-foreground">{product.stores?.name}</span>
+            <div className="flex items-center gap-2">
+              {product.stores && <StoreTag storeName={product.stores.name} size="sm" />}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon">
@@ -369,9 +370,9 @@ const ProductDetail = () => {
                 {product.stores && (
                   <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
                     <Store className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Loja</p>
-                      <p className="font-semibold">{product.stores.name}</p>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground mb-2">Loja</p>
+                      <StoreTag storeName={product.stores.name} size="md" />
                     </div>
                   </div>
                 )}

@@ -6,6 +6,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { StoreTag } from "@/components/StoreTag";
 import { BannersManager } from "@/components/admin/BannersManager";
 import { AlertSuggestionsManager } from "@/components/admin/AlertSuggestionsManager";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
@@ -246,6 +247,7 @@ export default function Admin() {
                     <TableRow>
                       <TableHead>Imagem</TableHead>
                       <TableHead>Título</TableHead>
+                      <TableHead>Loja</TableHead>
                       <TableHead>Preço Original</TableHead>
                       <TableHead>Preço Promo</TableHead>
                       <TableHead>Desconto</TableHead>
@@ -263,6 +265,11 @@ export default function Admin() {
                           />
                         </TableCell>
                         <TableCell className="font-medium">{product.title}</TableCell>
+                        <TableCell>
+                          {product.stores && (
+                            <StoreTag storeName={product.stores.name} size="sm" />
+                          )}
+                        </TableCell>
                         <TableCell>R$ {product.original_price}</TableCell>
                         <TableCell className="text-primary font-bold">
                           R$ {product.promotional_price}

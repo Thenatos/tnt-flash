@@ -98,11 +98,11 @@ export const ProductCard = ({
             )}
             {installmentCount && installmentCount > 1 && (
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-xs text-muted-foreground">
-                  {installmentCount}x R$ {(promotionalPrice / installmentCount).toFixed(2).replace(".", ",")}
+                <span className="text-xs font-medium text-foreground">
+                  {installmentCount}x
                 </span>
-                <Badge variant={hasInterest ? "destructive" : "secondary"} className="text-[10px] px-1.5 py-0">
-                  {hasInterest ? "C/ Juros" : "S/ Juros"}
+                <Badge className="text-[10px] px-2 py-0.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
+                  {hasInterest ? "Com Juros" : "Sem Juros"}
                 </Badge>
               </div>
             )}
@@ -189,10 +189,10 @@ export const ProductCard = ({
             )}
             {installmentCount && installmentCount > 1 && (
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground">
-                  {installmentCount}x R$ {(promotionalPrice / installmentCount).toFixed(2).replace(".", ",")}
+                <span className="text-sm font-medium text-foreground">
+                  {installmentCount}x
                 </span>
-                <Badge variant={hasInterest ? "destructive" : "secondary"} className="text-xs">
+                <Badge className="text-xs px-2.5 py-0.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
                   {hasInterest ? "Com Juros" : "Sem Juros"}
                 </Badge>
               </div>

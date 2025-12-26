@@ -289,10 +289,10 @@ const ProductDetail = () => {
                   </div>
                   {product.installment_count && (
                     <div className="flex items-center gap-2">
-                      <p className="text-sm text-muted-foreground">
-                        {product.installment_count}x de R$ {(Number(product.promotional_price) / product.installment_count).toFixed(2).replace(".", ",")}
+                      <p className="text-sm font-medium text-foreground">
+                        {product.installment_count}x
                       </p>
-                      <Badge variant={product.has_interest ? "destructive" : "secondary"} className="text-xs">
+                      <Badge className="text-xs px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
                         {product.has_interest ? "Com Juros" : "Sem Juros"}
                       </Badge>
                     </div>

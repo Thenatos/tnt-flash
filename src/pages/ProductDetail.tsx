@@ -28,6 +28,11 @@ const ProductDetail = () => {
     }
   }, [product]);
 
+  useEffect(() => {
+    // Scroll para o topo quando a página carregar
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -147,6 +152,15 @@ const ProductDetail = () => {
                 {timeAgo.replace("há ", "")}
               </div>
             </div>
+
+            {/* Installment Info */}
+            {product.installment_count && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 rounded">
+                  Parcelado em até {product.installment_count}x {product.has_interest ? "Com Juros" : "Sem Juros"}
+                </span>
+              </div>
+            )}
 
             {/* Reactions */}
             <div className="flex items-center gap-4">

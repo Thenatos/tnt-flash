@@ -191,7 +191,11 @@ const ProductDetail = () => {
               <div className="space-y-2">
                 <h3 className="font-semibold">Descrição</h3>
                 <div>
-                  <p className={`text-sm text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                  <p className={`text-sm text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${
+                    !isDescriptionExpanded 
+                      ? 'line-clamp-2' 
+                      : 'max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-200'
+                  }`}>
                     {product.description}
                   </p>
                   <button
@@ -289,7 +293,11 @@ const ProductDetail = () => {
                   
                   {product.description && (
                     <div>
-                      <p className={`text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                      <p className={`text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${
+                        !isDescriptionExpanded 
+                          ? 'line-clamp-2' 
+                          : 'max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-200'
+                      }`}>
                         {product.description}
                       </p>
                       <button

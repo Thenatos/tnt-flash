@@ -1,4 +1,4 @@
-import { MessageCircle, Send, Instagram, Facebook } from "lucide-react";
+import { MessageCircle, Send, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Footer = () => {
@@ -18,11 +18,19 @@ export const Footer = () => {
           <div>
             <h4 className="text-xl font-bold mb-4">Nossos Canais</h4>
             <div className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start text-white hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white hover:text-white hover:bg-white/10"
+                onClick={() => window.open('https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e', '_blank')}
+              >
                 <MessageCircle className="h-5 w-5 mr-2" />
                 Grupo WhatsApp
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-white hover:text-white hover:bg-white/10">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-white hover:text-white hover:bg-white/10"
+                onClick={() => window.open('https://t.me/tntofertas', '_blank')}
+              >
                 <Send className="h-5 w-5 mr-2" />
                 Canal Telegram
               </Button>
@@ -48,16 +56,28 @@ export const Footer = () => {
 
         {/* Social Icons */}
         <div className="flex justify-center gap-4 pt-8 border-t border-white/20">
-          <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-white/10 rounded-full">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-white/10 rounded-full"
+            onClick={() => window.open('https://www.instagram.com/canaltntofertas/', '_blank')}
+          >
             <Instagram className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-white/10 rounded-full">
-            <Facebook className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-white/10 rounded-full">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-white/10 rounded-full"
+            onClick={() => window.open('https://chat.whatsapp.com/IsXhhKLkxNPEywfx0IYG3e', '_blank')}
+          >
             <MessageCircle className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-white/10 rounded-full">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-white/10 rounded-full"
+            onClick={() => window.open('https://t.me/tntofertas', '_blank')}
+          >
             <Send className="h-5 w-5" />
           </Button>
         </div>

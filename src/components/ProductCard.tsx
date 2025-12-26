@@ -62,11 +62,6 @@ export const ProductCard = ({
               EXPIRADA
             </div>
           )}
-          {discount > 0 && (
-            <div className="absolute top-1 left-1 bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-xs font-bold shadow-lg">
-              -{discount}%
-            </div>
-          )}
           {isHot && (
             <div className="absolute top-1 right-1 bg-orange-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow-lg animate-pulse">
               BOMBANDO
@@ -93,8 +88,15 @@ export const ProductCard = ({
               R$ {promotionalPrice.toFixed(2).replace(".", ",")}
             </div>
             {originalPrice > promotionalPrice && (
-              <div className="text-xs text-muted-foreground line-through">
-                R$ {originalPrice.toFixed(2).replace(".", ",")}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground line-through">
+                  R$ {originalPrice.toFixed(2).replace(".", ",")}
+                </span>
+                {discount > 0 && (
+                  <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-[10px] font-bold">
+                    -{discount}%
+                  </span>
+                )}
               </div>
             )}
             {installmentCount && installmentCount > 1 && (
@@ -143,11 +145,6 @@ export const ProductCard = ({
               EXPIRADA
             </div>
           )}
-          {discount > 0 && (
-            <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-              -{discount}%
-            </div>
-          )}
           {isHot && (
             <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
               BOMBANDO
@@ -182,6 +179,11 @@ export const ProductCard = ({
                 <span className="text-sm text-muted-foreground line-through">
                   R$ {originalPrice.toFixed(2).replace(".", ",")}
                 </span>
+                {discount > 0 && (
+                  <span className="bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full text-xs font-bold">
+                    -{discount}%
+                  </span>
+                )}
               </div>
             )}
             {installmentCount && installmentCount > 1 && (

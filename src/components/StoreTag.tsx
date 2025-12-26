@@ -1,5 +1,4 @@
 import { getStoreGradientStyle } from "@/utils/storeColors";
-import { Badge } from "@/components/ui/badge";
 
 interface StoreTagProps {
   storeName: string;
@@ -17,11 +16,11 @@ export const StoreTag = ({ storeName, size = "md", className = "" }: StoreTagPro
   };
 
   return (
-    <Badge
+    <span
       style={gradientStyle}
-      className={`font-semibold shadow-md border-0 ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center rounded-full font-semibold shadow-md ${sizeClasses[size]} ${className}`}
     >
       {storeName}
-    </Badge>
+    </span>
   );
 };

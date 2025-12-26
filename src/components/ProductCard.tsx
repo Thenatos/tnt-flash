@@ -98,12 +98,9 @@ export const ProductCard = ({
             )}
             {installmentCount && installmentCount > 1 && (
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-xs font-medium text-foreground">
-                  {installmentCount}x
+                <span className="text-[10px] font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-2 py-1 rounded">
+                  Parcelado em até {installmentCount}x {hasInterest ? "Com Juros" : "Sem Juros"}
                 </span>
-                <Badge className="text-[10px] px-2 py-0.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
-                  {hasInterest ? "Com Juros" : "Sem Juros"}
-                </Badge>
               </div>
             )}
           </div>
@@ -189,12 +186,9 @@ export const ProductCard = ({
             )}
             {installmentCount && installmentCount > 1 && (
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm font-medium text-foreground">
-                  {installmentCount}x
+                <span className="text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 rounded">
+                  Parcelado em até {installmentCount}x {hasInterest ? "Com Juros" : "Sem Juros"}
                 </span>
-                <Badge className="text-xs px-2.5 py-0.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
-                  {hasInterest ? "Com Juros" : "Sem Juros"}
-                </Badge>
               </div>
             )}
           </div>

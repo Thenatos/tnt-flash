@@ -289,12 +289,9 @@ const ProductDetail = () => {
                   </div>
                   {product.installment_count && (
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground">
-                        {product.installment_count}x
-                      </p>
-                      <Badge className="text-xs px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 font-semibold">
-                        {product.has_interest ? "Com Juros" : "Sem Juros"}
-                      </Badge>
+                      <span className="text-sm font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 rounded">
+                        Parcelado em até {product.installment_count}x {product.has_interest ? "Com Juros" : "Sem Juros"}
+                      </span>
                     </div>
                   )}
                 </div>

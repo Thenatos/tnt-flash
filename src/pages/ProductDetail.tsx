@@ -191,12 +191,12 @@ const ProductDetail = () => {
               <div className="space-y-2">
                 <h3 className="font-semibold">Descrição</h3>
                 <div>
-                  <p className={`text-sm text-muted-foreground ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                  <p className={`text-sm text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
                     {product.description}
                   </p>
                   <button
                     onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                    className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1"
+                    className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1 transition-colors"
                   >
                     {isDescriptionExpanded ? 'Exibir menos' : 'Exibir mais...'}
                   </button>
@@ -289,12 +289,12 @@ const ProductDetail = () => {
                   
                   {product.description && (
                     <div>
-                      <p className={`text-muted-foreground ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                      <p className={`text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
                         {product.description}
                       </p>
                       <button
                         onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                        className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1"
+                        className="text-sm font-semibold text-orange-500 hover:text-orange-600 mt-1 transition-colors"
                       >
                         {isDescriptionExpanded ? 'Exibir menos' : 'Exibir mais...'}
                       </button>

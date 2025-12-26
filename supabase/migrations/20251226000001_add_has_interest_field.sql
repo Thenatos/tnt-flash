@@ -1,3 +1,6 @@
+-- Add installment_count field to products table
+ALTER TABLE products ADD COLUMN IF NOT EXISTS installment_count INTEGER;
+
 -- Add has_interest field to products table
 ALTER TABLE products ADD COLUMN IF NOT EXISTS has_interest BOOLEAN DEFAULT false;
 

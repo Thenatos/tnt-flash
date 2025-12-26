@@ -52,6 +52,8 @@ export const ProductCard = ({
           <img
             src={image || "/placeholder.svg"}
             alt={title}
+            loading="lazy"
+            decoding="async"
             className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
           {isExpired && (
@@ -133,6 +135,8 @@ export const ProductCard = ({
           <img
             src={image || "/placeholder.svg"}
             alt={title}
+            loading="lazy"
+            decoding="async"
             className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
           {isExpired && (

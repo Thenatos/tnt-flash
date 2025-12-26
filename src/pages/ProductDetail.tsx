@@ -139,7 +139,7 @@ const ProductDetail = () => {
               <img
                 src={product.image_url}
                 alt={product.title}
-                fetchPriority="high"
+                fetchpriority="high"
                 decoding="async"
                 className={`h-full w-full object-contain ${isExpired ? 'grayscale' : ''}`}
               />
@@ -259,7 +259,7 @@ const ProductDetail = () => {
                 <img
                   src={product.image_url}
                   alt={product.title}
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                   className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
                 />

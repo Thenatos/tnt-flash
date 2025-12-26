@@ -156,7 +156,7 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
               alt="TNT Ofertas" 
               width="96"
               height="96"
-              fetchPriority="high"
+              fetchpriority="high"
               className="h-10 w-auto md:h-12"
             />
           </picture>

@@ -7,8 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useCategories } from "@/hooks/useCategories";
 import { useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.png";
-import logoWebp from "@/assets/logo.webp";
+import logoWebp from "@/assets/logo-96.webp";
+import logoPng from "@/assets/logo.png";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import {
   DropdownMenu,
@@ -149,14 +149,17 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
           onClick={handleLogoClick}
           className="flex items-center hover:opacity-80 transition-opacity shrink-0"
         >
-          <img 
-            src={logo} 
-            alt="TNT Ofertas" 
-            width="48"
-            height="48"
-            fetchPriority="high"
-            className="h-10 w-auto md:h-12"
-          />
+          <picture>
+            <source srcSet={logoWebp} type="image/webp" />
+            <img 
+              src={logoPng} 
+              alt="TNT Ofertas" 
+              width="96"
+              height="96"
+              fetchPriority="high"
+              className="h-10 w-auto md:h-12"
+            />
+          </picture>
           <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent hidden sm:inline ml-3">
             TNT Ofertas
           </span>

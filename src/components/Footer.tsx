@@ -3,20 +3,20 @@ import { Button } from "@/components/ui/button";
 
 export const Footer = () => {
   return (
-    <footer className="gradient-primary text-white py-12 mt-20">
+    <footer className="gradient-primary text-white py-8 mt-12">
       <div className="container px-4">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
           {/* About */}
           <div>
-            <h3 className="text-2xl font-bold mb-4">TNT OFERTAS</h3>
-            <p className="text-white/80 mb-4">
+            <h3 className="text-2xl font-bold mb-2">TNT OFERTAS</h3>
+            <p className="text-white/80 mb-2">
               As melhores ofertas e promoções do Brasil em um só lugar. Economize tempo e dinheiro!
             </p>
           </div>
 
           {/* Social Channels */}
           <div>
-            <h4 className="text-xl font-bold mb-4">Nossos Canais</h4>
+            <h4 className="text-xl font-bold mb-3">Nossos Canais</h4>
             <div className="space-y-2">
               <Button 
                 variant="ghost" 
@@ -47,7 +47,7 @@ export const Footer = () => {
 
           {/* Links */}
           <div>
-            <h4 className="text-xl font-bold mb-4">Links Rápidos</h4>
+            <h4 className="text-xl font-bold mb-3">Links Rápidos</h4>
             <div className="space-y-2">
               <a href="/termos" className="block text-white/80 hover:text-white transition-colors">
                 Termos de Uso
@@ -62,7 +62,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <p className="text-center text-white/60 text-sm mt-8 pt-8 border-t border-white/20">
+        <p className="text-center text-white/60 text-sm mt-6 pt-6 border-t border-white/20">
           © 2025 TNT Ofertas. Todos os direitos reservados.
         </p>
       </div>

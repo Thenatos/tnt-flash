@@ -9,7 +9,8 @@ import { ProductSEO } from "@/components/ProductSEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StoreTag } from "@/components/StoreTag";
-import { useProduct } from "@/hooks/useProducts";
+import { ProductCard } from "@/components/ProductCard";
+import { useProduct, useRelatedProducts } from "@/hooks/useProducts";
 import { useProductAlerts } from "@/hooks/useProductAlerts";
 import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -21,6 +22,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: product, isLoading } = useProduct(id!);
+  const { data: relatedProducts = [] } = useRelatedProducts(product?.category_id, id!);
   const { createAlert } = useProductAlerts();
   const { trackEvent } = useAnalytics();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -414,6 +416,23 @@ const ProductDetail = () => {
             <div className="mt-12">
               <CommentSection productId={id!} />
             </div>
+
+            {/* Produtos Relacionados */}
+            {relatedProducts.length > 0 && (
+              <div className="mt-12">
+                <div className="flex items-center gap-2 mb-6">
+                  <Flame className="h-6 w-6 text-primary" />
+                  <h2 className="text-2xl font-bold">
+                    Mais ofertas de {product.categories?.name}
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {relatedProducts.map((relatedProduct) => (
+                    <ProductCard key={relatedProduct.id} product={relatedProduct} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

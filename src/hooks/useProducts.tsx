@@ -73,3 +73,36 @@ export const useProduct = (id: string) => {
     },
   });
 };
+
+export const useRelatedProducts = (categoryId: string | undefined, currentProductId: string, limit: number = 8) => {
+  return useQuery({
+    queryKey: ["relatedProducts", categoryId, currentProductId],
+    queryFn: async () => {
+      if (!categoryId) return [];
+      
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          categories (
+            name,
+            slug
+          ),
+          stores (
+            name,
+            slug,
+            logo_url
+          ),
+          comments (count)
+        `)
+        .eq("category_id", categoryId)
+        .neq("id", currentProductId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!categoryId,
+  });
+};

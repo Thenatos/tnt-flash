@@ -31,11 +31,17 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+  const [showAllComments, setShowAllComments] = useState(false);
   const { comments, isLoading, createComment, deleteComment } = useComments(productId);
   const { data: commentUsers = [] } = useCommentUsers(productId);
   const { user } = useAuth();
   const { data: isAdmin } = useAdmin();
   const { reportComment } = useCommentReports();
+
+  const INITIAL_COMMENTS_COUNT = 5;
+  const displayedComments = showAllComments 
+    ? comments 
+    : comments?.slice(0, INITIAL_COMMENTS_COUNT);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +144,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           </div>
         ) : comments && comments.length > 0 ? (
-          comments.map((comment) => {
+          <>
+            <div className={showAllComments ? "max-h-[600px] overflow-y-auto space-y-3 pr-2" : "space-y-3"}>
+              {displayedComments?.map((comment) => {
             const timeAgo = formatDistanceToNow(new Date(comment.created_at), {
               addSuffix: true,
               locale: ptBR,
@@ -309,7 +317,23 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                 )}
               </div>
             );
-          })
+          })}
+            </div>
+            
+            {/* Botão para ver mais comentários */}
+            {!showAllComments && comments.length > INITIAL_COMMENTS_COUNT && (
+              <div className="flex justify-center pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllComments(true)}
+                  className="gap-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Continuar vendo comentários ({comments.length - INITIAL_COMMENTS_COUNT} restantes)
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <Card className="p-8 text-center">
             <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3" />

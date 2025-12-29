@@ -55,7 +55,7 @@ export const ProductCard = ({
             alt={title}
             loading="lazy"
             decoding="async"
-            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
+            className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
           {isExpired && (
             <div className="absolute top-1 right-1 bg-muted text-muted-foreground px-2 py-0.5 rounded-full text-xs font-bold shadow-lg border border-border">
@@ -143,7 +143,7 @@ export const ProductCard = ({
             alt={title}
             loading="lazy"
             decoding="async"
-            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
+            className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ${isExpired ? 'grayscale' : ''}`}
           />
           {isExpired && (
             <div className="absolute top-3 right-3 bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm font-bold shadow-lg border border-border">

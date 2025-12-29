@@ -245,6 +245,45 @@ const ProductDetail = () => {
           <div className="px-4 py-6 border-t">
             <CommentSection productId={id!} />
           </div>
+
+          {/* Produtos Relacionados Mobile */}
+          {relatedProducts.length > 0 && (
+            <div className="px-4 py-6 border-t">
+              <div className="flex items-center gap-2 mb-6">
+                <Flame className="h-6 w-6 text-primary" />
+                <h2 className="text-2xl font-bold">
+                  Mais ofertas de {productData.categories?.name}
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {(relatedProducts as any[]).map((relatedProduct: any) => {
+                  const isExpired = relatedProduct.expires_at ? new Date(relatedProduct.expires_at) < new Date() : false;
+                  return (
+                    <ProductCard
+                      key={relatedProduct.id}
+                      id={relatedProduct.id}
+                      title={relatedProduct.title}
+                      originalPrice={Number(relatedProduct.original_price)}
+                      promotionalPrice={Number(relatedProduct.promotional_price)}
+                      image={relatedProduct.image_url}
+                      store={relatedProduct.stores?.name || "Loja"}
+                      storeLogo={relatedProduct.stores?.logo_url}
+                      discount={relatedProduct.discount_percentage}
+                      timeAgo={formatDistanceToNow(new Date(relatedProduct.created_at), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                      isHot={relatedProduct.is_hot || false}
+                      commentCount={relatedProduct.comments?.[0]?.count || 0}
+                      isExpired={isExpired}
+                      installmentCount={relatedProduct.installment_count}
+                      hasInterest={relatedProduct.has_interest}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Desktop Layout */}

@@ -9,19 +9,32 @@ export const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Verifica se o usuário já respondeu sobre cookies
-    const hasResponse = hasConsentResponse();
-    setShowBanner(!hasResponse);
+    try {
+      // Verifica se o usuário já respondeu sobre cookies
+      const hasResponse = hasConsentResponse();
+      setShowBanner(!hasResponse);
+    } catch (error) {
+      console.error("Erro ao verificar consentimento de cookies:", error);
+      setShowBanner(false);
+    }
   }, []);
 
   const handleAccept = () => {
-    setConsent(true);
-    setShowBanner(false);
+    try {
+      setConsent(true);
+      setShowBanner(false);
+    } catch (error) {
+      console.error("Erro ao aceitar cookies:", error);
+    }
   };
 
   const handleReject = () => {
-    setConsent(false);
-    setShowBanner(false);
+    try {
+      setConsent(false);
+      setShowBanner(false);
+    } catch (error) {
+      console.error("Erro ao rejeitar cookies:", error);
+    }
   };
 
   if (!showBanner) return null;

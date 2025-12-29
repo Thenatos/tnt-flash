@@ -10,8 +10,12 @@ export const useAffiliateTracking = () => {
 
   // Inicializa sessão do usuário quando há consentimento
   useEffect(() => {
-    if (hasConsent()) {
-      getOrCreateSessionId();
+    try {
+      if (hasConsent()) {
+        getOrCreateSessionId();
+      }
+    } catch (error) {
+      console.error("Erro ao inicializar sessão:", error);
     }
   }, []);
 
@@ -20,28 +24,32 @@ export const useAffiliateTracking = () => {
    */
   const trackClick = useCallback(
     (productId: string, productTitle: string, affiliateLink: string, store: string) => {
-      if (!hasConsent()) {
-        console.log("Rastreamento de afiliados não autorizado - sem consentimento");
-        return;
+      try {
+        if (!hasConsent()) {
+          console.log("Rastreamento de afiliados não autorizado - sem consentimento");
+          return;
+        }
+
+        // Salva nos cookies
+        trackAffiliateClick(productId, affiliateLink);
+
+        // Envia evento para analytics
+        trackEvent("affiliate_click", {
+          product_id: productId,
+          product_title: productTitle,
+          store: store,
+          session_id: getOrCreateSessionId(),
+          timestamp: new Date().toISOString(),
+        });
+
+        console.log("✅ Clique em afiliado rastreado:", {
+          productId,
+          productTitle,
+          store,
+        });
+      } catch (error) {
+        console.error("Erro ao rastrear clique de afiliado:", error);
       }
-
-      // Salva nos cookies
-      trackAffiliateClick(productId, affiliateLink);
-
-      // Envia evento para analytics
-      trackEvent("affiliate_click", {
-        product_id: productId,
-        product_title: productTitle,
-        store: store,
-        session_id: getOrCreateSessionId(),
-        timestamp: new Date().toISOString(),
-      });
-
-      console.log("✅ Clique em afiliado rastreado:", {
-        productId,
-        productTitle,
-        store,
-      });
     },
     [trackEvent]
   );
@@ -51,12 +59,18 @@ export const useAffiliateTracking = () => {
    */
   const trackNavigation = useCallback(
     (productId: string, productTitle: string, affiliateLink: string, store: string) => {
-      trackClick(productId, productTitle, affiliateLink, store);
+      try {
+        trackClick(productId, productTitle, affiliateLink, store);
 
-      // Pequeno delay para garantir que o tracking foi salvo antes de navegar
-      setTimeout(() => {
+        // Pequeno delay para garantir que o tracking foi salvo antes de navegar
+        setTimeout(() => {
+          window.open(affiliateLink, "_blank");
+        }, 100);
+      } catch (error) {
+        console.error("Erro ao rastrear navegação:", error);
+        // Mesmo com erro, abre o link
         window.open(affiliateLink, "_blank");
-      }, 100);
+      }
     },
     [trackClick]
   );

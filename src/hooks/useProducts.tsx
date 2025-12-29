@@ -34,7 +34,7 @@ export const useProducts = (searchQuery?: string, categorySlug?: string) => {
           .single();
 
         if (category) {
-          query = query.eq("category_id", category.id);
+          query = query.eq("category_id", (category as any).id);
         }
       }
 
@@ -76,7 +76,7 @@ export const useProduct = (id: string) => {
 
 export const useRelatedProducts = (categoryId: string | undefined, currentProductId: string, limit: number = 8) => {
   return useQuery({
-    queryKey: ["relatedProducts", categoryId, currentProductId],
+    queryKey: ["relatedProducts", categoryId, currentProductId, limit],
     queryFn: async () => {
       if (!categoryId) return [];
       
@@ -101,7 +101,7 @@ export const useRelatedProducts = (categoryId: string | undefined, currentProduc
         .limit(limit);
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!categoryId,
   });

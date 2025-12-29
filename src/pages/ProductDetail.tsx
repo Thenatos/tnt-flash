@@ -22,14 +22,14 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: product, isLoading } = useProduct(id!);
-  const { data: relatedProducts = [] } = useRelatedProducts(product?.category_id, id!);
+  const { data: relatedProducts = [] } = useRelatedProducts((product as any)?.category_id, id!, 8);
   const { createAlert } = useProductAlerts();
   const { trackEvent } = useAnalytics();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     if (product) {
-      trackEvent('page_view', { product_title: product.title }, product.id);
+      trackEvent('page_view', { product_title: productData.title }, productData.id);
     }
   }, [product]);
 
@@ -65,16 +65,19 @@ const ProductDetail = () => {
     );
   }
 
-  const timeAgo = formatDistanceToNow(new Date(product.created_at), {
+  // Type assertion para resolver problemas de inferência do TypeScript
+  const productData = product as any;
+
+  const timeAgo = formatDistanceToNow(new Date(productData.created_at), {
     addSuffix: true,
     locale: ptBR,
   });
 
-  const isExpired = product.expires_at ? new Date(product.expires_at) < new Date() : false;
+  const isExpired = productData.expires_at ? new Date(productData.expires_at) < new Date() : false;
 
   const handleCopyCoupon = () => {
-    if (product.coupon_code) {
-      navigator.clipboard.writeText(product.coupon_code);
+    if (productData.coupon_code) {
+      navigator.clipboard.writeText(productData.coupon_code);
       toast.success("Cupom copiado!");
     }
   };
@@ -82,7 +85,7 @@ const ProductDetail = () => {
   const handleCreateAlert = () => {
     createAlert.mutate({
       alert_type: "product_name",
-      search_term: product.title,
+      search_term: productData.title,
     });
   };
 
@@ -111,7 +114,7 @@ const ProductDetail = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              {product.stores && <StoreTag storeName={product.stores.name} size="sm" />}
+              {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon">
@@ -135,13 +138,13 @@ const ProductDetail = () => {
         <div className="md:hidden">
           <div className="px-4 py-6 space-y-6">
             {/* Title */}
-            <h1 className="text-2xl font-bold leading-tight">{product.title}</h1>
+            <h1 className="text-2xl font-bold leading-tight">{productData.title}</h1>
 
             {/* Image */}
             <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={product.image_url}
-                alt={product.title}
+                src={productData.image_url}
+                alt={productData.title}
                 fetchpriority="high"
                 decoding="async"
                 className={`h-full w-full object-contain ${isExpired ? 'grayscale' : ''}`}
@@ -151,7 +154,7 @@ const ProductDetail = () => {
             {/* Price and Time */}
             <div className="flex items-end justify-between">
               <div className="text-4xl font-bold text-orange-500">
-                R$ {Number(product.promotional_price).toFixed(2).replace(".", ",")}
+                R$ {Number(productData.promotional_price).toFixed(2).replace(".", ",")}
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
@@ -160,10 +163,10 @@ const ProductDetail = () => {
             </div>
 
             {/* Installment Info */}
-            {product.installment_count && (
+            {productData.installment_count && (
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 rounded">
-                  Parcelado em até {product.installment_count}x {product.has_interest ? "Com Juros" : "Sem Juros"}
+                  Parcelado em até {productData.installment_count}x {productData.has_interest ? "Com Juros" : "Sem Juros"}
                 </span>
               </div>
             )}
@@ -187,14 +190,14 @@ const ProductDetail = () => {
             <Button
               size="lg"
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg py-6 rounded-full shadow-lg"
-              onClick={() => window.open(product.affiliate_link, "_blank")}
+              onClick={() => window.open(productData.affiliate_link, "_blank")}
             >
               Ir para loja
               <ExternalLink className="h-5 w-5 ml-2" />
             </Button>
 
             {/* Additional Info */}
-            {product.description && (
+            {productData.description && (
               <div className="space-y-2">
                 <h3 className="font-semibold">Descrição</h3>
                 <div>
@@ -203,7 +206,7 @@ const ProductDetail = () => {
                       ? 'line-clamp-2' 
                       : 'max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-200'
                   }`}>
-                    {product.description}
+                    {productData.description}
                   </p>
                   <button
                     onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
@@ -216,13 +219,13 @@ const ProductDetail = () => {
             )}
 
             {/* Coupon */}
-            {product.coupon_code && (
+            {productData.coupon_code && (
               <div className="flex items-center justify-between gap-3 p-4 bg-accent/10 rounded-lg border-2 border-dashed border-accent">
                 <div className="flex items-center gap-3">
                   <Tag className="h-5 w-5 text-accent" />
                   <div>
                     <p className="text-sm font-medium">Cupom de desconto</p>
-                    <p className="text-lg font-bold text-accent">{product.coupon_code}</p>
+                    <p className="text-lg font-bold text-accent">{productData.coupon_code}</p>
                   </div>
                 </div>
                 <Button
@@ -260,13 +263,13 @@ const ProductDetail = () => {
               {/* Image */}
               <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
                 <img
-                  src={product.image_url}
-                  alt={product.title}
+                  src={productData.image_url}
+                  alt={productData.title}
                   fetchpriority="high"
                   decoding="async"
                   className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
                 />
-                {product.is_hot && !isExpired && (
+                {productData.is_hot && !isExpired && (
                   <div className="absolute top-4 right-4">
                     <Badge variant="destructive" className="font-bold shadow-lg text-base px-3 py-1">
                       BOMBANDO
@@ -287,10 +290,10 @@ const ProductDetail = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge className="gradient-accent text-foreground font-bold text-lg px-4 py-1">
-                      -{product.discount_percentage}%
+                      -{productData.discount_percentage}%
                     </Badge>
-                    {product.categories && (
-                      <Badge variant="outline">{product.categories.name}</Badge>
+                    {productData.categories && (
+                      <Badge variant="outline">{productData.categories.name}</Badge>
                     )}
                     {isExpired && (
                       <Badge variant="secondary" className="bg-muted text-muted-foreground font-bold">
@@ -298,16 +301,16 @@ const ProductDetail = () => {
                       </Badge>
                     )}
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-4">{product.title}</h1>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4">{productData.title}</h1>
                   
-                  {product.description && (
+                  {productData.description && (
                     <div>
                       <p className={`text-muted-foreground whitespace-pre-wrap transition-all duration-300 ease-in-out ${
                         !isDescriptionExpanded 
                           ? 'line-clamp-2' 
                           : 'max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-200'
                       }`}>
-                        {product.description}
+                        {productData.description}
                       </p>
                       <button
                         onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
@@ -331,29 +334,29 @@ const ProductDetail = () => {
                 <div className="space-y-2 p-6 bg-muted/50 rounded-lg">
                   <div className="flex items-baseline gap-3">
                     <span className="text-4xl font-bold text-primary">
-                      R$ {Number(product.promotional_price).toFixed(2)}
+                      R$ {Number(productData.promotional_price).toFixed(2)}
                     </span>
                     <span className="text-xl text-muted-foreground line-through">
-                      R$ {Number(product.original_price).toFixed(2)}
+                      R$ {Number(productData.original_price).toFixed(2)}
                     </span>
                   </div>
-                  {product.installment_count && (
+                  {productData.installment_count && (
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 rounded">
-                        Parcelado em até {product.installment_count}x {product.has_interest ? "Com Juros" : "Sem Juros"}
+                        Parcelado em até {productData.installment_count}x {productData.has_interest ? "Com Juros" : "Sem Juros"}
                       </span>
                     </div>
                   )}
                 </div>
 
                 {/* Coupon */}
-                {product.coupon_code && (
+                {productData.coupon_code && (
                   <div className="flex items-center justify-between gap-3 p-4 bg-accent/10 rounded-lg border-2 border-dashed border-accent">
                     <div className="flex items-center gap-3">
                       <Tag className="h-5 w-5 text-accent" />
                       <div>
                         <p className="text-sm font-medium">Cupom de desconto</p>
-                        <p className="text-lg font-bold text-accent">{product.coupon_code}</p>
+                        <p className="text-lg font-bold text-accent">{productData.coupon_code}</p>
                       </div>
                     </div>
                     <Button
@@ -369,12 +372,12 @@ const ProductDetail = () => {
                 )}
 
                 {/* Store Info */}
-                {product.stores && (
+                {productData.stores && (
                   <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
                     <Store className="h-5 w-5 text-muted-foreground" />
                     <div className="flex-1">
                       <p className="text-sm text-muted-foreground mb-2">Loja</p>
-                      <StoreTag storeName={product.stores.name} size="md" />
+                      <StoreTag storeName={productData.stores.name} size="md" />
                     </div>
                   </div>
                 )}
@@ -389,7 +392,7 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   className="w-full gradient-accent hover:opacity-90 font-bold text-lg py-6 shadow-lg"
-                  onClick={() => window.open(product.affiliate_link, "_blank")}
+                  onClick={() => window.open(productData.affiliate_link, "_blank")}
                 >
                   <span>VER OFERTA NA LOJA</span>
                   <ExternalLink className="h-5 w-5 ml-2" />
@@ -423,13 +426,35 @@ const ProductDetail = () => {
                 <div className="flex items-center gap-2 mb-6">
                   <Flame className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-bold">
-                    Mais ofertas de {product.categories?.name}
+                    Mais ofertas de {productData.categories?.name}
                   </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {relatedProducts.map((relatedProduct) => (
-                    <ProductCard key={relatedProduct.id} product={relatedProduct} />
-                  ))}
+                  {(relatedProducts as any[]).map((relatedProduct: any) => {
+                    const isExpired = relatedProduct.expires_at ? new Date(relatedProduct.expires_at) < new Date() : false;
+                    return (
+                      <ProductCard
+                        key={relatedProduct.id}
+                        id={relatedProduct.id}
+                        title={relatedProduct.title}
+                        originalPrice={Number(relatedProduct.original_price)}
+                        promotionalPrice={Number(relatedProduct.promotional_price)}
+                        image={relatedProduct.image_url}
+                        store={relatedProduct.stores?.name || "Loja"}
+                        storeLogo={relatedProduct.stores?.logo_url}
+                        discount={relatedProduct.discount_percentage}
+                        timeAgo={formatDistanceToNow(new Date(relatedProduct.created_at), {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })}
+                        isHot={relatedProduct.is_hot || false}
+                        commentCount={relatedProduct.comments?.[0]?.count || 0}
+                        isExpired={isExpired}
+                        installmentCount={relatedProduct.installment_count}
+                        hasInterest={relatedProduct.has_interest}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             )}

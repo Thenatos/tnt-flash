@@ -132,7 +132,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
       )}
 
       {/* Lista de comentários */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isLoading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -145,26 +145,26 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
             });
 
             return (
-              <div key={comment.id} className="space-y-3">
-                <Card className="p-4">
-                  <div className="flex gap-3">
-                    <Avatar className="h-10 w-10">
+              <div key={comment.id} className="space-y-2">
+                <Card className="p-3">
+                  <div className="flex gap-2">
+                    <Avatar className="h-8 w-8">
                       <AvatarImage src={comment.profile?.avatar_url || ""} />
                       <AvatarFallback>
                         {comment.profile?.full_name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-sm">
                             {comment.profile?.full_name || "Usuário"}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             @{comment.profile?.username || "usuario"} · {timeAgo}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                           {user && (
                             <Button
                               variant="ghost"
@@ -218,7 +218,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
 
                   {/* Reply Form */}
                   {replyingTo === comment.id && user && (
-                    <div className="mt-4 ml-12">
+                    <div className="mt-3 ml-10">
                       <div className="flex gap-2">
                         <div className="flex-1">
                           <RichTextEditor
@@ -257,7 +257,7 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
 
                 {/* Replies */}
                 {comment.replies && comment.replies.length > 0 && (
-                  <div className="ml-12 space-y-2">
+                  <div className="ml-10 space-y-2">
                     {comment.replies.map((reply: any) => {
                       const replyTimeAgo = formatDistanceToNow(new Date(reply.created_at), {
                         addSuffix: true,
@@ -265,9 +265,9 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
                       });
 
                       return (
-                        <Card key={reply.id} className="p-3 bg-muted/50">
-                          <div className="flex gap-3">
-                            <Avatar className="h-8 w-8">
+                        <Card key={reply.id} className="p-2 bg-muted/50">
+                          <div className="flex gap-2">
+                            <Avatar className="h-7 w-7">
                               <AvatarImage src={reply.profile?.avatar_url || ""} />
                               <AvatarFallback>
                                 {reply.profile?.full_name?.charAt(0).toUpperCase() || "U"}

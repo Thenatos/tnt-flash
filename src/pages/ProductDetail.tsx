@@ -31,9 +31,10 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (product) {
+      const productData = product as any;
       trackEvent('page_view', { product_title: productData.title }, productData.id);
     }
-  }, [product]);
+  }, [product, trackEvent]);
 
   useEffect(() => {
     // Scroll para o topo quando a página carregar

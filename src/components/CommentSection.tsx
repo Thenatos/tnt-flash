@@ -38,7 +38,8 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
   const { data: isAdmin } = useAdmin();
   const { reportComment } = useCommentReports();
 
-  const INITIAL_COMMENTS_COUNT = 5;
+  // Quantidade inicial de comentários a serem exibidos
+  const INITIAL_COMMENTS_COUNT = 3;
   const displayedComments = showAllComments 
     ? comments 
     : comments?.slice(0, INITIAL_COMMENTS_COUNT);

@@ -70,7 +70,7 @@ export const CookieConsent = () => {
                 Utilizamos cookies para melhorar sua experiência, personalizar conteúdo, analisar o tráfego 
                 e rastrear comissionamento de produtos afiliados. Ao clicar em "Aceitar", você concorda com 
                 o uso de cookies conforme nossa{" "}
-                <Link to="/privacy" className="text-primary underline hover:text-primary/80">
+                <Link to="/privacidade" className="text-primary underline hover:text-primary/80">
                   Política de Privacidade
                 </Link>
                 . Seus dados são protegidos seguindo a LGPD.
@@ -134,7 +134,7 @@ export const CookieConsent = () => {
               <div className="pt-2 border-t">
                 <p className="text-xs text-muted-foreground">
                   Ao aceitar cookies, você concorda com nossa{" "}
-                  <Link to="/privacy" className="text-primary underline hover:text-primary/80">
+                  <Link to="/privacidade" className="text-primary underline hover:text-primary/80">
                     Política de Privacidade
                   </Link>{" "}
                   em conformidade com a LGPD.

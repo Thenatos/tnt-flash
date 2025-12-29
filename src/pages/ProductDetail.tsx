@@ -17,6 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useAffiliateTracking } from "@/hooks/useAffiliateTracking";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,7 @@ const ProductDetail = () => {
   const { data: relatedProducts = [] } = useRelatedProducts((product as any)?.category_id, id!, 8);
   const { createAlert } = useProductAlerts();
   const { trackEvent } = useAnalytics();
+  const { trackNavigation } = useAffiliateTracking();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
@@ -190,7 +192,7 @@ const ProductDetail = () => {
             <Button
               size="lg"
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg py-6 rounded-full shadow-lg"
-              onClick={() => window.open(productData.affiliate_link, "_blank")}
+              onClick={() => trackNavigation(id!, productData.title, productData.affiliate_link, productData.stores?.name || 'Loja')}
             >
               Ir para loja
               <ExternalLink className="h-5 w-5 ml-2" />
@@ -441,7 +443,7 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   className="w-full gradient-accent hover:opacity-90 font-bold text-lg py-6 shadow-lg"
-                  onClick={() => window.open(productData.affiliate_link, "_blank")}
+                  onClick={() => trackNavigation(id!, productData.title, productData.affiliate_link, productData.stores?.name || 'Loja')}
                 >
                   <span>VER OFERTA NA LOJA</span>
                   <ExternalLink className="h-5 w-5 ml-2" />

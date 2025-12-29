@@ -249,11 +249,21 @@ const ProductDetail = () => {
           {/* Produtos Relacionados Mobile */}
           {relatedProducts.length > 0 && (
             <div className="px-4 py-6 border-t">
-              <div className="flex items-center gap-2 mb-6">
-                <Flame className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold">
-                  Mais ofertas de {productData.categories?.name}
-                </h2>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <Flame className="h-6 w-6 text-primary" />
+                  <h2 className="text-xl font-bold">
+                    Mais ofertas de {productData.categories?.name}
+                  </h2>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/", { state: { categorySlug: productData.categories?.slug } })}
+                  className="shrink-0"
+                >
+                  Ver todas
+                </Button>
               </div>
               <div className="space-y-4">
                 {(relatedProducts as any[]).map((relatedProduct: any) => {
@@ -462,11 +472,19 @@ const ProductDetail = () => {
             {/* Produtos Relacionados */}
             {relatedProducts.length > 0 && (
               <div className="mt-12">
-                <div className="flex items-center gap-2 mb-6">
-                  <Flame className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold">
-                    Mais ofertas de {productData.categories?.name}
-                  </h2>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <Flame className="h-6 w-6 text-primary" />
+                    <h2 className="text-2xl font-bold">
+                      Mais ofertas de {productData.categories?.name}
+                    </h2>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/", { state: { categorySlug: productData.categories?.slug } })}
+                  >
+                    Ver todas as ofertas
+                  </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {(relatedProducts as any[]).map((relatedProduct: any) => {

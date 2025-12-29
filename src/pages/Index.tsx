@@ -39,6 +39,21 @@ const Index = () => {
         });
       }, 300);
     }
+    
+    // Aplicar filtro de categoria vindo de outra página
+    if (location.state?.categorySlug) {
+      setSelectedCategory(location.state.categorySlug);
+      setShowBestDeals(false);
+      setSearchQuery("");
+      
+      // Scroll para produtos após aplicar filtro
+      setTimeout(() => {
+        productsRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 300);
+    }
   }, [location.state]);
 
   const handleBestDealsFilter = () => {

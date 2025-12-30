@@ -39,7 +39,6 @@ const Index = () => {
   // Resetar paginação quando filtros mudarem
   useEffect(() => {
     setPage(0);
-    setDisplayedProducts([]);
   }, [searchQuery, selectedCategory, showBestDeals]);
 
   // Infinite scroll observer
@@ -99,18 +98,13 @@ const Index = () => {
   }, [location.state]);
 
   const handleBestDealsFilter = () => {
-    setShowBestDeals(prev => !prev);
+    setShowBestDeals(true);
     setSelectedCategory(undefined);
     setSearchQuery("");
   };
 
   const handleCategorySelect = (slug: string | undefined) => {
-    // Se clicar na mesma categoria, desativa
-    if (selectedCategory === slug) {
-      setSelectedCategory(undefined);
-    } else {
-      setSelectedCategory(slug);
-    }
+    setSelectedCategory(slug);
     setShowBestDeals(false);
     setSearchQuery("");
   };

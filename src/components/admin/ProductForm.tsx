@@ -214,14 +214,10 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
   };
 
   const handleFormSubmit = async (data: ProductFormData) => {
-    // Validate affiliate link before submitting
-    if (linkValidationError) {
-      toast.error("Corrija o erro no link de afiliado antes de continuar.");
-      return;
-    }
-
-    // Final validation check
+    // Final validation check - always validate before submitting
     setValidatingLink(true);
+    setLinkValidationError(null);
+    
     try {
       let urlToValidate = data.affiliate_link;
 
@@ -257,15 +253,16 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
 
       if (!isValid) {
         toast.error(`O link ${isShortened ? "expandido" : ""} não contém um ID de afiliado válido para esta loja.`);
-        setLinkValidationError("Link inválido");
+        setLinkValidationError("Link inválido - não contém ID de afiliado");
+        setValidatingLink(false);
         return;
       }
 
       // Link is valid, proceed with submission
+      setValidatingLink(false);
       onSubmit(data);
     } catch (error: any) {
       toast.error("Erro ao validar link: " + error.message);
-    } finally {
       setValidatingLink(false);
     }
   };

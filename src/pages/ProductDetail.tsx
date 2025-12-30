@@ -12,7 +12,7 @@ import { StoreTag } from "@/components/StoreTag";
 import { ProductCard } from "@/components/ProductCard";
 import { useProduct, useRelatedProducts } from "@/hooks/useProducts";
 import { useProductAlerts } from "@/hooks/useProductAlerts";
-import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical } from "lucide-react";
+import { ExternalLink, Clock, Store, Tag, ArrowLeft, Flame, Copy, Bell, Bookmark, Share2, MoreVertical, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -140,6 +140,22 @@ const ProductDetail = () => {
         {/* Mobile Layout */}
         <div className="md:hidden">
           <div className="px-4 py-6 space-y-6">
+            {/* Badges - Loja, Desconto e Categoria */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
+              <Badge className="gradient-accent text-foreground font-bold text-base px-3 py-1">
+                -{productData.discount_percentage}%
+              </Badge>
+              {productData.categories && (
+                <Badge variant="outline">{productData.categories.name}</Badge>
+              )}
+              {isExpired && (
+                <Badge variant="secondary" className="bg-muted text-muted-foreground font-bold">
+                  EXPIRADA
+                </Badge>
+              )}
+            </div>
+
             {/* Title */}
             <h1 className="text-2xl font-bold leading-tight">{productData.title}</h1>
 
@@ -154,30 +170,50 @@ const ProductDetail = () => {
               />
             </div>
 
-            {/* Price and Time */}
-            <div className="flex items-end justify-between">
-              <div className="text-4xl font-bold text-orange-500">
-                R$ {Number(productData.promotional_price).toFixed(2).replace(".", ",")}
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                {timeAgo.replace("há ", "")}
-              </div>
-            </div>
-
-            {/* Installment Info */}
-            {productData.installment_count && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 rounded">
-                  Parcelado em até {productData.installment_count}x {productData.has_interest ? "Com Juros" : "Sem Juros"}
+            {/* Price */}
+            <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-primary">
+                  R$ {Number(productData.promotional_price).toFixed(2)}
+                </span>
+                <span className="text-lg text-muted-foreground line-through">
+                  R$ {Number(productData.original_price).toFixed(2)}
                 </span>
               </div>
-            )}
+              {/* Installment Info */}
+              {productData.installment_count && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1 rounded">
+                    Parcelado em até {productData.installment_count}x {productData.has_interest ? "Com Juros" : "Sem Juros"}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Time */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              Publicado {timeAgo}
+            </div>
 
             {/* Reactions */}
             <div className="flex items-center gap-4">
               <ProductReactions productId={id!} />
             </div>
+
+            {/* Share Button - Mobile */}
+            <Button
+              variant="outline"
+              className="w-full justify-center gap-2 bg-green-50 hover:bg-green-100 border-green-500 text-green-700"
+              onClick={() => {
+                const shareUrl = window.location.href;
+                const shareText = `Confira esta oferta: ${productData.title} - R$ ${Number(productData.promotional_price).toFixed(2)}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, "_blank");
+              }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Compartilhar
+            </Button>
 
             {/* Alert Button */}
             <Button
@@ -313,28 +349,44 @@ const ProductDetail = () => {
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Image */}
-              <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                <img
-                  src={productData.image_url}
-                  alt={productData.title}
-                  fetchpriority="high"
-                  decoding="async"
-                  className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
-                />
-                {productData.is_hot && !isExpired && (
-                  <div className="absolute top-4 right-4">
-                    <Badge variant="destructive" className="font-bold shadow-lg text-base px-3 py-1">
-                      BOMBANDO
-                    </Badge>
-                  </div>
-                )}
-                {isExpired && (
-                  <div className="absolute top-4 right-4">
-                    <Badge variant="secondary" className="font-bold shadow-lg text-base px-3 py-1 bg-muted text-muted-foreground">
-                      EXPIRADA
-                    </Badge>
-                  </div>
-                )}
+              <div className="space-y-4">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                  <img
+                    src={productData.image_url}
+                    alt={productData.title}
+                    fetchpriority="high"
+                    decoding="async"
+                    className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
+                  />
+                  {productData.is_hot && !isExpired && (
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="destructive" className="font-bold shadow-lg text-base px-3 py-1">
+                        BOMBANDO
+                      </Badge>
+                    </div>
+                  )}
+                  {isExpired && (
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="secondary" className="font-bold shadow-lg text-base px-3 py-1 bg-muted text-muted-foreground">
+                        EXPIRADA
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Share Button - Desktop */}
+                <Button
+                  variant="outline"
+                  className="w-full justify-center gap-2 bg-green-50 hover:bg-green-100 border-green-500 text-green-700 font-semibold"
+                  onClick={() => {
+                    const shareUrl = window.location.href;
+                    const shareText = `Confira esta oferta: ${productData.title} - R$ ${Number(productData.promotional_price).toFixed(2)}`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, "_blank");
+                  }}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Compartilhar
+                </Button>
               </div>
 
               {/* Details */}

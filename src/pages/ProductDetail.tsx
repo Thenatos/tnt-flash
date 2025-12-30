@@ -134,21 +134,22 @@ const ProductDetail = () => {
 
             {/* Price */}
             <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-              <div className="flex items-baseline gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-3xl font-bold text-primary">
                   R$ {Number(productData.promotional_price).toFixed(2)}
                 </span>
+                <span className="text-xl text-muted-foreground">|</span>
                 <span className="text-lg text-muted-foreground line-through">
                   R$ {Number(productData.original_price).toFixed(2)}
                 </span>
+                <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-3 py-1">
+                  {productData.discount_percentage}% de Desconto
+                </Badge>
               </div>
               
-              {/* Badges - Loja, Desconto e Categoria */}
+              {/* Badges - Loja e Categoria */}
               <div className="flex items-center gap-2 flex-wrap">
                 {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
-                <Badge className="gradient-accent text-foreground font-bold text-base px-3 py-1">
-                  -{productData.discount_percentage}%
-                </Badge>
                 {productData.categories && (
                   <Badge variant="outline">{productData.categories.name}</Badge>
                 )}
@@ -372,9 +373,6 @@ const ProductDetail = () => {
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <Badge className="gradient-accent text-foreground font-bold text-lg px-4 py-1">
-                      -{productData.discount_percentage}%
-                    </Badge>
                     {productData.categories && (
                       <Badge variant="outline">{productData.categories.name}</Badge>
                     )}
@@ -415,13 +413,17 @@ const ProductDetail = () => {
 
                 {/* Price */}
                 <div className="space-y-2 p-6 bg-muted/50 rounded-lg">
-                  <div className="flex items-baseline gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-4xl font-bold text-primary">
                       R$ {Number(productData.promotional_price).toFixed(2)}
                     </span>
+                    <span className="text-2xl text-muted-foreground">|</span>
                     <span className="text-xl text-muted-foreground line-through">
                       R$ {Number(productData.original_price).toFixed(2)}
                     </span>
+                    <Badge className="bg-destructive text-destructive-foreground font-bold text-base px-4 py-1.5">
+                      {productData.discount_percentage}% de Desconto
+                    </Badge>
                   </div>
                   {productData.installment_count && (
                     <div className="flex items-center gap-2">

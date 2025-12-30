@@ -281,8 +281,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       console.log("Resultado da validação:", isValid, "Link:", urlToValidate, "IDs configurados:", affiliateIds);
 
       if (isValid === false || isValid === null) {
-        const idsString = affiliateIds.map(id => id.affiliate_id).join(", ");
-        toast.error(`O link não contém nenhum dos IDs de afiliado configurados: ${idsString}`);
+        toast.error("O link não contém nenhum dos IDs de afiliado configurados!");
         setLinkValidationError("Link inválido - não contém ID de afiliado");
         setValidatingLink(false);
         return;

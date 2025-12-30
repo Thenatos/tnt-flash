@@ -99,13 +99,18 @@ const Index = () => {
   }, [location.state]);
 
   const handleBestDealsFilter = () => {
-    setShowBestDeals(true);
+    setShowBestDeals(prev => !prev);
     setSelectedCategory(undefined);
     setSearchQuery("");
   };
 
   const handleCategorySelect = (slug: string | undefined) => {
-    setSelectedCategory(slug);
+    // Se clicar na mesma categoria, desativa
+    if (selectedCategory === slug) {
+      setSelectedCategory(undefined);
+    } else {
+      setSelectedCategory(slug);
+    }
     setShowBestDeals(false);
     setSearchQuery("");
   };

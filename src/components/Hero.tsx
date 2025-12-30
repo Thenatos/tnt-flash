@@ -133,50 +133,50 @@ export const Hero = () => {
             <div className="container relative z-10 px-4 h-full flex items-center">
               <div className="max-w-4xl mx-auto text-center text-white w-full">
                 {/* Main heading */}
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <Zap className="h-12 w-12 md:h-16 md:w-16 text-accent animate-pulse" />
-                  <h2 className="text-5xl md:text-7xl font-bold tracking-tight">
+                <div className="flex items-center justify-center gap-2 md:gap-3 mb-4">
+                  <Zap className="h-8 w-8 md:h-16 md:w-16 text-accent animate-pulse" />
+                  <h2 className="text-3xl md:text-7xl font-bold tracking-tight">
                     OFERTAS EXPLOSIVAS
                   </h2>
-                  <Percent className="h-12 w-12 md:h-16 md:w-16 text-accent animate-pulse" />
+                  <Percent className="h-8 w-8 md:h-16 md:w-16 text-accent animate-pulse" />
                 </div>
 
-                <p className="text-xl md:text-2xl mb-8 text-white/90 font-medium">
+                <p className="text-base md:text-2xl mb-6 md:mb-8 text-white/90 font-medium">
                   As melhores promoções do Brasil em um só lugar!
                 </p>
 
                 {/* Stats */}
-                <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-8">
+                <div className="flex flex-wrap justify-center gap-4 md:gap-12 mb-6 md:mb-8">
                   <div className="flex items-center gap-2">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                      <TrendingDown className="h-6 w-6 text-accent" />
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3">
+                      <TrendingDown className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                     </div>
                     <div className="text-left">
-                      <div className="text-2xl md:text-3xl font-bold">1000+</div>
-                      <div className="text-sm text-white/80">Ofertas Ativas</div>
+                      <div className="text-xl md:text-3xl font-bold">1000+</div>
+                      <div className="text-xs md:text-sm text-white/80">Ofertas Ativas</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                      <Percent className="h-6 w-6 text-accent" />
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3">
+                      <Percent className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                     </div>
                     <div className="text-left">
-                      <div className="text-2xl md:text-3xl font-bold">Até 80%</div>
-                      <div className="text-sm text-white/80">de Desconto</div>
+                      <div className="text-xl md:text-3xl font-bold">Até 80%</div>
+                      <div className="text-xs md:text-sm text-white/80">de Desconto</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                      <Zap className="h-6 w-6 text-accent" />
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3">
+                      <Zap className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                     </div>
                     <div className="text-left">
-                      <div className="text-2xl md:text-3xl font-bold">24/7</div>
-                      <div className="text-sm text-white/80">Atualizações</div>
+                      <div className="text-xl md:text-3xl font-bold">24/7</div>
+                      <div className="text-xs md:text-sm text-white/80">Atualizações</div>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-white/90 max-w-2xl mx-auto">
+                <p className="text-sm md:text-base text-white/90 max-w-2xl mx-auto px-4">
                   Economize tempo e dinheiro! Encontre cupons de desconto, ofertas relâmpago e as melhores promoções das maiores lojas do Brasil.
                 </p>
               </div>

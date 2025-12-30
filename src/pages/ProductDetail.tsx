@@ -108,16 +108,6 @@ const ProductDetail = () => {
         {/* Mobile Layout */}
         <div className="md:hidden">
           <div className="px-4 py-6 space-y-6">
-            {/* Botão Voltar */}
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="-ml-2"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-
             {/* Title */}
             <h1 className="text-2xl font-bold leading-tight">{productData.title}</h1>
 
@@ -318,15 +308,6 @@ const ProductDetail = () => {
         {/* Desktop Layout */}
         <div className="hidden md:block py-8">
           <div className="container px-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="mb-6"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-
             <div className="grid md:grid-cols-2 gap-8">
               {/* Image */}
               <div className="space-y-4">

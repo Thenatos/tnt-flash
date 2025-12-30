@@ -86,14 +86,6 @@ export const CookieConsent = () => {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <Button
-                variant="outline"
-                onClick={() => setShowSettings(true)}
-                className="gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                Configurar
-              </Button>
-              <Button
                 onClick={handleAccept}
                 className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >

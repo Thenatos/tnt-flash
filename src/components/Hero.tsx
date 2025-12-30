@@ -82,9 +82,12 @@ export const Hero = () => {
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "low"}
                 decoding="async"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover md:object-cover object-[center_top]"
+                style={{
+                  objectPosition: 'center 20%'
+                }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent md:bg-gradient-to-r md:from-black/70 md:via-black/50 bg-gradient-to-b from-black/60 via-black/40"></div>
               
               {/* Conteúdo do banner */}
               <div className="absolute inset-0 z-10 flex items-center">

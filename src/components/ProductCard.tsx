@@ -216,9 +216,9 @@ export const ProductCard = ({
 
           {/* CTA Button */}
           <Button 
-            className="w-full gradient-accent hover:opacity-90 font-bold shadow-md group/btn pointer-events-none"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full shadow-md group/btn pointer-events-none"
           >
-            <span>VER OFERTA</span>
+            <span>Ir para loja</span>
             <ExternalLink className="h-4 w-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
           </Button>
         </div>

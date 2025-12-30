@@ -457,10 +457,10 @@ const ProductDetail = () => {
                 {/* CTA */}
                 <Button
                   size="lg"
-                  className="w-full gradient-accent hover:opacity-90 font-bold text-lg py-6 shadow-lg"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg py-6 rounded-full shadow-lg"
                   onClick={() => trackNavigation(id!, productData.title, productData.affiliate_link, productData.stores?.name || 'Loja')}
                 >
-                  <span>VER OFERTA NA LOJA</span>
+                  Ir para loja
                   <ExternalLink className="h-5 w-5 ml-2" />
                 </Button>
 

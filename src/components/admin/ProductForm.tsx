@@ -249,9 +249,16 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
         p_link: urlToValidate,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro na validação:", error);
+        toast.error("Erro ao validar link: " + error.message);
+        setValidatingLink(false);
+        return;
+      }
 
-      if (!isValid) {
+      console.log("Resultado da validação:", isValid, "Link:", urlToValidate);
+
+      if (isValid === false || isValid === null) {
         toast.error(`O link ${isShortened ? "expandido" : ""} não contém um ID de afiliado válido para esta loja.`);
         setLinkValidationError("Link inválido - não contém ID de afiliado");
         setValidatingLink(false);
@@ -262,6 +269,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
       setValidatingLink(false);
       onSubmit(data);
     } catch (error: any) {
+      console.error("Erro ao validar link:", error);
       toast.error("Erro ao validar link: " + error.message);
       setValidatingLink(false);
     }

@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useProducts = (searchQuery?: string, categorySlug?: string) => {
+export const useProducts = (searchQuery?: string, categorySlug?: string, limit?: number, offset?: number) => {
   return useQuery({
-    queryKey: ["products", searchQuery, categorySlug],
+    queryKey: ["products", searchQuery, categorySlug, limit, offset],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -36,6 +36,11 @@ export const useProducts = (searchQuery?: string, categorySlug?: string) => {
         if (category) {
           query = query.eq("category_id", (category as any).id);
         }
+      }
+
+      // Aplicar paginação se fornecido
+      if (limit !== undefined) {
+        query = query.range(offset || 0, (offset || 0) + limit - 1);
       }
 
       const { data, error } = await query;

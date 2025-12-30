@@ -107,11 +107,13 @@ const Index = () => {
   const handleCategorySelect = (slug: string | undefined) => {
     setSelectedCategory(slug);
     setShowBestDeals(false);
+    setSearchQuery("");
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setShowBestDeals(false);
+    setSelectedCategory(undefined);
     
     // Scroll suave para a seção de produtos quando uma busca é realizada
     if (query && productsRef.current) {

@@ -67,13 +67,10 @@ export const CookieConsent = () => {
                 <Shield className="h-4 w-4 text-green-600" />
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Utilizamos cookies para melhorar sua experiência, personalizar conteúdo, analisar o tráfego 
-                e rastrear comissionamento de produtos afiliados. Ao clicar em "Aceitar", você concorda com 
-                o uso de cookies conforme nossa{" "}
+                Usamos cookies para melhorar sua experiência e rastrear comissionamento de afiliados.{" "}
                 <Link to="/privacidade" className="text-primary underline hover:text-primary/80">
                   Política de Privacidade
                 </Link>
-                . Seus dados são protegidos seguindo a LGPD.
               </p>
             </div>
 

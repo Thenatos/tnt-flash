@@ -219,6 +219,27 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
     setLinkValidationError(null);
     
     try {
+      // Primeiro verificar se a loja tem IDs de afiliado cadastrados
+      const { data: affiliateIds, error: checkError } = await supabase
+        .from("store_affiliate_ids")
+        .select("affiliate_id")
+        .eq("store_id", data.store_id)
+        .eq("is_active", true);
+
+      if (checkError) {
+        console.error("Erro ao verificar IDs de afiliado:", checkError);
+        toast.error("Erro ao verificar configuração da loja");
+        setValidatingLink(false);
+        return;
+      }
+
+      if (!affiliateIds || affiliateIds.length === 0) {
+        toast.error("Esta loja não possui IDs de afiliado configurados. Configure os IDs antes de adicionar produtos.");
+        setLinkValidationError("Loja sem IDs de afiliado configurados");
+        setValidatingLink(false);
+        return;
+      }
+
       let urlToValidate = data.affiliate_link;
 
       // Check if it's a shortened URL
@@ -241,6 +262,7 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
 
         if (expandData?.expandedUrl) {
           urlToValidate = expandData.expandedUrl;
+          toast.success("Link expandido para validação");
         }
       }
 
@@ -256,13 +278,18 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
         return;
       }
 
-      console.log("Resultado da validação:", isValid, "Link:", urlToValidate);
+      console.log("Resultado da validação:", isValid, "Link:", urlToValidate, "IDs configurados:", affiliateIds);
 
       if (isValid === false || isValid === null) {
-        toast.error(`O link ${isShortened ? "expandido" : ""} não contém um ID de afiliado válido para esta loja.`);
+        const idsString = affiliateIds.map(id => id.affiliate_id).join(", ");
+        toast.error(`O link não contém nenhum dos IDs de afiliado configurados: ${idsString}`);
         setLinkValidationError("Link inválido - não contém ID de afiliado");
         setValidatingLink(false);
         return;
+      }
+
+      if (isShortened) {
+        toast.success("Link encurtado validado com sucesso!");
       }
 
       // Link is valid, proceed with submission

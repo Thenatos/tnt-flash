@@ -100,61 +100,23 @@ const ProductDetail = () => {
     <div className="min-h-screen flex flex-col">
       <ProductSEO product={product} />
       <JoinGroupsPopup />
-      {/* Desktop Header */}
-      <div className="hidden md:block">
-        <Header onSearch={handleSearch} />
-      </div>
+      {/* Header com busca */}
+      <Header onSearch={handleSearch} />
       
       <main className="flex-1">
-        {/* Mobile Header */}
-        <div className="md:hidden sticky top-0 z-50 bg-background border-b px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Bookmark className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`, "_blank")}
-              >
-                <Share2 className="h-5 w-5 text-green-500" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Mobile Layout */}
         <div className="md:hidden">
           <div className="px-4 py-6 space-y-6">
-            {/* Badges - Loja, Desconto e Categoria */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
-              <Badge className="gradient-accent text-foreground font-bold text-base px-3 py-1">
-                -{productData.discount_percentage}%
-              </Badge>
-              {productData.categories && (
-                <Badge variant="outline">{productData.categories.name}</Badge>
-              )}
-              {isExpired && (
-                <Badge variant="secondary" className="bg-muted text-muted-foreground font-bold">
-                  EXPIRADA
-                </Badge>
-              )}
-            </div>
+            {/* Botão Voltar */}
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="-ml-2"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
 
             {/* Title */}
             <h1 className="text-2xl font-bold leading-tight">{productData.title}</h1>
@@ -171,7 +133,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Price */}
-            <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-bold text-primary">
                   R$ {Number(productData.promotional_price).toFixed(2)}
@@ -180,6 +142,23 @@ const ProductDetail = () => {
                   R$ {Number(productData.original_price).toFixed(2)}
                 </span>
               </div>
+              
+              {/* Badges - Loja, Desconto e Categoria */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {productData.stores && <StoreTag storeName={productData.stores.name} size="sm" />}
+                <Badge className="gradient-accent text-foreground font-bold text-base px-3 py-1">
+                  -{productData.discount_percentage}%
+                </Badge>
+                {productData.categories && (
+                  <Badge variant="outline">{productData.categories.name}</Badge>
+                )}
+                {isExpired && (
+                  <Badge variant="secondary" className="bg-muted text-muted-foreground font-bold">
+                    EXPIRADA
+                  </Badge>
+                )}
+              </div>
+              
               {/* Installment Info */}
               {productData.installment_count && (
                 <div className="flex items-center gap-2">

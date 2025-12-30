@@ -317,7 +317,7 @@ const ProductDetail = () => {
                     alt={productData.title}
                     fetchpriority="high"
                     decoding="async"
-                    className={`h-full w-full object-cover ${isExpired ? 'grayscale' : ''}`}
+                    className={`h-full w-full object-contain ${isExpired ? 'grayscale' : ''}`}
                   />
                   {productData.is_hot && !isExpired && (
                     <div className="absolute top-4 right-4">

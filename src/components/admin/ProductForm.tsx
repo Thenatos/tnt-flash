@@ -470,6 +470,14 @@ export const ProductForm = ({ onSubmit, defaultValues, isLoading }: ProductFormP
                 <Input 
                   placeholder="https://loja.com/produto?ref=..." 
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    const storeId = form.getValues("store_id");
+                    if (e.target.value && storeId) {
+                      // Limpar erro anterior ao alterar
+                      setLinkValidationError(null);
+                    }
+                  }}
                   onBlur={(e) => {
                     field.onBlur();
                     const storeId = form.getValues("store_id");

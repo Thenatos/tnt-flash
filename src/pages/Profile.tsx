@@ -263,7 +263,10 @@ const Profile = () => {
                   {/* Criador de Avatar */}
                   <div className="space-y-3">
                     <Label>Ou crie seu avatar personalizado:</Label>
-                    <AvatarCreator onAvatarCreated={handleAvatarCreated} />
+                    <AvatarCreator 
+                      onAvatarCreated={handleAvatarCreated} 
+                      onSave={handleSaveProfile}
+                    />
                   </div>
 
                   {/* Nome completo */}

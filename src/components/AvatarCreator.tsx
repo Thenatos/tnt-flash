@@ -14,9 +14,10 @@ const AVATAR_STYLES = [
 
 interface AvatarCreatorProps {
   onAvatarCreated: (avatarUrl: string) => void;
+  onSave?: () => void;
 }
 
-export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
+export const AvatarCreator = ({ onAvatarCreated, onSave }: AvatarCreatorProps) => {
   const [selectedStyle, setSelectedStyle] = useState("big-smile");
   const [seed, setSeed] = useState(Math.random().toString(36).substring(7));
 
@@ -32,6 +33,12 @@ export const AvatarCreator = ({ onAvatarCreated }: AvatarCreatorProps) => {
 
   const handleUseAvatar = () => {
     onAvatarCreated(currentAvatarUrl);
+    // Salvar automaticamente se a função foi passada
+    if (onSave) {
+      setTimeout(() => {
+        onSave();
+      }, 100);
+    }
   };
 
   return (

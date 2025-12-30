@@ -154,7 +154,10 @@ export const Header = ({ onSearch, onCategorySelect, onBestDealsFilter, onReset 
             width="200"
             height="96"
             fetchpriority="high"
-            className="h-10 w-auto md:h-12"
+            className="h-14 w-auto md:h-20"
+            style={{
+              filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.4)) drop-shadow(0 0 16px rgba(219, 39, 119, 0.3)) drop-shadow(0 2px 8px rgba(236, 72, 153, 0.2))'
+            }}
           />
         </button>
 

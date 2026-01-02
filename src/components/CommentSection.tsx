@@ -107,20 +107,31 @@ export const CommentSection = ({ productId }: CommentSectionProps) => {
       {/* Form de novo comentário */}
       {user ? (
         <Card className="p-4">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <div className="flex-1">
-              <RichTextEditor
-                value={newComment}
-                onChange={setNewComment}
-                placeholder="Deixe seu comentário sobre este produto..."
-                users={commentUsers}
-              />
+          <form onSubmit={handleSubmit} className="space-y-2">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <RichTextEditor
+                  value={newComment}
+                  onChange={setNewComment}
+                  placeholder="Deixe seu comentário sobre este produto..."
+                  users={commentUsers}
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={!newComment.trim() || createComment.isPending}
+                className="hidden md:flex gap-2 self-end mb-1"
+              >
+                <Send className="h-4 w-4" />
+                Comentar
+              </Button>
             </div>
             <Button
               type="submit"
               variant="secondary"
               disabled={!newComment.trim() || createComment.isPending}
-              className="gap-2 self-end mb-1"
+              className="md:hidden w-full gap-2"
             >
               <Send className="h-4 w-4" />
               Comentar

@@ -244,9 +244,9 @@ export const RichTextEditor = ({
         />
       )}
 
-      {/* Helper text - Only visible when focused */}
+      {/* Helper text - Only visible when focused on desktop */}
       {isFocused && (
-        <div className="text-xs text-muted-foreground px-2 py-1 animate-fade-in">
+        <div className="hidden md:block text-xs text-muted-foreground px-2 py-1 animate-fade-in">
           Use **negrito**, *itálico* ou &lt;u&gt;sublinhado&lt;/u&gt; para formatar. Digite @ para mencionar usuários.
         </div>
       )}

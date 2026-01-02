@@ -22,8 +22,6 @@ export const ProductReactionCount = ({ productId }: ProductReactionCountProps) =
 
   const totalReactions = count || 0;
 
-  if (totalReactions === 0) return null;
-
   return (
     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
       <Users className="h-3.5 w-3.5" />

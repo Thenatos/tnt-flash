@@ -218,7 +218,7 @@ export const ProductCard = ({
           <Button 
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full shadow-md group/btn pointer-events-none"
           >
-            <span>Ir para loja</span>
+            <span>Ver o Produto</span>
             <ExternalLink className="h-4 w-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
           </Button>
         </div>
